@@ -2,7 +2,7 @@
 import socket
 import sys
 
-from .bus.telegram import Telegram
+from pybuspro.api.telegram import Telegram
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -24,9 +24,8 @@ class Buspro():
         print(f"send telegram: {telegram}...")
 
     async def start(self, callback=None):
-        #iterations = 15
-        #i = 0
 
+        '''
         # Datagram (udp) socket
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -88,28 +87,30 @@ class Buspro():
 #                ret = await telegram_received_cb['callback'](f"{device_address} ==> {str(telegram)}")
 
         s.close()
+        '''
 
+        iterations = 15
+        i = 0
+        while True:
+             i += 1
 
-        # while True:
-        #     i += 1
-        #
-        #     telegram = Telegram(source_address=(1,120,10))
-        #     telegram.payload = f"[{i}]"
-        #     #print(telegram.payload)
-        #     #print(telegram.source_address)
-        #     #print(str(telegram))
-        #
-        #     if callback is not None:
-        #         await callback(telegram)
-        #
-        #     for telegram_received_cb in self._telegram_received_cbs:
-        #         device_address = telegram_received_cb['device_address']
-        #
-        #         # Sender callback kun for oppgitt kanal
-        #         if device_address[2] == i:
-        #             ret = await telegram_received_cb['callback'](f"{device_address} ==> {str(telegram)}")
-        #
-        #     if i == iterations:
-        #         break;
-        #     await asyncio.sleep(1)
-        #
+             telegram = Telegram(source_address=(1,120,10))
+             telegram.payload = f"[{i}]"
+             #print(telegram.payload)
+             #print(telegram.source_address)
+             #print(str(telegram))
+
+             if callback is not None:
+                 await callback(telegram)
+
+             for telegram_received_cb in self._telegram_received_cbs:
+                 device_address = telegram_received_cb['device_address']
+
+                 # Sender callback kun for oppgitt kanal
+                 if device_address[2] == i:
+                     ret = await telegram_received_cb['callback'](f"{device_address} ==> {str(telegram)}")
+
+             if i == iterations:
+                 break;
+             await asyncio.sleep(1)
+

@@ -1,8 +1,7 @@
 import asyncio
 
-from buspro.buspro import Buspro
-from buspro.devices.light import Light
-from buspro.devices.device import Device
+from pybuspro.api.buspro import Buspro
+from pybuspro.devices.light import Light
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address

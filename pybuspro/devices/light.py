@@ -1,7 +1,7 @@
 ﻿import asyncio
 
-from .device import Device
-from buspro.bus.telegram import Telegram
+from pybuspro.devices.device import Device
+from pybuspro.api.telegram import Telegram
 
 class Light(Device):
     def __init__(self,  buspro, device_address):
