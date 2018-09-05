@@ -1,6 +1,4 @@
-﻿# pip install crc16==0.1.1
-
-import asyncio
+﻿import asyncio
 import socket
 import sys
 
