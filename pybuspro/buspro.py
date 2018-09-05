@@ -1,4 +1,4 @@
-﻿#pip install crc16==0.1.1
+﻿# pip install crc16==0.1.1
 
 import asyncio
 import socket
@@ -32,7 +32,7 @@ class Buspro:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             print('Socket created')
         except socket.error as msg:
-            print('Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+            print(f'Failed to create socket. Error Code : {msg.errno}. Message {msg.strerror}.')
             sys.exit()
 
         # Bind socket to local host and port
@@ -42,7 +42,7 @@ class Buspro:
             s.bind(('', port))
             print(f'Socket bind to port {port} complete')
         except socket.error as msg:
-            print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
+            print(f'Bind failed. Error Code : {msg.errno}. Message {msg.strerror}.')
             sys.exit()
 
         self._socket = s

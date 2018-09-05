@@ -6,7 +6,9 @@ from pybuspro.devices.light import Light
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-   
+GATEWAY_ADDRESS = ('192.168.1.15', 6000)
+
+
 async def callback_all_messages(telegram):
     print(telegram)
 
@@ -24,8 +26,6 @@ async def main():
     # Now you want to start long_operation, but you don't want to wait it finished:
     # long_operation should be started, but second msg should be printed immediately.
     # Create task to do so:
-    
-    GATEWAY_ADDRESS = ('192.168.1.15', 6000)
 
     hdl = Buspro(GATEWAY_ADDRESS)
     await hdl.connect()
