@@ -1,0 +1,126 @@
+title: Kalliåsen 1
+
+
+# Include external resources
+resources:
+  - url: /local/my-custom-card.js
+    type: js
+  - url: /local/my-webfont.css
+    type: css
+
+    
+# Optional background for all views. Check https://developer.mozilla.org/en-US/docs/Web/CSS/background for more examples.
+background: center / cover no-repeat url("/background.png") fixed
+
+
+# Exclude entities from "Unused entities" view
+excluded_entities:
+  - weblink.router
+
+  
+views:
+
+
+#############################################        
+# View Hovedside
+#############################################        
+
+
+
+
+    # View tab title.
+  - title: Hovedside
+    # Optional unique id for direct access /lovelace/${id}
+    id: mainpage
+    
+    # Optional background (overwrites the global background).
+    background: radial-gradient(crimson, skyblue)
+    
+    # Each view can have a different theme applied. Theme should be defined in the frontend.
+    theme: dark-mode
+    
+    # The cards to show on this view.
+    cards:
+        # The filter card will filter entities for their state
+      # - type: entity-filter
+        # entities:
+          # - device_tracker.paulus
+          # - device_tracker.anne_there
+        # state_filter:
+          # - 'home'
+        # card:
+          # type: glance
+          # title: Personer som er hjemme....
+
+        # The picture entity card will represent an entity with a picture
+      - type: picture-entity
+        image: https://www.home-assistant.io/images/default-social.png
+        entity: light.front_door
+        name: Lys inngangsdør
+      - type: picture-entity
+        image: https://www.home-assistant.io/images/default-social.png
+        entity: light.living_room
+        name: Lys i stue
+      - type: picture-entity
+        image: https://www.home-assistant.io/images/default-social.png
+        entity: sensor.sensor_name
+        name: Temperatur i stue
+
+      - type: entities
+        title: Lys
+        entities:
+          - type: divider
+          - entity: light.front_door
+            name: Inngangsdør
+          - entity: light.living_room
+            name: Stue
+
+      - type: entities
+        title: Temperatur
+        entities:
+          - entity: sensor.sensor_name
+            name: Stue
+        
+  
+        
+#############################################
+# View Side 2
+#############################################        
+
+
+
+        
+    # Specify a tab icon if you want the view tab to be an icon.
+  - icon: mdi:home-assistant
+    # Title of the view. Will be used as the tooltip for tab icon
+    title: Side 2
+    
+    id: side2
+    
+    cards:
+        # Entities card will take a list of entities and show their state.
+      - type: entities
+        # Title of the entities card
+        title: En gruppe med enheter
+        # The entities here will be shown in the same order as specified.
+        # Each entry is an entity ID or a map with extra options.
+        entities:
+          - light.front_door
+         
+          - entity: light.living_room
+            # Override the name to use
+            name: Lys stue
+            
+          - entity: sensor.sensor_name
+            name: Temperatur i stue
+
+        # The markdown card will render markdown text.
+      - type: markdown
+        title: Lovelace...
+        content: >
+          Welcome to your **Lovelace UI**...
+          
+          
+          
+#############################################        
+#############################################        

@@ -1,0 +1,28 @@
+
+## hub (component) 
+home-assistant/homeassistant/components/buspro.py
+eller
+home-assistant/homeassistant/components/buspro/__init__.py
+home-assistant/homeassistant/components/buspro/const.py
+home-assistant/homeassistant/components/buspro/services.py
+home-assistant/homeassistant/components/buspro/util.py
+home-assistant/homeassistant/components/buspro/*.py
+
+## binary-sensor (platform)
+home-assistant/homeassistant/components/binary_sensor/buspro.py
+
+## climate (platform)
+home-assistant/homeassistant/components/climate/buspro.py
+
+## light (platform)
+home-assistant/homeassistant/components/light/buspro.py
+
+## sensor (platform)
+home-assistant/homeassistant/components/sensor/buspro.py
+
+## switch (platform)
+home-assistant/homeassistant/components/switch/buspro.py
+
+
+A component contains the foundation (creating connection, setup devices, and alike) which platforms can used without doing the same for themself. Components can also be independent part.
+The term “Hub” is used to to group components which have platforms.

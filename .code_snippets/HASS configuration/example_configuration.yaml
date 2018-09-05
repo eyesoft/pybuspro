@@ -1,0 +1,39 @@
+# Example configuration.yaml entry
+buspro:
+  host: 192.168.1.100
+  port: 7094
+  name: "My custom name"
+ 
+Configuration variables:
+- host (string) (Required): The IP address or hostname of your Ethernet module.
+- port (int) (Required): The port used by your Ethernet module.
+- name (string) (Optional): Friendly name for your Ethernet module.
+ 
+
+
+ light:
+  - platform: buspro
+    devices:
+      1.89.1:
+        name: Light-Kitchen-Ceiling
+      1.89.2:
+        name: Light-Kitchen-Counter
+
+				
+Configuration variables:
+- devices (array) (Required): List of your devices/bulbs.
+  - address (string) (Required): The address of the bulb.
+    - name (string) (Optional): Friendly name for the frontend.
+
+
+ 
+ 
+ 
+ 
+ 
+ <config directory>/custom_components/<component name>
+ <config directory>/custom_components/buspro.py
+ 
+~/.homeassistant/custom_components/buspro.py
+~/.homeassistant/custom_components/light/buspro.py
+~/.homeassistant/custom_components/switch/buspro.py

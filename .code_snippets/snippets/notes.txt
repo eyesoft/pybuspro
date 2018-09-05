@@ -1,0 +1,83 @@
+####################################################
+Kataloger/filer som det må tas backup av:
+
+C:\Users\mcaasi\AppData\Roaming\.homeassistant\*.yaml
+C:\Users\mcaasi\AppData\Roaming\.homeassistant\custom_components\*
+
+
+####################################################
+Ressurser:
+
+GitHub:
+https://github.com/home-assistant/home-assistant
+
+Components:
+https://www.home-assistant.io/components/
+https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components
+
+Documentation:
+https://www.home-assistant.io/docs/
+
+Developer documentation:
+https://developers.home-assistant.io/en/
+
+
+####################################################
+BusproService:
+https://github.com/eyesoft/BusproService
+
+
+
+####################################################
+X:\Audun\Google Disk\Audun\PythonVEnv\ASIPC\homeassistant\Lib\site-packages\homeassistant
+
+## Activate Python virtual environment
+C:\> cd '\Audun\Google Disk\Audun\PythonVEnv\ASIPC\homeassistant\'
+C:\> Scripts\activate.bat
+
+## Install homeassistant (https://www.home-assistant.io/docs/installation/windows/#Installing_in_a_Python_virtual_environment)
+C:\> py -m pip install homeassistant
+
+## Start homeassistant (https://www.home-assistant.io/docs/tools/hass/)
+#C:\> hass
+#C:\> hass --open-ui
+C:\> py -m homeassistant
+
+http://10.120.1.66:8123
+
+
+####################################################
+OS		Path
+macOS	~/.homeassistant
+Linux	~/.homeassistant
+Windows	%APPDATA%/.homeassistant
+
+
+####################################################
+C:\Users\mcaasi\AppData\Roaming\.homeassistant\configuration.yaml
+C:\Users\mcaasi\AppData\Roaming\.homeassistant\custom_components\
+
+
+####################################################
+
+## xknx:
+
+class XKNX:							"""Class for reading and writing KNX/IP packets."""
+    async def start(...):			"""Start XKNX module. Connect to KNX/IP devices and start state updater."""
+    async def stop(self):			"""Stop XKNX module."""
+
+class Light							"""Class for managing a light."""
+    def __str__(self):				"""Return object as readable string."""
+    async def set_brightness(...):	"""Set brightness of light."""
+
+## Home assistant:
+
+class KNXModule:					"""Representation of KNX Object."""
+    def init_xknx(self):			"""Initialize of KNX object."""
+    async def start(self):			"""Start KNX object. Connect to tunneling or Routing device."""
+    async def stop(self, event):	"""Stop KNX object. Disconnect from tunneling or Routing device."""
+
+class KNXLight(Light):				"""Representation of a KNX light."""
+    async def async_turn_on(...):	"""Turn the light on."""
+    async def async_turn_off(...):	"""Turn the light off."""
+
