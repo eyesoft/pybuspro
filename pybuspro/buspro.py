@@ -7,7 +7,6 @@ import sys
 from pybuspro.core.telegram import Telegram
 from pybuspro.core.enums import DeviceType
 from crc16 import *
-import binascii
 from struct import *
 
 # ip, port = gateway_address
@@ -22,7 +21,7 @@ class Buspro:
         self._socket = None
         
     def register_telegram_received_cb(self, telegram_received_cb, device_address):
-        self._telegram_received_cbs.append({'callback':telegram_received_cb, 'device_address':device_address})
+        self._telegram_received_cbs.append({'callback': telegram_received_cb, 'device_address': device_address})
 
     async def disconnect(self):
         self._socket.close()

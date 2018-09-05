@@ -26,10 +26,10 @@ async def main():
     # Create task to do so:
     
     GATEWAY_ADDRESS = ('192.168.1.15', 6000)
-        
+
     hdl = Buspro(GATEWAY_ADDRESS)
     await hdl.connect()
-    
+
     light = Light(hdl, device_address=(1, 123, 11))
     light.register_telegram_received_cb(first_callback)
     # print(light.name)
@@ -52,3 +52,4 @@ async def main():
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
+    loop.close()

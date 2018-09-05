@@ -3,7 +3,8 @@
 
 # DTO class
 class Telegram:
-    def __init__(self, udp_address = None, payload=None, operate_code=None, source_device_type=None, source_address=None, target_address=None, raw_data=None):
+    def __init__(self, udp_address=None, payload=None, operate_code=None, source_device_type=None,
+                 source_address=None, target_address=None, raw_data=None):
         self.udp_address = udp_address
         self.payload = payload
         self.operate_code = operate_code
