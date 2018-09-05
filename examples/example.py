@@ -1,6 +1,6 @@
 import asyncio
 
-from pybuspro.api.buspro import Buspro
+from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
 
 # ip, port = gateway_address

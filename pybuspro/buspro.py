@@ -4,8 +4,8 @@ import asyncio
 import socket
 import sys
 
-from pybuspro.api.telegram import Telegram
-from pybuspro.api.enums import DeviceType
+from pybuspro.core.telegram import Telegram
+from pybuspro.core.enums import DeviceType
 from crc16 import *
 import binascii
 from struct import *

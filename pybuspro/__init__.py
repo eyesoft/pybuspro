@@ -1,1 +1,1 @@
-﻿from pybuspro.api.buspro import Buspro
+﻿from .buspro import Buspro

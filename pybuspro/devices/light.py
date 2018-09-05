@@ -1,5 +1,5 @@
 ﻿from pybuspro.devices.device import Device
-from pybuspro.api.telegram import Telegram
+from pybuspro.core.telegram import Telegram
 
 
 class Light(Device):
