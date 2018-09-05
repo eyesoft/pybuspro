@@ -13,6 +13,14 @@ Home-Assistant Plugin
 pybuspro contains a Plugin for the [Home-Assistant](https://home-assistant.io/) automation plattform
 
 
+Installation
+-------
+
+```commandline
+pip3 install pybuspro
+```
+
+
 Example
 -------
 

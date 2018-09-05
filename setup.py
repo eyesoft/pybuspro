@@ -14,7 +14,7 @@ setuptools.setup(
     description="An Asynchronous Library for the Buspro protocol",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    # url="https://github.com/pypa/sampleproject",
+    url="https://github.com/eyesoft/pybuspro",
     packages=setuptools.find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -24,9 +24,10 @@ setuptools.setup(
         'Programming Language :: Python :: 3.6',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
-        # download_url='https://github.com/eyesoft/pybuspro/archive/{}.zip'.format(VERSION),
-        # license='MIT',
     ],
+    # download_url='https://github.com/eyesoft/pybuspro/archive/{}.zip'.format(VERSION),
+    license='MIT',
     install_requires=REQUIRES,
     keywords='hdl buspro home automation',
+    # python_requires=">=3.5.2",
 )
