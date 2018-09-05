@@ -34,14 +34,16 @@ async def main():
     light.register_telegram_received_cb(first_callback)
     # print(light.name)
     
-    task = asyncio.ensure_future(hdl.start(callback_all_messages))
+    task = asyncio.ensure_future(hdl.start_listen(callback_all_messages))
     # task = asyncio.ensure_future(hdl.start())
 
-    # await light.turn_on()
+    # await light.set_on()
     # await asyncio.sleep(2)
-    # await light.turn_off()
+    # await light.set_off()
     # await asyncio.sleep(4)
     # await light.dim(75)
+
+    await hdl.disconnect()
 
     # Now, when you want, you can await task finished:
     await task

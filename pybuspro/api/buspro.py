@@ -52,7 +52,7 @@ class Buspro:
         await asyncio.sleep(0.1)
         print(f"send telegram: {telegram}...")
 
-    async def start(self, callback=None):
+    async def start_listen(self, callback=None):
         await self.full(callback)
         # await self.simple(callback)
 

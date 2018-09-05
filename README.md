@@ -20,17 +20,18 @@ Example
 """Example for switching a light on and off."""
 import asyncio
 
+
 async def main():
     """Connect to Buspro bus, switch on light, wait 2 seconds and switch of off again."""
-    buspro = Buspro()
-    await buspro.start()
-    light = Light(buspro,
-                  name='TestLight',
-                  address='1.100.9')
+    buspro = Buspro(('192.168.0.1', 6000))
+    await buspro.connect()
+    
+    light = Light(buspro, device_address=(1, 100, 9))
     await light.set_on()
     await asyncio.sleep(2)
     await light.set_off()
-    await buspro.stop()
+    
+    await buspro.disconnect()
 
 
 # pylint: disable=invalid-name

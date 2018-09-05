@@ -8,11 +8,11 @@ class Light(Device):
         self._device_address = device_address
         self._buspro = buspro
         
-    async def turn_on(self):
+    async def set_on(self):
         telegram = Telegram(target_address=self._device_address, payload=100)
         await self._buspro.send_message(telegram)
         
-    async def turn_off(self):
+    async def set_off(self):
         telegram = Telegram(target_address=self._device_address, payload=0)
         await self._buspro.send_message(telegram)
         
