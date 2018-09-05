@@ -43,7 +43,7 @@ async def main():
     # await asyncio.sleep(4)
     # await light.dim(75)
 
-    await hdl.disconnect()
+    # await hdl.disconnect()
 
     # Now, when you want, you can await task finished:
     await task

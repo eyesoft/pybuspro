@@ -50,9 +50,10 @@ class Buspro:
         print(f"send telegram: {telegram}...")
 
     async def start_listen(self, callback=None):
-        await self.full(callback)
+        await self.listen(callback)
         # await self.simple(callback)
 
+    '''
     async def simple(self, callback=None):
         iterations = 15
         i = 0
@@ -79,8 +80,9 @@ class Buspro:
                 break
 
             await asyncio.sleep(1)
+    '''
 
-    async def full(self, callback=None):
+    async def listen(self, callback=None):
 
         if not self._socket:
             print('Socket not created. Please run connect().')
@@ -88,14 +90,17 @@ class Buspro:
 
         # now keep talking with the client
         while 1:
-            # receive data from client (data, addr)
-            # data, udp_address = self._socket.recvfrom(1024)
 
-            udp_address = ('192.168.1.15', 6000)
-            data = b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01\x17\x00\x95\x001\x01J\x01d\x00\x03\xd7\xd1'
+            # udp_address = ('192.168.1.15', 6000)
+            # data = b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01\x17\x00\x95\x001\x01J\x01d\x00\x03\xd7\xd1'
+
+            # receive data from client (data, addr)
+            data, udp_address = self._socket.recvfrom(1024)
 
             if not data:
                 break
+
+            print(data)
 
             index_length_of_data_package = 16
             index_original_subnet_id = 17
