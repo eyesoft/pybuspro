@@ -2,6 +2,8 @@
 import socket
 import sys
 
+from pybuspro.transport.network_interface import NetworkInterface
+from pybuspro.core.state_updater import StateUpdater
 from pybuspro.core.telegram import Telegram
 from pybuspro.core.enums import DeviceType
 from crc16 import *
@@ -13,14 +15,66 @@ from struct import *
 
 class Buspro:
 
-    def __init__(self, gateway_address):
+    def __init__(self, gateway_address_receive=None, gateway_address_send=None, loop_=None):
+        self.loop = loop_ or asyncio.get_event_loop()
+        self.state_updater = None
+        self.started = False
+        self.network_interface = None
+
+        self.callback = None
         self._telegram_received_cbs = []
-        self._gateway_address = gateway_address
-        self._socket = None
-        
+
+        self.gateway_address_receive = gateway_address_receive
+        self.gateway_address_send = gateway_address_send
+
+    def __del__(self):
+        if self.started:
+            try:
+                task = self.loop.create_task(self.stop())
+                self.loop.run_until_complete(task)
+            except RuntimeError as exp:
+                print(f"LOG: Could not close loop, reason: {exp}")
+
+    async def start(self, state_updater=False):     # , daemon_mode=False):
+        self.network_interface = NetworkInterface(self, self.gateway_address_receive, self.gateway_address_send)
+        await self.network_interface.start()
+        self.network_interface.register_callback(self.callback)
+
+        if state_updater:
+            self.state_updater = StateUpdater(self)
+            await self.state_updater.start()
+
+        '''
+        if daemon_mode:
+            await self._loop_until_sigint()
+        '''
+
+        self.started = True
+
+        # await asyncio.sleep(5)
+        # await self.network_interface.send_message(b'\0x01')
+
+    async def stop(self):
+        await self._stop_network_interface()
+        self.started = False
+
+    async def _stop_network_interface(self):
+        if self.network_interface is not None:
+            await self.network_interface.stop()
+            self.network_interface = None
+
+    def register_telegram_received_cb_2(self, telegram_received_cb):
+        self.callback = telegram_received_cb
+
     def register_telegram_received_cb(self, telegram_received_cb, device_address):
         self._telegram_received_cbs.append({'callback': telegram_received_cb, 'device_address': device_address})
 
+    @staticmethod
+    async def sync():
+        # await self.callback("LOG: Sync() triggered from StateUpdater")
+        print("LOG: Sync() triggered from StateUpdater")
+
+    '''
     async def disconnect(self):
         self._socket.close()
 
@@ -53,7 +107,7 @@ class Buspro:
         await self.listen(callback)
         # await self.simple(callback)
 
-    '''
+    ''''''
     async def simple(self, callback=None):
         iterations = 15
         i = 0
@@ -80,7 +134,7 @@ class Buspro:
                 break
 
             await asyncio.sleep(1)
-    '''
+    ''''''
 
     async def listen(self, callback=None):
 
@@ -143,14 +197,14 @@ class Buspro:
             if callback:
                 await callback(f"Received telegram from callback: {telegram}")
 
-            '''
+            ''''''
             for telegram_received_cb in self._telegram_received_cbs:
                 device_address = telegram_received_cb['device_address']
 
                 # Sender callback kun for oppgitt kanal
                 if device_address[2] == i:
                     await telegram_received_cb['callback'](f"{device_address} ==> {str(telegram)}")
-            '''
+            ''''''
 
             break
 
@@ -206,4 +260,4 @@ class Buspro:
         for string in hex_value:
             list_of_integer.append(string)
         return list_of_integer
-
+    '''

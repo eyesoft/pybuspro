@@ -6,10 +6,13 @@ from pybuspro.devices.light import Light
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-GATEWAY_ADDRESS = ('192.168.1.15', 6000)
+# GATEWAY_ADDRESS = ('192.168.1.15', 6000)
+
+GATEWAY_ADDRESS_RECEIVE = ('10.120.1.66', 6000)
+GATEWAY_ADDRESS_SEND = ('10.120.1.66', 6000)
 
 
-async def callback_all_messages(telegram):
+def callback_all_messages(telegram):
     print(telegram)
 
 
@@ -27,14 +30,18 @@ async def main():
     # long_operation should be started, but second msg should be printed immediately.
     # Create task to do so:
 
-    hdl = Buspro(GATEWAY_ADDRESS)
-    await hdl.connect()
+    loop_ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_RECEIVE, GATEWAY_ADDRESS_SEND, loop_)
+    hdl.register_telegram_received_cb_2(callback_all_messages)
+
+    # await hdl.connect()
 
     light = Light(hdl, device_address=(1, 123, 11))
     light.register_telegram_received_cb(first_callback)
     # print(light.name)
-    
-    task = asyncio.ensure_future(hdl.start_listen(callback_all_messages))
+
+    task = asyncio.ensure_future(hdl.start())
+    # task = asyncio.ensure_future(hdl.start_listen(callback_all_messages))
     # task = asyncio.ensure_future(hdl.start())
 
     # await light.set_on()
@@ -49,7 +56,16 @@ async def main():
     await task
 
 
+async def main2():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_RECEIVE, GATEWAY_ADDRESS_SEND, loop__)
+    hdl.register_telegram_received_cb_2(callback_all_messages)
+    await hdl.start()
+
 if __name__ == "__main__":
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(main())
+    # loop.close()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-    loop.close()
+    loop.run_until_complete(main2())
+    loop.run_forever()
