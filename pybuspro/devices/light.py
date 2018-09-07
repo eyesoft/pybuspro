@@ -12,6 +12,9 @@ class Light(Device):
         _, _, self._channel = device_address
         self._buspro = buspro
 
+        self._state = False
+        self._brightness = 0
+
         # print(self._device_address)
         # print(self._channel)
 
@@ -29,7 +32,20 @@ class Light(Device):
     async def read_status(self):
         raise NotImplementedError
 
+    @property
+    def brightness(self):
+        return self._brightness
+
+    @property
+    def is_on(self):
+        if self._brightness == 0:
+            return False
+        else:
+            return True
+
     async def _set(self, intensity, running_time_seconds):
+        self._brightness = intensity
+
         running_time_minutes = 0
 
         telegram = Telegram()
@@ -38,6 +54,10 @@ class Light(Device):
             [self._channel, intensity, running_time_minutes, running_time_seconds])
         telegram.target_address = self._device_address
         telegram.operate_code_hex = OperateCode.SingleChannelLightingControl.value
+
+        # When we have sent the command we should wait for the response via callback and set
+        # the properties regarding state
+        # DeviceCallback
 
         await self._buspro.network_interface.send_telegram(telegram)
 

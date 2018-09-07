@@ -109,15 +109,23 @@ async def main3():
 
     light = Light(hdl, (1, 50, 3))
     light.register_telegram_received_cb(callback_light)
+
     await light.set_on(3)
+    print(f"{light.brightness} {light.is_on}")
+
     await light.set_off()
+    print(f"{light.brightness} {light.is_on}")
+
     await light.set_brightness(75, 3)
+    print(f"{light.brightness} {light.is_on}")
 
     light2 = Light(hdl, (1, 100, 1))
     light2.register_telegram_received_cb(callback_light)
-    await light2.set_brightness(10, 0)
 
-    await send_random_message(hdl)
+    await light2.set_brightness(10, 0)
+    print(f"{light.brightness} {light.is_on}")
+
+    # await send_random_message(hdl)
 
 
 if __name__ == "__main__":
