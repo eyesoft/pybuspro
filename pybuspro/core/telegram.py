@@ -11,7 +11,7 @@ class Telegram:
         self.udp_address = None
 
         self.payload = None
-        # self.payload_list = None
+        self.payload_list = None
 
         self.operate_code_hex = None
         self.operate_code = None
@@ -38,11 +38,11 @@ class Telegram:
             {"name": "operate_code_hex", "value": str(self.operate_code_hex)},
             {"name": "operate_code", "value": str(self.operate_code)},
             {"name": "payload", "value": str(self.payload)},
-            # {"name": "payload_list", "value": str(self.payload_list)},
+            {"name": "payload_list", "value": str(self.payload_list)},
             {"name": "udp_address", "value": self.udp_address},
             {"name": "raw_data", "value": str(self.raw_data)},
             # {"name": "raw_data_list", "value": str(self.raw_data_list)},
-            {"name": "raw_data", "value": str(self.raw_data)},
+            # {"name": "raw_data", "value": str(self.raw_data)},
             {"name": "crc", "value": str(self.crc)},
         ])
 
@@ -90,7 +90,7 @@ class TelegramHelper:
         telegram.target_address = (target_subnet_id, target_device_id)
         telegram.udp_address = address
         telegram.payload = content
-        # telegram.payload_list = self._hex_to_integer_as_list(content)
+        telegram.payload_list = self._hex_to_integer_list(content)
         telegram.crc = crc
 
         crc_check_pass = self._check_crc(telegram)
@@ -182,7 +182,7 @@ class TelegramHelper:
         return False
 
     @staticmethod
-    def _hex_to_integer__list(hex_value):
+    def _hex_to_integer_list(hex_value):
         list_of_integer = []
         for string in hex_value:
             list_of_integer.append(string)

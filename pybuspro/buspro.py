@@ -60,7 +60,7 @@ class Buspro:
             device_address = telegram_received_cb['device_address']
 
             # Sender callback kun for oppgitt kanal
-            if device_address == telegram.target_address:
+            if device_address == telegram.source_address:
                 telegram_received_cb['callback'](telegram)
                 # telegram_received_cb['callback'](f"{device_address} ==> {str(telegram)}")
 

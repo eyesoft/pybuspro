@@ -7,8 +7,8 @@ from pybuspro.devices.light import Light
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 
 
 def callback_all_messages(telegram):
@@ -98,32 +98,38 @@ async def main2():
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
     hdl.register_telegram_received_all_messages_cb(callback_all_messages)
     await hdl.start()
-    await send_random_message(hdl)
+    # await send_random_message(hdl)
 
 
 async def main3():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
-    hdl.register_telegram_received_all_messages_cb(callback_all_messages)
+    #hdl.register_telegram_received_all_messages_cb(callback_all_messages)
     await hdl.start()
 
-    light = Light(hdl, (1, 50, 3))
+    # Lys kino
+    light = Light(hdl, (1, 74, 1))
     light.register_telegram_received_cb(callback_light)
 
     await light.set_on(3)
     print(f"{light.brightness} {light.is_on}")
 
+    await asyncio.sleep(5)
     await light.set_off()
     print(f"{light.brightness} {light.is_on}")
 
-    await light.set_brightness(75, 3)
+    await asyncio.sleep(5)
+    await light.set_brightness(20, 5)
     print(f"{light.brightness} {light.is_on}")
 
-    light2 = Light(hdl, (1, 100, 1))
-    light2.register_telegram_received_cb(callback_light)
+    await asyncio.sleep(10)
+    await light.set_off()
 
-    await light2.set_brightness(10, 0)
-    print(f"{light.brightness} {light.is_on}")
+    # light2 = Light(hdl, (1, 100, 1))
+    # light2.register_telegram_received_cb(callback_light)
+
+    # await light2.set_brightness(10, 0)
+    # print(f"{light.brightness} {light.is_on}")
 
     # await send_random_message(hdl)
 
