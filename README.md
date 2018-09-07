@@ -41,7 +41,7 @@ def callback_all_messages(telegram):
 async def main():
     """Connect to Buspro bus, switch on light, wait 2 seconds and switch of off again."""
     buspro = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE)
-    buspro.register_telegram_received_cb_2(callback_all_messages)
+    # buspro.register_telegram_received_cb_2(callback_all_messages)
     await buspro.start()
     
     light = Light(buspro, device_address=(1, 100, 9))

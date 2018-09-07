@@ -12,7 +12,11 @@ GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 
 
 def callback_all_messages(telegram):
-    print(f'Final callback: {telegram}')
+    print(f'Callback all messages: {telegram}')
+
+
+def callback_light(telegram):
+    print(f'Callback light: {telegram}')
 
 
 async def first_callback(message):
@@ -31,7 +35,7 @@ async def main():
 
     loop_ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop_)
-    hdl.register_telegram_received_cb_2(callback_all_messages)
+    # hdl._register_telegram_received_cb_2(callback_all_messages)
 
     # await hdl.connect()
 
@@ -85,15 +89,34 @@ async def send_random_message(hdl):
     ]
 
     while True:
-        await hdl._send_message(random.choice(messages))
+        await hdl.network_interface.send_message(random.choice(messages))
         await asyncio.sleep(2)
 
 
 async def main2():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
-    hdl.register_telegram_received_cb_2(callback_all_messages)
+    hdl.register_telegram_received_all_messages_cb(callback_all_messages)
     await hdl.start()
+    await send_random_message(hdl)
+
+
+async def main3():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_all_messages)
+    await hdl.start()
+
+    light = Light(hdl, (1, 50, 3))
+    light.register_telegram_received_cb(callback_light)
+    await light.set_on(3)
+    await light.set_off()
+    await light.set_brightness(75, 3)
+
+    light2 = Light(hdl, (1, 100, 1))
+    light2.register_telegram_received_cb(callback_light)
+    await light2.set_brightness(10, 0)
+
     await send_random_message(hdl)
 
 
@@ -102,5 +125,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main())
     # loop.close()
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main2())
+    # loop.run_until_complete(main2())
+    loop.run_until_complete(main3())
     loop.run_forever()

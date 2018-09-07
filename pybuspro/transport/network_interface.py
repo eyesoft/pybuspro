@@ -1,5 +1,5 @@
 from pybuspro.transport.udp_client import UDPClient
-from pybuspro.core.telegram import Telegram, TelegramHelper
+from pybuspro.core.telegram import TelegramHelper
 
 
 class NetworkInterface:
@@ -9,6 +9,7 @@ class NetworkInterface:
         self.udp_client = None
         self.callback = None
         self._init_udp_client()
+        self._th = TelegramHelper()
 
     def _init_udp_client(self):
         self.udp_client = UDPClient(self.buspro, self.gateway_address_send_receive, self._udp_request_received)
@@ -24,19 +25,8 @@ class NetworkInterface:
         :return:
         """
         if self.callback is not None:
-            telegram = self._create_telegram(data, address)
+            telegram = self._th.build_telegram(data, address)
             self.callback(telegram)
-
-    def _create_telegram(self, data, address):
-        """
-        Converts data and address to Telegram
-        :param data:
-        :param address:
-        :return:
-        """
-        th = TelegramHelper()
-        telegram = th.build_telegram(data, address)
-        return telegram
 
     async def start(self):
         await self.udp_client.start()
@@ -47,4 +37,8 @@ class NetworkInterface:
             self.udp_client = None
 
     async def send_message(self, message):
+        await self.udp_client.send_message(message)
+
+    async def send_telegram(self, telegram):
+        message = self._th.build_send_buffer(telegram)
         await self.udp_client.send_message(message)

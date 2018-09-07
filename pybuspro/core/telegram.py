@@ -1,6 +1,6 @@
 ﻿import json
 
-from pybuspro.core.enums import DeviceType, OperateCode, OnOff
+from pybuspro.core.enums import DeviceType, OperateCode
 from crc16 import *
 from struct import *
 
@@ -115,12 +115,22 @@ class TelegramHelper:
         length_of_data_package = 11 + len(telegram.payload)
         send_buf.append(length_of_data_package)
 
-        sender_subnet_id, sender_device_id = telegram.source_address
+        if telegram.source_address is not None:
+            sender_subnet_id, sender_device_id = telegram.source_address
+        else:
+            sender_subnet_id = 200
+            sender_device_id = 200
+
         send_buf.append(sender_subnet_id)
         send_buf.append(sender_device_id)
 
-        send_buf.append(telegram.source_device_type_hex[0])
-        send_buf.append(telegram.source_device_type_hex[1])
+        if telegram.source_device_type_hex is not None:
+            send_buf.append(telegram.source_device_type_hex[0])
+            send_buf.append(telegram.source_device_type_hex[1])
+        else:
+            send_buf.append(0)
+            send_buf.append(0)
+            # send_buf.append(b'\x00\x00')
 
         send_buf.append(telegram.operate_code_hex[0])
         send_buf.append(telegram.operate_code_hex[1])
@@ -140,13 +150,22 @@ class TelegramHelper:
         # send_buf.append(hex_byte_array[0])
         # send_buf.append(hex_byte_array[1])
 
-        crc_0, crc_1 = self._calculate_crc(telegram)
+        crc_0, crc_1 = self._calculate_crc(length_of_data_package, send_buf)
         send_buf.append(crc_0)
         send_buf.append(crc_1)
 
         return send_buf
 
-    def _calculate_crc(self, telegram):
+    @staticmethod
+    def _calculate_crc(length_of_data_package, send_buf):
+        crc_buf_length = length_of_data_package - 2
+        crc_buf = send_buf[-crc_buf_length:]
+        crc_buf_as_bytes = bytes(crc_buf)
+        crc = crc16xmodem(crc_buf_as_bytes)
+        return pack(">H", crc)
+
+    @staticmethod
+    def _calculate_crc_from_telegram(telegram):
         length_of_data_package = 11 + len(telegram.payload)
         crc_buf_length = length_of_data_package - 2
         send_buf = telegram.raw_data[:-2]
@@ -157,18 +176,20 @@ class TelegramHelper:
 
     def _check_crc(self, telegram):
         # crc = data[-2:]
-        calculated_crc = self._calculate_crc(telegram)
+        calculated_crc = self._calculate_crc_from_telegram(telegram)
         if calculated_crc == telegram.crc:
             return True
         return False
 
-    def _hex_to_integer_as_list(self, hex_value):
+    @staticmethod
+    def _hex_to_integer__list(hex_value):
         list_of_integer = []
         for string in hex_value:
             list_of_integer.append(string)
         return list_of_integer
 
-    def _enum_has_value(self, enum, value):
+    @staticmethod
+    def _enum_has_value(enum, value):
         return any(value == item.value for item in enum)
 
     def _get_enum_value(self, enum, value):
