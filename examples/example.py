@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
@@ -6,14 +7,12 @@ from pybuspro.devices.light import Light
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-# GATEWAY_ADDRESS = ('192.168.1.15', 6000)
-
-GATEWAY_ADDRESS_RECEIVE = ('10.120.1.66', 6000)
-GATEWAY_ADDRESS_SEND = ('10.120.1.66', 6000)
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 
 
 def callback_all_messages(telegram):
-    print(telegram)
+    print(f'Final callback: {telegram}')
 
 
 async def first_callback(message):
@@ -31,7 +30,7 @@ async def main():
     # Create task to do so:
 
     loop_ = asyncio.get_event_loop()
-    hdl = Buspro(GATEWAY_ADDRESS_RECEIVE, GATEWAY_ADDRESS_SEND, loop_)
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop_)
     hdl.register_telegram_received_cb_2(callback_all_messages)
 
     # await hdl.connect()
@@ -43,6 +42,16 @@ async def main():
     task = asyncio.ensure_future(hdl.start())
     # task = asyncio.ensure_future(hdl.start_listen(callback_all_messages))
     # task = asyncio.ensure_future(hdl.start())
+
+    '''
+    await hdl._send_message(b'\0x01')
+    await asyncio.sleep(2)
+    await hdl._send_message(b'\0x02')
+    await asyncio.sleep(2)
+    await hdl._send_message(b'\0x03')
+    await asyncio.sleep(2)
+    await hdl._send_message(b'\0x04')
+    '''
 
     # await light.set_on()
     # await asyncio.sleep(2)
@@ -56,11 +65,37 @@ async def main():
     await task
 
 
+async def send_random_message(hdl):
+    messages = [
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\r\x012\x014\x00\x02\x01H\x01\t\x8d\x1b',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01(\x014\x001\x01J\x04\x00\x00\x03\xc4c',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x012\x014\x001\x01\x83\x05d\x00\x00\t\xdb',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0e\x01J\x02`\x002\xff\xff\x04\xf8\x00\x96\xb3',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01H\x02`\x00\x03\xff\xff\x01\t\x06\x05\xc6g',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x10\x01\x83\x00\x11\x002\xff\xff\x05\xf8d\x06\x10)(',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01d\x04S\xdaD\xff\xff\x12\t\x05\x11\x1c\x00^\x05',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01\x82\x00\x11\xef\xff\xff\xff\x01\xfe\x06\x00u8',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01)\x014\xe3\xe5\xff\xff\x01\x1f\x00\x00\xf8A\xac4',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x011\x014\xe3\xe5\xff\xff\x01\x1f\x00\x00\xf8A\xb1\xda',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01n\x0b\xe9\xdaD\xff\xff\x12\x07\x13\x11\x18\x00\x87\xf8',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01\x83\x00\x11\xef\xff\xff\xff\x03\xfe\xfe\xff\x06\x10\\\n',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x14\x01(\x014\x16G\xff\xff2\x00\x19\x00\x00\x00\x00\x00\x00\xfbC',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x14\x011\x014\x16G\xff\xff3\x00\x00\x00\x00\x00\x00\x00\x00\x96|',
+        b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x14\x01)\x014\x16G\xff\xff3\x00\x00\x00\x00\x00\x00\x00\x00\xa4\xf3',
+    ]
+
+    while True:
+        await hdl._send_message(random.choice(messages))
+        await asyncio.sleep(2)
+
+
 async def main2():
     loop__ = asyncio.get_event_loop()
-    hdl = Buspro(GATEWAY_ADDRESS_RECEIVE, GATEWAY_ADDRESS_SEND, loop__)
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
     hdl.register_telegram_received_cb_2(callback_all_messages)
     await hdl.start()
+    await send_random_message(hdl)
+
 
 if __name__ == "__main__":
     # loop = asyncio.get_event_loop()

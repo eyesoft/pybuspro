@@ -28,23 +28,32 @@ Example
 """Example for switching a light on and off."""
 import asyncio
 
+from pybuspro.buspro import Buspro
+from pybuspro.devices.light import Light
 
+GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('', 6000))
+
+
+def callback_all_messages(telegram):
+    print(telegram)
+    
+    
 async def main():
     """Connect to Buspro bus, switch on light, wait 2 seconds and switch of off again."""
-    buspro = Buspro(('192.168.0.1', 6000))
-    await buspro.connect()
+    buspro = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE)
+    buspro.register_telegram_received_cb_2(callback_all_messages)
+    await buspro.start()
     
     light = Light(buspro, device_address=(1, 100, 9))
     await light.set_on()
     await asyncio.sleep(2)
     await light.set_off()
     
-    await buspro.disconnect()
+    # await buspro.disconnect()
 
 
-# pylint: disable=invalid-name
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
-loop.close()
-```
+loop.run_forever()
 
+```

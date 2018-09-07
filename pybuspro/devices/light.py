@@ -9,13 +9,19 @@ class Light(Device):
         self._buspro = buspro
         
     async def set_on(self):
-        telegram = Telegram(target_address=self._device_address, payload=100)
+        telegram = Telegram()
+        telegram.target_address = self._device_address
+        telegram.payload = 100
         await self._buspro.send_message(telegram)
         
     async def set_off(self):
-        telegram = Telegram(target_address=self._device_address, payload=0)
+        telegram = Telegram()
+        telegram.target_address = self._device_address
+        telegram.payload = 0
         await self._buspro.send_message(telegram)
         
     async def dim(self, intensity):
-        telegram = Telegram(target_address=self._device_address, payload=intensity)
+        telegram = Telegram()
+        telegram.target_address = self._device_address
+        telegram.payload = intensity
         await self._buspro.send_message(telegram)

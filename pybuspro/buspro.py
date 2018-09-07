@@ -1,13 +1,7 @@
 ﻿import asyncio
-import socket
-import sys
 
 from pybuspro.transport.network_interface import NetworkInterface
 from pybuspro.core.state_updater import StateUpdater
-from pybuspro.core.telegram import Telegram
-from pybuspro.core.enums import DeviceType
-from crc16 import *
-from struct import *
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -15,7 +9,7 @@ from struct import *
 
 class Buspro:
 
-    def __init__(self, gateway_address_receive=None, gateway_address_send=None, loop_=None):
+    def __init__(self, gateway_address_send_receive, loop_=None):
         self.loop = loop_ or asyncio.get_event_loop()
         self.state_updater = None
         self.started = False
@@ -24,8 +18,7 @@ class Buspro:
         self.callback = None
         self._telegram_received_cbs = []
 
-        self.gateway_address_receive = gateway_address_receive
-        self.gateway_address_send = gateway_address_send
+        self.gateway_address_send_receive = gateway_address_send_receive
 
     def __del__(self):
         if self.started:
@@ -33,10 +26,10 @@ class Buspro:
                 task = self.loop.create_task(self.stop())
                 self.loop.run_until_complete(task)
             except RuntimeError as exp:
-                print(f"LOG: Could not close loop, reason: {exp}")
+                print(f"ERROR: Could not close loop, reason: {exp}")
 
     async def start(self, state_updater=False):     # , daemon_mode=False):
-        self.network_interface = NetworkInterface(self, self.gateway_address_receive, self.gateway_address_send)
+        self.network_interface = NetworkInterface(self, self.gateway_address_send_receive)
         await self.network_interface.start()
         self.network_interface.register_callback(self.callback)
 
@@ -72,41 +65,13 @@ class Buspro:
     @staticmethod
     async def sync():
         # await self.callback("LOG: Sync() triggered from StateUpdater")
-        print("LOG: Sync() triggered from StateUpdater")
+        # print("LOG: Sync() triggered from StateUpdater")
+        pass
+
+    async def _send_message(self, message):
+        await self.network_interface.send_message(message)
 
     '''
-    async def disconnect(self):
-        self._socket.close()
-
-    async def connect(self):
-        try:
-            print('Creating socket...')
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            print('Socket created')
-        except socket.error as msg:
-            print(f'Failed to create socket. Error Code : {msg.errno}. Message {msg.strerror}.')
-            sys.exit()
-
-        # Bind socket to local host and port
-        try:
-            port = self._gateway_address[1]
-            print(f'Binding to port {port}...')
-            s.bind(('', port))
-            print(f'Socket bind to port {port} complete')
-        except socket.error as msg:
-            print(f'Bind failed. Error Code : {msg.errno}. Message {msg.strerror}.')
-            sys.exit()
-
-        self._socket = s
-
-    async def send_message(self, telegram: Telegram):
-        await asyncio.sleep(0.1)
-        print(f"send telegram: {telegram}...")
-
-    async def start_listen(self, callback=None):
-        await self.listen(callback)
-        # await self.simple(callback)
-
     ''''''
     async def simple(self, callback=None):
         iterations = 15
@@ -151,49 +116,8 @@ class Buspro:
             # receive data from client (data, addr)
             data, udp_address = self._socket.recvfrom(1024)
 
-            if not data:
-                break
-
-            print(data)
-
-            index_length_of_data_package = 16
-            index_original_subnet_id = 17
-            index_original_device_id = 18
-            index_original_device_type = 19
-            index_operate_code = 21
-            index_target_subnet_id = 23
-            index_target_device_id = 24
-            index_content = 25
-            length_of_data_package = data[index_length_of_data_package]
-
-            source_device_id = data[index_original_device_id]
-            content_length = length_of_data_package - 1 - 1 - 1 - 2 - 2 - 1 - 1 - 1 - 1
-            source_subnet_id = data[index_original_subnet_id]
-            source_device_type_hex = data[index_original_device_type:index_original_device_type + 2]
-            operate_code_hex = data[index_operate_code:index_operate_code + 2]
-            target_subnet_id = data[index_target_subnet_id]
-            target_device_id = data[index_target_device_id]
-            content = data[index_content:index_content + content_length]
-
-            crc_check_pass = self.check_crc(data)
-            # crc_check_pass = False
-            if not crc_check_pass:
-                print("CRC check of received data failed")
-                continue
-
-            telegram = Telegram()
-            telegram.source_device_type = source_device_type_hex
-            telegram.raw_data = data
-            telegram.source_address = (source_subnet_id, source_device_id)
-            telegram.operate_code = operate_code_hex
-            telegram.target_address = (target_subnet_id, target_device_id)
-            telegram.udp_address = udp_address
-            telegram.payload = content
-
-            print(f"_Data: {self.hex_to_integer(data)}")
-            print(f"_DeviceType: {DeviceType(source_device_type_hex)}")     # Returns DeviceType
-            print(f"_SendBuf: {self.build_buf_to_send(telegram)}")
-
+            self.build_telegram(data)
+    
             if callback:
                 await callback(f"Received telegram from callback: {telegram}")
 
@@ -209,55 +133,4 @@ class Buspro:
             break
 
         await self.disconnect()
-
-    @staticmethod
-    def build_buf_to_send(telegram: Telegram):
-
-        send_buf = bytearray([192, 168, 1, 15])
-        send_buf.extend('HDLMIRACLE'.encode())
-        send_buf.append(0xAA)
-        send_buf.append(0xAA)
-
-        length_of_data_package = 11 + len(telegram.payload)
-        send_buf.append(length_of_data_package)
-
-        sender_subnet_id, sender_device_id = telegram.source_address
-        send_buf.append(sender_subnet_id)
-        send_buf.append(sender_device_id)
-
-        send_buf.append(telegram.source_device_type[0])
-        send_buf.append(telegram.source_device_type[1])
-
-        send_buf.append(telegram.operate_code[0])
-        send_buf.append(telegram.operate_code[1])
-
-        target_subnet_id, target_device_id = telegram.target_address
-        send_buf.append(target_subnet_id)
-        send_buf.append(target_device_id)
-
-        for byte in telegram.payload:
-            send_buf.append(byte)
-
-        crc_buf_length = length_of_data_package - 2
-        crc_buf = send_buf[-crc_buf_length:]
-        crc_buf_as_bytes = bytes(crc_buf)
-        crc = crc16xmodem(crc_buf_as_bytes)
-        hex_byte_array = pack(">H", crc)
-
-        send_buf.append(hex_byte_array[0])
-        send_buf.append(hex_byte_array[1])
-
-        return send_buf
-
-    @staticmethod
-    def check_crc(data):
-        crc = b'\xd7\xd1'
-        return True
-
-    @staticmethod
-    def hex_to_integer(hex_value):
-        list_of_integer = []
-        for string in hex_value:
-            list_of_integer.append(string)
-        return list_of_integer
-    '''
+   '''

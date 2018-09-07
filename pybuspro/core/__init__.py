@@ -1,2 +1,2 @@
-﻿from .telegram import Telegram
+﻿from .telegram import Telegram, TelegramHelper
 from .enums import DeviceType, OnOff, OperateCode

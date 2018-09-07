@@ -16,7 +16,7 @@ class UDPClient:
 
         def datagram_received(self, data, address):
             if self.data_received_callback is not None:
-                self.data_received_callback(data)
+                self.data_received_callback(data, address)
 
         def error_received(self, exc):
             print('ERROR: Error received: %s', exc)
@@ -24,24 +24,27 @@ class UDPClient:
         def connection_lost(self, exc):
             print('ERROR: closing transport %s', exc)
 
-    def __init__(self, buspro, gateway_address_receive, gateway_address_send):
+    def __init__(self, buspro, gateway_address_send_receive, callback):
         self.buspro = buspro
-        self.gateway_address_receive = gateway_address_receive
-        self.gateway_address_send = gateway_address_send
-        self.callback = None
+        self.gateway_address_send_receive = gateway_address_send_receive
+        self.callback = callback
         self.transport = None
 
-    def register_callback(self, callback):
-        self.callback = callback
+    # def register_callback(self, callback):
+    #     self.callback = callback
 
-    def _data_received_callback(self, telegram):
-        self.callback(telegram)
+    def _data_received_callback(self, data, address):
+        self.callback(data, address)
 
     def _create_multicast_sock(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.setblocking(False)
-        sock.bind(self.gateway_address_receive)
+
+        _, gateway_address_receive = self.gateway_address_send_receive
+        sock.bind(gateway_address_receive)
+
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 0)
         return sock
 
@@ -64,4 +67,5 @@ class UDPClient:
         self.transport.close()
 
     async def send_message(self, message):
-        self.transport.sendto(message, self.gateway_address_send)
+        gateway_address_send, _ = self.gateway_address_send_receive
+        self.transport.sendto(message, gateway_address_send)

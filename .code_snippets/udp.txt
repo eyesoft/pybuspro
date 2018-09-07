@@ -1,86 +1,63 @@
-/usr/local/bin/python3.7 /Users/audun/PycharmProjects/pybuspro/examples/example.py
-Creating socket...
-Socket created
-Binding to port 6000...
-Socket bind to port 6000 complete
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 130, 0, 17, 239, 255, 255, 255, 1, 254, 6, 0, 117, 56]
-_DeviceType: DeviceType.SB_DN_6B0_10v
+[
+  {
+    "name": "source_address",
+    "value": [
+      1,
+      72
+    ]
+  },
+  {
+    "name": "source_device_type_hex",
+    "value": "None"
+  },
+  {
+    "name": "target_address",
+    "value": [
+      255,
+      255
+    ]
+  },
+  {
+    "name": "operate_code_hex",
+    "value": "None"
+  },
+  {
+    "name": "payload",
+    "value": "b'\\x01\\t\\x06\\x05'"
+  },
+  {
+    "name": "udp_address",
+    "value": [
+      "10.120.1.66",
+      6000
+    ]
+  },
+  {
+    "name": "raw_data",
+    "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01H\\x02`\\x00\\x03\\xff\\xff\\x01\\t\\x06\\x05\\xc6g'"
+  }
+]
+
+
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01\x82\x00\x11\xef\xff\xff\xff\x01\xfe\x06\x00u8')
-Received telegram from callback: [{"name": "source_address", "value": [1, 130]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\xef\\xff'"}, {"name": "payload", "value": "b'\\x01\\xfe\\x06\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01\\x82\\x00\\x11\\xef\\xff\\xff\\xff\\x01\\xfe\\x06\\x00u8'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 13, 1, 50, 1, 52, 0, 2, 1, 72, 1, 9, 141, 27]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\r\x012\x014\x00\x02\x01H\x01\t\x8d\x1b')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 72]}, {"name": "operate_code", "value": "b'\\x00\\x02'"}, {"name": "payload", "value": "b'\\x01\\t'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\r\\x012\\x014\\x00\\x02\\x01H\\x01\\t\\x8d\\x1b'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 72, 2, 96, 0, 3, 255, 255, 1, 9, 6, 5, 198, 103]
-_DeviceType: DeviceType.SB_DN_DT0601
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01H\x02`\x00\x03\xff\xff\x01\t\x06\x05\xc6g')
-Received telegram from callback: [{"name": "source_address", "value": [1, 72]}, {"name": "source_device_type", "value": "b'\\x02`'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x00\\x03'"}, {"name": "payload", "value": "b'\\x01\\t\\x06\\x05'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01H\\x02`\\x00\\x03\\xff\\xff\\x01\\t\\x06\\x05\\xc6g'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 50, 1, 52, 0, 49, 1, 131, 5, 100, 0, 0, 9, 219]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x012\x014\x001\x01\x83\x05d\x00\x00\t\xdb')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 131]}, {"name": "operate_code", "value": "b'\\x001'"}, {"name": "payload", "value": "b'\\x05d\\x00\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x012\\x014\\x001\\x01\\x83\\x05d\\x00\\x00\\t\\xdb'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 16, 1, 131, 0, 17, 0, 50, 255, 255, 5, 248, 100, 6, 16, 41, 40]
-_DeviceType: DeviceType.SB_DN_6B0_10v
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x10\x01\x83\x00\x11\x002\xff\xff\x05\xf8d\x06\x10)(')
-Received telegram from callback: [{"name": "source_address", "value": [1, 131]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x002'"}, {"name": "payload", "value": "b'\\x05\\xf8d\\x06\\x10'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x10\\x01\\x83\\x00\\x11\\x002\\xff\\xff\\x05\\xf8d\\x06\\x10)('"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 40, 1, 52, 0, 49, 1, 74, 4, 0, 0, 3, 196, 99]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01(\x014\x001\x01J\x04\x00\x00\x03\xc4c')
-Received telegram from callback: [{"name": "source_address", "value": [1, 40]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 74]}, {"name": "operate_code", "value": "b'\\x001'"}, {"name": "payload", "value": "b'\\x04\\x00\\x00\\x03'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01(\\x014\\x001\\x01J\\x04\\x00\\x00\\x03\\xc4c'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 14, 1, 74, 2, 96, 0, 50, 255, 255, 4, 248, 0, 150, 179]
-_DeviceType: DeviceType.SB_DN_DT0601
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0e\x01J\x02`\x002\xff\xff\x04\xf8\x00\x96\xb3')
-Received telegram from callback: [{"name": "source_address", "value": [1, 74]}, {"name": "source_device_type", "value": "b'\\x02`'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x002'"}, {"name": "payload", "value": "b'\\x04\\xf8\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0e\\x01J\\x02`\\x002\\xff\\xff\\x04\\xf8\\x00\\x96\\xb3'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 17, 1, 131, 0, 17, 239, 255, 255, 255, 3, 254, 254, 255, 6, 16, 92, 10]
-_DeviceType: DeviceType.SB_DN_6B0_10v
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01\x83\x00\x11\xef\xff\xff\xff\x03\xfe\xfe\xff\x06\x10\\\n')
-Received telegram from callback: [{"name": "source_address", "value": [1, 131]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\xef\\xff'"}, {"name": "payload", "value": "b'\\x03\\xfe\\xfe\\xff\\x06\\x10'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x11\\x01\\x83\\x00\\x11\\xef\\xff\\xff\\xff\\x03\\xfe\\xfe\\xff\\x06\\x10\\\\\\n'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 17, 1, 110, 11, 233, 218, 68, 255, 255, 18, 7, 19, 17, 24, 0, 135, 248]
-_DeviceType: DeviceType.SB_DN_SEC250K
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01n\x0b\xe9\xdaD\xff\xff\x12\x07\x13\x11\x18\x00\x87\xf8')
-Received telegram from callback: [{"name": "source_address", "value": [1, 110]}, {"name": "source_device_type", "value": "b'\\x0b\\xe9'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\xdaD'"}, {"name": "payload", "value": "b'\\x12\\x07\\x13\\x11\\x18\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x11\\x01n\\x0b\\xe9\\xdaD\\xff\\xff\\x12\\x07\\x13\\x11\\x18\\x00\\x87\\xf8'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 13, 1, 50, 1, 52, 0, 2, 1, 72, 1, 9, 141, 27]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\r\x012\x014\x00\x02\x01H\x01\t\x8d\x1b')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 72]}, {"name": "operate_code", "value": "b'\\x00\\x02'"}, {"name": "payload", "value": "b'\\x01\\t'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\r\\x012\\x014\\x00\\x02\\x01H\\x01\\t\\x8d\\x1b'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 72, 2, 96, 0, 3, 255, 255, 1, 9, 6, 5, 198, 103]
-_DeviceType: DeviceType.SB_DN_DT0601
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01H\x02`\x00\x03\xff\xff\x01\t\x06\x05\xc6g')
-Received telegram from callback: [{"name": "source_address", "value": [1, 72]}, {"name": "source_device_type", "value": "b'\\x02`'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x00\\x03'"}, {"name": "payload", "value": "b'\\x01\\t\\x06\\x05'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01H\\x02`\\x00\\x03\\xff\\xff\\x01\\t\\x06\\x05\\xc6g'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 50, 1, 52, 0, 49, 1, 131, 5, 100, 0, 0, 9, 219]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x012\x014\x001\x01\x83\x05d\x00\x00\t\xdb')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 131]}, {"name": "operate_code", "value": "b'\\x001'"}, {"name": "payload", "value": "b'\\x05d\\x00\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x012\\x014\\x001\\x01\\x83\\x05d\\x00\\x00\\t\\xdb'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 16, 1, 131, 0, 17, 0, 50, 255, 255, 5, 248, 100, 6, 16, 41, 40]
-_DeviceType: DeviceType.SB_DN_6B0_10v
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x10\x01\x83\x00\x11\x002\xff\xff\x05\xf8d\x06\x10)(')
-Received telegram from callback: [{"name": "source_address", "value": [1, 131]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x002'"}, {"name": "payload", "value": "b'\\x05\\xf8d\\x06\\x10'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x10\\x01\\x83\\x00\\x11\\x002\\xff\\xff\\x05\\xf8d\\x06\\x10)('"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 130, 0, 17, 239, 255, 255, 255, 1, 254, 6, 0, 117, 56]
-_DeviceType: DeviceType.SB_DN_6B0_10v
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01\x82\x00\x11\xef\xff\xff\xff\x01\xfe\x06\x00u8')
-Received telegram from callback: [{"name": "source_address", "value": [1, 130]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\xef\\xff'"}, {"name": "payload", "value": "b'\\x01\\xfe\\x06\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01\\x82\\x00\\x11\\xef\\xff\\xff\\xff\\x01\\xfe\\x06\\x00u8'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 13, 1, 50, 1, 52, 0, 2, 1, 72, 1, 9, 141, 27]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\r\x012\x014\x00\x02\x01H\x01\t\x8d\x1b')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 72]}, {"name": "operate_code", "value": "b'\\x00\\x02'"}, {"name": "payload", "value": "b'\\x01\\t'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\r\\x012\\x014\\x00\\x02\\x01H\\x01\\t\\x8d\\x1b'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 72, 2, 96, 0, 3, 255, 255, 1, 9, 6, 5, 198, 103]
-_DeviceType: DeviceType.SB_DN_DT0601
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x01H\x02`\x00\x03\xff\xff\x01\t\x06\x05\xc6g')
-Received telegram from callback: [{"name": "source_address", "value": [1, 72]}, {"name": "source_device_type", "value": "b'\\x02`'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x00\\x03'"}, {"name": "payload", "value": "b'\\x01\\t\\x06\\x05'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x01H\\x02`\\x00\\x03\\xff\\xff\\x01\\t\\x06\\x05\\xc6g'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 15, 1, 50, 1, 52, 0, 49, 1, 131, 5, 100, 0, 0, 9, 219]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x0f\x012\x014\x001\x01\x83\x05d\x00\x00\t\xdb')
-Received telegram from callback: [{"name": "source_address", "value": [1, 50]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [1, 131]}, {"name": "operate_code", "value": "b'\\x001'"}, {"name": "payload", "value": "b'\\x05d\\x00\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0f\\x012\\x014\\x001\\x01\\x83\\x05d\\x00\\x00\\t\\xdb'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 16, 1, 131, 0, 17, 0, 50, 255, 255, 5, 248, 100, 6, 16, 41, 40]
-_DeviceType: DeviceType.SB_DN_6B0_10v
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x10\x01\x83\x00\x11\x002\xff\xff\x05\xf8d\x06\x10)(')
-Received telegram from callback: [{"name": "source_address", "value": [1, 131]}, {"name": "source_device_type", "value": "b'\\x00\\x11'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x002'"}, {"name": "payload", "value": "b'\\x05\\xf8d\\x06\\x10'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x10\\x01\\x83\\x00\\x11\\x002\\xff\\xff\\x05\\xf8d\\x06\\x10)('"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 20, 1, 40, 1, 52, 22, 71, 255, 255, 50, 0, 25, 0, 0, 0, 0, 0, 0, 251, 67]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x14\x01(\x014\x16G\xff\xff2\x00\x19\x00\x00\x00\x00\x00\x00\xfbC')
-Received telegram from callback: [{"name": "source_address", "value": [1, 40]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\x16G'"}, {"name": "payload", "value": "b'2\\x00\\x19\\x00\\x00\\x00\\x00\\x00\\x00'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x14\\x01(\\x014\\x16G\\xff\\xff2\\x00\\x19\\x00\\x00\\x00\\x00\\x00\\x00\\xfbC'"}]
-_Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 17, 1, 40, 1, 52, 227, 229, 255, 255, 1, 30, 0, 0, 240, 65, 202, 175]
-_DeviceType: DeviceType.SB_CMS_12in1
 _SendBuf: bytearray(b'\xc0\xa8\x01\x0fHDLMIRACLE\xaa\xaa\x11\x01(\x014\xe3\xe5\xff\xff\x01\x1e\x00\x00\xf0A\xca\xaf')
 Received telegram from callback: [{"name": "source_address", "value": [1, 40]}, {"name": "source_device_type", "value": "b'\\x014'"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code", "value": "b'\\xe3\\xe5'"}, {"name": "payload", "value": "b'\\x01\\x1e\\x00\\x00\\xf0A'"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x11\\x01(\\x014\\xe3\\xe5\\xff\\xff\\x01\\x1e\\x00\\x00\\xf0A\\xca\\xaf'"}]
 _Data: [192, 168, 1, 15, 72, 68, 76, 77, 73, 82, 65, 67, 76, 69, 170, 170, 17, 1, 100, 4, 83, 218, 68, 255, 255, 18, 9, 5, 17, 28, 0, 94, 5]
