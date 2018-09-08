@@ -1,3 +1,25 @@
+
+
+Callback light: [{"name": "source_address", "value": [1, 74]}, {"name": "source_device_type_hex", "value": "b'\\x02`'"}, {"name": "source_device_type", "value": "DeviceType.SB_DN_DT0601"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code_hex", "value": "b'\\x002'"}, {"name": "operate_code", "value": "OperateCode.Response_SingleChannelLightingControl"}, {"name": "payload", "value": "b'\\x01\\xf8d'"}, {"name": "payload_list", "value": "[1, 248, 100]"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0e\\x01J\\x02`\\x002\\xff\\xff\\x01\\xf8dQa'"}, {"name": "crc", "value": "b'Qa'"}]
+Callback light: [{"name": "source_address", "value": [1, 74]}, {"name": "source_device_type_hex", "value": "b'\\x02`'"}, {"name": "source_device_type", "value": "DeviceType.SB_DN_DT0601"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code_hex", "value": "b'\\x002'"}, {"name": "operate_code", "value": "OperateCode.Response_SingleChannelLightingControl"}, {"name": "payload", "value": "b'\\x01\\xf8\\x00'"}, {"name": "payload_list", "value": "[1, 248, 0]"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0e\\x01J\\x02`\\x002\\xff\\xff\\x01\\xf8\\x00}C'"}, {"name": "crc", "value": "b'}C'"}]
+Callback light: [{"name": "source_address", "value": [1, 74]}, {"name": "source_device_type_hex", "value": "b'\\x02`'"}, {"name": "source_device_type", "value": "DeviceType.SB_DN_DT0601"}, {"name": "target_address", "value": [255, 255]}, {"name": "operate_code_hex", "value": "b'\\x002'"}, {"name": "operate_code", "value": "OperateCode.Response_SingleChannelLightingControl"}, {"name": "payload", "value": "b'\\x01\\xf8\\x14'"}, {"name": "payload_list", "value": "[1, 248, 20]"}, {"name": "udp_address", "value": ["192.168.1.15", 6000]}, {"name": "raw_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0e\\x01J\\x02`\\x002\\xff\\xff\\x01\\xf8\\x14/\\xf6'"}, {"name": "crc", "value": "b'/\\xf6'"}]
+
+
+Callback light: [
+    {"name": "source_address", "value": [1, 74]},
+    {"name": "source_device_type", "value": "DeviceType.SB_DN_DT0601"},
+    {"name": "target_address", "value": [255, 255]},
+    {"name": "operate_code", "value": "OperateCode.Response_SingleChannelLightingControl"},
+    {"name": "payload", "value": "[1, 248, 0]"},
+    {"name": "udp_address", "value": ["192.168.1.15", 6000]},
+    {"name": "udp_data", "value": "b'\\xc0\\xa8\\x01\\x0fHDLMIRACLE\\xaa\\xaa\\x0e\\x01J\\x02`\\x002\\xff\\xff\\x01\\xf8\\x00}C'"},
+    {"name": "crc", "value": "b'}C'"}
+]
+
+
+
+
+
 [
   {
     "name": "source_address",

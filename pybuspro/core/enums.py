@@ -10,6 +10,7 @@ class DeviceType(Enum):
     SB_DLP2 = b'\x00\x86'  # DLP
     SB_DLP = b'\x00\x95'  # DLP
     SB_DLP_v2 = b'\x00\x9C'  # DLPv2
+    PyBusPro = b'\xFF\xFC'
     SmartHDLTest = b'\xFF\xFD'
     SetupTool = b'\xFF\xFE'
     SB_WS8M = b'\x01\x2B'  # 8 keys panel

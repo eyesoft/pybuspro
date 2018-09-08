@@ -1,22 +1,19 @@
-﻿from pybuspro.devices.device import Device
-from pybuspro.core.telegram import Telegram
-from pybuspro.core.enums import OperateCode
+﻿from .device import Device
+from ..core.telegram import Telegram
+from ..core.enums import OperateCode, DeviceType
 
 
 class Light(Device):
-    def __init__(self, buspro, device_address):
-        super().__init__(buspro, device_address)
+    def __init__(self, buspro, device_address, name):
+        super().__init__(buspro, device_address, name)
 
         self._device_address = device_address
         self._device_address = device_address[:2]
         _, _, self._channel = device_address
         self._buspro = buspro
-
         self._state = False
         self._brightness = 0
-
-        # print(self._device_address)
-        # print(self._channel)
+        self._support_brightness = True
 
     async def set_on(self, running_time_seconds=0):
         intensity = 100
@@ -33,7 +30,11 @@ class Light(Device):
         raise NotImplementedError
 
     @property
-    def brightness(self):
+    def supports_brightness(self):
+        return self._support_brightness
+
+    @property
+    def current_brightness(self):
         return self._brightness
 
     @property
@@ -48,20 +49,23 @@ class Light(Device):
 
         running_time_minutes = 0
 
+        operate_code = OperateCode.SingleChannelLightingControl
+        source_device_type = DeviceType.PyBusPro
+
         telegram = Telegram()
         telegram.target_address = self._device_address
-        telegram.payload = self._integer__list_to_hex(
-            [self._channel, intensity, running_time_minutes, running_time_seconds])
-        telegram.target_address = self._device_address
-        telegram.operate_code_hex = OperateCode.SingleChannelLightingControl.value
+        telegram.payload = [self._channel, intensity, running_time_minutes, running_time_seconds]
+        # telegram.operate_code_hex = OperateCode.SingleChannelLightingControl.value
+        telegram.operate_code = operate_code
+        telegram.source_device_type = source_device_type
 
         # When we have sent the command we should wait for the response via callback and set
         # the properties regarding state
         # DeviceCallback
 
-        await self._buspro.network_interface.send_telegram(telegram)
+        await self.send_telegram(telegram)
 
     @staticmethod
-    def _integer__list_to_hex(list_):
+    def _integer_list_to_hex(list_):
         hex_ = bytearray(list_)
         return hex_

@@ -104,23 +104,25 @@ async def main2():
 async def main3():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
-    #hdl.register_telegram_received_all_messages_cb(callback_all_messages)
+    hdl.register_telegram_received_all_messages_cb(callback_all_messages)
     await hdl.start()
 
     # Lys kino
-    light = Light(hdl, (1, 74, 1))
+    light = Light(hdl, (1, 74, 1), "kino")
     light.register_telegram_received_cb(callback_light)
 
+    # await light.set_off(0)
+
     await light.set_on(3)
-    print(f"{light.brightness} {light.is_on}")
+    print(f"{light.current_brightness} {light.is_on}")
 
     await asyncio.sleep(5)
     await light.set_off()
-    print(f"{light.brightness} {light.is_on}")
+    print(f"{light.current_brightness} {light.is_on}")
 
     await asyncio.sleep(5)
     await light.set_brightness(20, 5)
-    print(f"{light.brightness} {light.is_on}")
+    print(f"{light.current_brightness} {light.is_on}")
 
     await asyncio.sleep(10)
     await light.set_off()

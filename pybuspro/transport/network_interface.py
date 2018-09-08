@@ -1,5 +1,5 @@
-from pybuspro.transport.udp_client import UDPClient
-from pybuspro.core.telegram import TelegramHelper
+from .udp_client import UDPClient
+from ..core.telegram import TelegramHelper
 
 
 class NetworkInterface:

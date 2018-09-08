@@ -1,7 +1,7 @@
 ﻿import asyncio
 
-from pybuspro.transport.network_interface import NetworkInterface
-from pybuspro.core.state_updater import StateUpdater
+from .transport.network_interface import NetworkInterface
+from .core.state_updater import StateUpdater
 
 
 # ip, port = gateway_address

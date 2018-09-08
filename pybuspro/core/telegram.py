@@ -1,6 +1,6 @@
 ﻿import json
 
-from pybuspro.core.enums import DeviceType, OperateCode
+from .enums import DeviceType, OperateCode
 from crc16 import *
 from struct import *
 
@@ -11,15 +11,15 @@ class Telegram:
         self.udp_address = None
 
         self.payload = None
-        self.payload_list = None
+        # self.payload_list = None
 
-        self.operate_code_hex = None
+        # self.operate_code_hex = None
         self.operate_code = None
 
-        self.source_device_type_hex = None
+        # self.source_device_type_hex = None
         self.source_device_type = None
 
-        self.raw_data = None
+        self.udp_data = None
         # self.raw_data_list = None
 
         self.source_address = None
@@ -32,15 +32,15 @@ class Telegram:
 
         return json.JSONEncoder().encode([
             {"name": "source_address", "value": self.source_address},
-            {"name": "source_device_type_hex", "value": str(self.source_device_type_hex)},
+            # {"name": "source_device_type_hex", "value": str(self.source_device_type_hex)},
             {"name": "source_device_type", "value": str(self.source_device_type)},
             {"name": "target_address", "value": self.target_address},
-            {"name": "operate_code_hex", "value": str(self.operate_code_hex)},
+            # {"name": "operate_code_hex", "value": str(self.operate_code_hex)},
             {"name": "operate_code", "value": str(self.operate_code)},
             {"name": "payload", "value": str(self.payload)},
-            {"name": "payload_list", "value": str(self.payload_list)},
+            # {"name": "payload_list", "value": str(self.payload_list)},
             {"name": "udp_address", "value": self.udp_address},
-            {"name": "raw_data", "value": str(self.raw_data)},
+            {"name": "udp_data", "value": str(self.udp_data)},
             # {"name": "raw_data_list", "value": str(self.raw_data_list)},
             # {"name": "raw_data", "value": str(self.raw_data)},
             {"name": "crc", "value": str(self.crc)},
@@ -80,17 +80,17 @@ class TelegramHelper:
         crc = data[-2:]
 
         telegram = Telegram()
-        telegram.source_device_type_hex = source_device_type_hex
+        # telegram.source_device_type_hex = source_device_type_hex
         telegram.source_device_type = self._get_enum_value(DeviceType, source_device_type_hex)
-        telegram.raw_data = data
+        telegram.udp_data = data
         # telegram.raw_data_list = self._hex_to_integer_as_list(data)
         telegram.source_address = (source_subnet_id, source_device_id)
-        telegram.operate_code_hex = operate_code_hex
+        # telegram.operate_code_hex = operate_code_hex
         telegram.operate_code = self._get_enum_value(OperateCode, operate_code_hex)
         telegram.target_address = (target_subnet_id, target_device_id)
         telegram.udp_address = address
-        telegram.payload = content
-        telegram.payload_list = self._hex_to_integer_list(content)
+        # telegram.payload = content
+        telegram.payload = self._hex_to_integer_list(content)
         telegram.crc = crc
 
         crc_check_pass = self._check_crc(telegram)
@@ -124,16 +124,25 @@ class TelegramHelper:
         send_buf.append(sender_subnet_id)
         send_buf.append(sender_device_id)
 
-        if telegram.source_device_type_hex is not None:
-            send_buf.append(telegram.source_device_type_hex[0])
-            send_buf.append(telegram.source_device_type_hex[1])
+        if telegram.source_device_type is not None:
+            source_device_type_hex = telegram.source_device_type.value
+            send_buf.append(source_device_type_hex[0])
+            send_buf.append(source_device_type_hex[1])
         else:
             send_buf.append(0)
             send_buf.append(0)
-            # send_buf.append(b'\x00\x00')
 
-        send_buf.append(telegram.operate_code_hex[0])
-        send_buf.append(telegram.operate_code_hex[1])
+        # if telegram.source_device_type_hex is not None:
+        #    send_buf.append(telegram.source_device_type_hex[0])
+        #    send_buf.append(telegram.source_device_type_hex[1])
+        # else:
+        #     send_buf.append(0)
+        #    send_buf.append(0)
+        #    # send_buf.append(b'\x00\x00')
+
+        operate_code_hex = telegram.operate_code.value
+        send_buf.append(operate_code_hex[0])
+        send_buf.append(operate_code_hex[1])
 
         target_subnet_id, target_device_id = telegram.target_address
         send_buf.append(target_subnet_id)
@@ -168,7 +177,7 @@ class TelegramHelper:
     def _calculate_crc_from_telegram(telegram):
         length_of_data_package = 11 + len(telegram.payload)
         crc_buf_length = length_of_data_package - 2
-        send_buf = telegram.raw_data[:-2]
+        send_buf = telegram.udp_data[:-2]
         crc_buf = send_buf[-crc_buf_length:]
         crc_buf_as_bytes = bytes(crc_buf)
         crc = crc16xmodem(crc_buf_as_bytes)
