@@ -6,19 +6,12 @@ https://home-assistant.io/...
 """
 
 import logging
-import voluptuous as vol
+
 import homeassistant.helpers.config_validation as cv
-
+import voluptuous as vol
 from homeassistant.const import (CONF_HOST, CONF_PORT, CONF_NAME)
-from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.discovery import load_platform
-
 from homeassistant.const import (
-    CONF_ENTITY_ID, EVENT_HOMEASSISTANT_STOP)
-from homeassistant.core import callback
-from homeassistant.helpers import discovery
-from homeassistant.helpers.event import async_track_state_change
-from homeassistant.helpers.script import Script
+    EVENT_HOMEASSISTANT_STOP)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +46,7 @@ async def async_setup(hass, config):
 
     # load_platform(hass, 'sensor', DOMAIN)
 
-    _LOGGER.info(f"Listening on {host}:{port} with alias '{name}'")
+    # _LOGGER.info(f"Listening on {host}:{port} with alias '{name}'")
 
     return True
 
@@ -79,7 +72,7 @@ class BusproModule:
         await self.hdl.start(state_updater=False)
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, self.stop)
         self.connected = True
-        _LOGGER.info(f"Started")
+        # _LOGGER.info(f"Started")
 
     async def stop(self, event):
         """Stop Buspro object. Disconnect from tunneling device."""

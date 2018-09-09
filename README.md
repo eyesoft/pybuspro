@@ -35,7 +35,8 @@ GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('', 6000))
 
 
 def callback_all_messages(telegram):
-    print(telegram)
+    # print(telegram)
+    pass
     
     
 async def main():

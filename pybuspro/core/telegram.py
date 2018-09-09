@@ -1,8 +1,9 @@
 ﻿import json
+from struct import *
+
+from crc16 import *
 
 from .enums import DeviceType, OperateCode
-from crc16 import *
-from struct import *
 
 
 # DTO class
@@ -95,7 +96,7 @@ class TelegramHelper:
 
         crc_check_pass = self._check_crc(telegram)
         if not crc_check_pass:
-            print("ERROR: CRC check of received data failed")
+            # print("ERROR: CRC check of received data failed")
             return None
 
         # print(crc)

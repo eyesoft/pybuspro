@@ -6,12 +6,11 @@ https://home-assistant.io/components/...
 """
 
 import logging
-import voluptuous as vol
+
 import homeassistant.helpers.config_validation as cv
-
+import voluptuous as vol
 from homeassistant.components.light import Light, PLATFORM_SCHEMA, SUPPORT_BRIGHTNESS, ATTR_BRIGHTNESS
-from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_API_KEY, CONF_HOST, CONF_PORT)
-
+from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up Buspro light devices."""
-    from ..pybuspro.buspro import Buspro
     from ..pybuspro.devices import Light
 
     # _LOGGER.info("starting setup_platform")
@@ -42,7 +40,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         adress2 = address.split('.')
         device_address = (int(adress2[0]), int(adress2[1]), int(adress2[2]))
-        _LOGGER.info(f"Appending light with name '{name}' and address '{device_address}'")
+        # _LOGGER.info(f"Appending light with name '{name}' and address '{device_address}'")
 
         light = Light(hdl, device_address, name)
 

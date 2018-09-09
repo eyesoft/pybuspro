@@ -13,7 +13,7 @@ class StateUpdater:
 
     async def run(self):
         await asyncio.sleep(0)
-        print(f"LOG: Starting StateUpdater with {self.sleep} seconds interval")
+        # print(f"LOG: Starting StateUpdater with {self.sleep} seconds interval")
 
         while True:
             await asyncio.sleep(self.sleep)
