@@ -1,6 +1,11 @@
 from enum import Enum
 
 
+class SuccessOrFailure(Enum):
+    Success = b'\xF8'
+    Failure = b'\xF5'
+
+
 class DeviceType(Enum):
     NotSet = b'\x00\x00'
     SB_DN_6B0_10v = b'\x00\x11'  # Rele varme
@@ -29,8 +34,13 @@ class OnOff(Enum):
 class OperateCode(Enum):
     NotSet = b'\x00'
 
-    SingleChannelLightingControl = b'\x00\x31'
-    Response_SingleChannelLightingControl = b'\x00\x32'
+    SingleChannelControl = b'\x00\x31'
+    SingleChannelControlResponse = b'\x00\x32'
+    ReadStatusOfChannels = b'\x00\x33'
+    ReadStatusOfChannelsResponse = b'\x00\x34'
+
+
+
 
     UniversalSwitch = b'\xE0\x1C'
     Response_UniversalSwitch = b'\xE0\x1D'
@@ -272,12 +282,7 @@ class OperateCode(Enum):
     '''
 
     '''
-    public enum SuccessOrFailure
-    {
-    Success = 0xF8,
-    Failure = 0xF5
-    }
-    
+
     
     
     public class Channel

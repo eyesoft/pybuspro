@@ -17,7 +17,7 @@ class Telegram:
         self.operate_code = None
 
         # self.source_device_type_hex = None
-        self.source_device_type = None
+        self.source_device_type = DeviceType.PyBusPro
 
         self.udp_data = None
         # self.raw_data_list = None

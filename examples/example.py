@@ -39,7 +39,7 @@ async def main():
 
     # await hdl.connect()
 
-    light = Light(hdl, device_address=(1, 123, 11))
+    light = Light(hdl, device_address=(1, 123, 11), name="name of light")
     light.register_telegram_received_cb(first_callback)
     # print(light.name)
 
@@ -136,11 +136,36 @@ async def main3():
     # await send_random_message(hdl)
 
 
+async def after_update_callback(light):
+    print(f"AFTER UPDATE: {light.current_brightness}")
+
+async def main4():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    # hdl.register_telegram_received_all_messages_cb(callback_all_messages)
+    await hdl.start()
+
+    # Lys kino
+    light = Light(hdl, (1, 74, 1), "kino")
+    light.register_device_updated_cb(after_update_callback)
+
+    await light.read_current_state()
+    await light.set_brightness(30)
+    # light.register_telegram_received_cb(callback_light)
+
+
+    # await light.set_on(3)
+    # print(f"{light.current_brightness} {light.is_on}")
+
+
+
+
 if __name__ == "__main__":
     # loop = asyncio.get_event_loop()
     # loop.run_until_complete(main())
     # loop.close()
     loop = asyncio.get_event_loop()
     # loop.run_until_complete(main2())
-    loop.run_until_complete(main3())
+    # loop.run_until_complete(main3())
+    loop.run_until_complete(main4())
     loop.run_forever()

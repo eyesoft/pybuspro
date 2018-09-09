@@ -1,4 +1,5 @@
 ﻿import asyncio
+import binascii
 
 from .transport.network_interface import NetworkInterface
 from .core.state_updater import StateUpdater

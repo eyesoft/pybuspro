@@ -20,11 +20,10 @@
         """Unregister device updated callback."""
         self.device_updated_cbs.remove(device_updated_cb)
 
-    async def _after_update(self):
-        """Execute callbacks after internal state has been changed."""
+    async def device_updated(self):
         for device_updated_cb in self.device_updated_cbs:
             await device_updated_cb(self)
 
     async def send_telegram(self, telegram):
         await self._buspro.network_interface.send_telegram(telegram)
-        await self._after_update()
+        await self.device_updated()
