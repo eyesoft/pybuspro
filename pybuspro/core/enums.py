@@ -38,6 +38,8 @@ class OperateCode(Enum):
     SingleChannelControlResponse = b'\x00\x32'
     ReadStatusOfChannels = b'\x00\x33'
     ReadStatusOfChannelsResponse = b'\x00\x34'
+    SceneControl = b'\x00\x02'
+    SceneControlResponse = b'\x00\x03'
 
 
 
@@ -45,8 +47,8 @@ class OperateCode(Enum):
     UniversalSwitch = b'\xE0\x1C'
     Response_UniversalSwitch = b'\xE0\x1D'
 
-    Scene = b'\x00\x02'
-    Response_Scene = b'\x00\x03'
+    # Scene = b'\x00\x02'
+    # Response_Scene = b'\x00\x03'
 
     TIME_IF_FROM_LOGIC_OR_SECURITY = b'\xDA\x44'
 
@@ -177,8 +179,6 @@ class OperateCode(Enum):
     RequestTotalQtyOfPackagesFromPcToTargetDeviceResponse = 0xDC11,
     ReversingControl = 0xDC1C,
     ReversingControlResponse = 0xDC1D,
-    SceneControl = 0x0002,
-    SceneControlResponse = 0x0003,
     SendSmallPackageFromPcToTargetDevice = 0xDC1A,
     SendSmallPackageFromPcToTargetDeviceResponse = 0xDC1B,
     SendTotalQtyOfPackagesFromPcToTargetDevice = 0xDC16,

@@ -50,11 +50,10 @@ class UDPClient:
 
     async def _connect(self):
         try:
-            udp_client_factory = UDPClient.UDPClientFactory(self.buspro,
-                                                            data_received_callback=self._data_received_callback)
+            udp_client_factory = \
+                UDPClient.UDPClientFactory(self.buspro, data_received_callback=self._data_received_callback)
             sock = self._create_multicast_sock()
-            (transport, _) = await self.buspro.loop.create_datagram_endpoint(
-                lambda: udp_client_factory, sock=sock)
+            (transport, _) = await self.buspro.loop.create_datagram_endpoint(lambda: udp_client_factory, sock=sock)
 
             self.transport = transport
         except Exception as ex:

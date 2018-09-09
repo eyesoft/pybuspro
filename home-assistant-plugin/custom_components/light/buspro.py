@@ -45,6 +45,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         _LOGGER.info(f"Appending light with name '{name}' and address '{device_address}'")
 
         light = Light(hdl, device_address, name)
+
         devices.append(BusproLight(hass, light))
 
     add_devices(devices)

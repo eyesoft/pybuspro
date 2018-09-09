@@ -149,9 +149,9 @@ async def main4():
     light = Light(hdl, (1, 74, 1), "kino")
     light.register_device_updated_cb(after_update_callback)
 
-    await light.read_current_state()
-    await light.set_brightness(30)
-    # light.register_telegram_received_cb(callback_light)
+    # await light.set_brightness(30)
+    # light.read_current_state()
+    light.register_telegram_received_cb(callback_light)
 
 
     # await light.set_on(3)

@@ -1,4 +1,9 @@
-﻿class Device(object):
+﻿import asyncio
+from ..core.telegram import Telegram
+from ..core.enums import OperateCode
+
+
+class BaseDevice(object):
     def __init__(self, buspro, device_address, name):
         self._device_address = device_address
         self._buspro = buspro
@@ -26,4 +31,21 @@
 
     async def send_telegram(self, telegram):
         await self._buspro.network_interface.send_telegram(telegram)
-        await self.device_updated()
+
+        # Should only be called when we receive a response from the bus
+        # await self.device_updated()
+
+    def call_device_updated(self):
+        asyncio.ensure_future(self.device_updated(), loop=self._buspro.loop)
+
+    def _call_read_current_status_of_channels(self, run_in_init=False):
+        asyncio.ensure_future(self._read_current_state(OperateCode.ReadStatusOfChannels, run_in_init), loop=self._buspro.loop)
+
+    async def _read_current_state(self, operate_code, run_in_init=False):
+        if run_in_init:
+            await asyncio.sleep(1)
+        telegram = Telegram()
+        telegram.target_address = self._device_address
+        telegram.payload = []
+        telegram.operate_code = operate_code
+        await self.send_telegram(telegram)

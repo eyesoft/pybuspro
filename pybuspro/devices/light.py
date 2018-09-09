@@ -1,56 +1,34 @@
 ﻿from binascii import hexlify
+import asyncio
 
-from .device import Device
+from .base_device import BaseDevice
 from ..core.telegram import Telegram
 from ..core.enums import *
 
 
-class Light(Device):
+class Light(BaseDevice):
     def __init__(self, buspro, device_address, name):
         super().__init__(buspro, device_address, name)
 
-        # self._device_address = device_address
         self._device_address = device_address[:2]
         _, _, self._channel = device_address
-        # self._buspro = buspro
-        # self._state = False
         self._brightness = 0
-        # self._support_brightness = True
         self.register_telegram_received_cb(self.telegram_received_cb)
+        self._call_read_current_status_of_channels(run_in_init=True)
 
     def telegram_received_cb(self, telegram):
-        print(f"Telegram received: {telegram}")
-
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
             channel, success, brightness = tuple(telegram.payload)
             if channel == self._channel:
-                print(f"## SINGLE CHANNEL RESPONSE: {brightness}")
                 self._brightness = brightness
-
-
-
+                self.call_device_updated()
         elif telegram.operate_code == OperateCode.ReadStatusOfChannelsResponse:
             if self._channel <= telegram.payload[0]:
                 brightness_2 = telegram.payload[self._channel]
-                print(f"## READ STATUS RESPONSE: {brightness_2}")
                 self._brightness = brightness_2
-
-    def telegram_received_cb_2(self, telegram):
-        if telegram.operate_code == OperateCode.SingleChannelControlResponse:
-            channel, success, brightness = tuple(telegram.payload)
-            if channel == self._channel:
-                # if hex(success) == SuccessOrFailure.Success.value:
-                self._brightness = brightness
-                # self.device_updated()
-                # else:
-                #     print("s")
-
-    async def read_current_state(self):
-        telegram = Telegram()
-        telegram.target_address = self._device_address
-        telegram.payload = []
-        telegram.operate_code = OperateCode.ReadStatusOfChannels
-        await self.send_telegram(telegram)
+                self.call_device_updated()
+        elif telegram.operate_code == OperateCode.SceneControlResponse:
+            self._call_read_current_status_of_channels()
 
     async def set_on(self, running_time_seconds=0):
         intensity = 100
