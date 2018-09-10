@@ -18,8 +18,8 @@ Configuration variables:
 + **port** _(int) (Required)_: The UDP port to your Buspro Ethernet gateway
 + **name** _(string) (Optional)_: The name of the installation
 
- Platform
- -   
+Light platform
+-   
 To use your Buspro light in your installation, add the following to your configuration.yaml file: 
 
 ```yaml
@@ -41,3 +41,23 @@ Configuration variables:
   + **0.0.0** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
     + **name** _(string) (Required)_: The name of the device
     + **running_time** _(int) (Optional)_: The running time in seconds for the device. If omitted, the default running time for all devices is used.
+
+Switch platform
+-   
+To use your Buspro switch in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+switch:
+  - platform: buspro
+    devices:
+      1.89.1:
+        name: Living Room
+      1.89.2:
+        name: Front Door
+```
+
+Configuration variables:
+
++ **devices** _(Required)_: A list of devices to set up
+  + **0.0.0** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
+    + **name** _(string) (Required)_: The name of the device

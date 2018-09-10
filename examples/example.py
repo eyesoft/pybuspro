@@ -3,6 +3,7 @@ import random
 
 from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
+from pybuspro.devices.switch import Switch
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -99,9 +100,31 @@ async def main__turn_light_on_off_with_device_updated_cb():
     print(f"{light.current_brightness} {light.is_on}")
 
 
+async def main__turn_switch_on_off():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    def callback_received_for_switch(telegram):
+        print(f'Callback switch: {telegram}')
+
+    # Lys kino
+    switch = Switch(hdl, (1, 74, 1), "kino")
+    switch.register_telegram_received_cb(callback_received_for_switch)
+
+    await switch.set_on()
+    print(f"{switch.is_on}")
+
+    await asyncio.sleep(5)
+    await switch.set_off()
+    print(f"{switch.is_on}")
+
+
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main__send_and_receive_random_messages())
+    # loop.run_until_complete(main__send_and_receive_random_messages())
     # loop.run_until_complete(main__turn_light_on_off())
     # loop.run_until_complete(main__turn_light_on_off_with_device_updated_cb())
+    loop.run_until_complete(main__turn_switch_on_off())
     loop.run_forever()

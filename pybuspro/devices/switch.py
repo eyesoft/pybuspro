@@ -1,10 +1,10 @@
-﻿from .device import Device
+from .device import Device
 from ..core.telegram import Telegram
 from ..helpers.enums import *
 from ..helpers.generics import Generics
 
 
-class Light(Device):
+class Switch(Device):
     def __init__(self, buspro, device_address, name):
         super().__init__(buspro, device_address, name)
 
@@ -27,27 +27,20 @@ class Light(Device):
         elif telegram.operate_code == OperateCode.SceneControlResponse:
             self._call_read_current_status_of_channels()
 
-    async def set_on(self, running_time_seconds=0):
+    async def set_on(self):
         intensity = 100
-        await self._set(intensity, running_time_seconds)
+        await self._set(intensity, 0)
 
-    async def set_off(self, running_time_seconds=0):
+    async def set_off(self):
         intensity = 0
-        await self._set(intensity, running_time_seconds)
-
-    async def set_brightness(self, intensity, running_time_seconds=0):
-        await self._set(intensity, running_time_seconds)
+        await self._set(intensity, 0)
 
     async def read_status(self):
         raise NotImplementedError
 
     @property
     def supports_brightness(self):
-        return True
-
-    @property
-    def current_brightness(self):
-        return self._brightness
+        return False
 
     @property
     def is_on(self):

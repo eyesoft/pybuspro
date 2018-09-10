@@ -34,27 +34,24 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Light
 
-    # _LOGGER.info("starting setup_platform")
-
     hdl = hass.data[DOMAIN].hdl
     devices = []
-
-    platform_delay_time = int(config["running_time"])
+    platform_running_time = int(config["running_time"])
 
     for address, device_config in config[CONF_DEVICES].items():
         name = device_config[CONF_NAME]
-        device_delay_time = int(device_config["running_time"])
+        device_running_time = int(device_config["running_time"])
 
-        if device_delay_time == 0:
-            device_delay_time = platform_delay_time
+        if device_running_time == 0:
+            device_running_time = platform_running_time
 
         adress2 = address.split('.')
         device_address = (int(adress2[0]), int(adress2[1]), int(adress2[2]))
-        # _LOGGER.info(f"Appending light with name '{name}' and address '{device_address}'")
+        _LOGGER.info("Appending light with name '{}' and address '{}'".format(name, device_address))
 
         light = Light(hdl, device_address, name)
 
-        devices.append(BusproLight(hass, light, device_delay_time))
+        devices.append(BusproLight(hass, light, device_running_time))
 
     add_devices(devices)
 
@@ -63,12 +60,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BusproLight(Light):
     """Representation of a Buspro light."""
 
-    def __init__(self, hass, device, delay_time):
+    def __init__(self, hass, device, running_time):
         self._hass = hass
         self._device = device
-        self._state = False
-        self._brightness = 0
-        self._delay_time = delay_time
+        self._running_time = running_time
         self.async_register_callbacks()
 
     @callback
@@ -118,14 +113,9 @@ class BusproLight(Light):
 
     async def async_turn_on(self, **kwargs):
         """Instruct the light to turn on."""
-        self._state = True
         brightness = int(kwargs.get(ATTR_BRIGHTNESS, 255) / 255 * 100)
-        self._brightness = kwargs.get(ATTR_BRIGHTNESS, 255)
-        await self._device.set_brightness(brightness, self._delay_time)
-        # _LOGGER.info("turn_on() is called")
+        await self._device.set_brightness(brightness, self._running_time)
 
     async def async_turn_off(self, **kwargs):
         """Instruct the light to turn off."""
-        self._brightness = 0
-        self._state = False
-        await self._device.set_off(self._delay_time)
+        await self._device.set_off(self._running_time)

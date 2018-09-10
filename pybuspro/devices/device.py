@@ -38,12 +38,12 @@ class Device(object):
     def call_device_updated(self):
         asyncio.ensure_future(self.device_updated(), loop=self._buspro.loop)
 
-    def _call_read_current_status_of_channels(self, run_in_init=False):
+    def _call_read_current_status_of_channels(self, run_from_init=False):
         asyncio.ensure_future(
-            self._read_current_state(OperateCode.ReadStatusOfChannels, run_in_init), loop=self._buspro.loop)
+            self._read_current_state(OperateCode.ReadStatusOfChannels, run_from_init), loop=self._buspro.loop)
 
-    async def _read_current_state(self, operate_code, run_in_init=False):
-        if run_in_init:
+    async def _read_current_state(self, operate_code, run_from_init=False):
+        if run_from_init:
             await asyncio.sleep(1)
         telegram = Telegram()
         telegram.target_address = self._device_address

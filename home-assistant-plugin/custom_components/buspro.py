@@ -35,12 +35,9 @@ async def async_setup(hass, config):
 
     # load_platform(hass, 'light', DOMAIN, {'optional': 'arguments'})
     # load_platform(hass, 'light', DOMAIN, busprodevice, config)
-
     # Added via configuration.yaml light:
     # load_platform(hass, 'light', DOMAIN)
-
     # load_platform(hass, 'sensor', DOMAIN)
-
     # _LOGGER.info(f"Listening on {host}:{port} with alias '{name}'")
 
     return True
@@ -76,7 +73,6 @@ class BusproModule:
         await self.hdl.start(state_updater=False)
         self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, self.stop)
         self.connected = True
-        # _LOGGER.info(f"Started")
 
     # noinspection PyUnusedLocal
     async def stop(self, event):
