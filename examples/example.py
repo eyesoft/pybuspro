@@ -4,6 +4,7 @@ import random
 from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
 from pybuspro.devices.switch import Switch
+from pybuspro.devices.scene import Scene
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -121,10 +122,27 @@ async def main__turn_switch_on_off():
     print(f"{switch.is_on}")
 
 
+async def main__run_scene():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    def callback_received_for_scene(telegram):
+        print(f'Callback scene: {telegram}')
+
+    # Scene kino
+    scene = Scene(hdl, (1, 74, 1, 2), "kino")
+    scene.register_telegram_received_cb(callback_received_for_scene)
+
+    await scene.run()
+
+
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     # loop.run_until_complete(main__send_and_receive_random_messages())
     # loop.run_until_complete(main__turn_light_on_off())
     # loop.run_until_complete(main__turn_light_on_off_with_device_updated_cb())
-    loop.run_until_complete(main__turn_switch_on_off())
+    # loop.run_until_complete(main__turn_switch_on_off())
+    loop.run_until_complete(main__run_scene())
     loop.run_forever()

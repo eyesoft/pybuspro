@@ -7,14 +7,15 @@ from ..helpers.generics import Generics
 class Light(Device):
     def __init__(self, buspro, device_address, name):
         super().__init__(buspro, device_address, name)
+        # device_address = (subnet_id, device_id, channel_number)
 
         self._device_address = device_address[:2]
         _, _, self._channel = device_address
         self._brightness = 0
-        self.register_telegram_received_cb(self.telegram_received_cb)
+        self.register_telegram_received_cb(self._telegram_received_cb)
         self._call_read_current_status_of_channels(run_from_init=True)
 
-    def telegram_received_cb(self, telegram):
+    def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
             channel, success, brightness = tuple(telegram.payload)
             if channel == self._channel:
