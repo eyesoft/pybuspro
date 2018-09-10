@@ -41,8 +41,17 @@ class OperateCode(Enum):
     SceneControl = b'\x00\x02'
     SceneControlResponse = b'\x00\x03'
 
-
-
+    """
+    # 
+    # 
+    # 
+    # 
+    # 
+    # 
+    # 
+    # 
+    # 
+    """
 
     UniversalSwitch = b'\xE0\x1C'
     Response_UniversalSwitch = b'\xE0\x1D'

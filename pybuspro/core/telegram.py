@@ -3,7 +3,8 @@ from struct import *
 
 from crc16 import *
 
-from .enums import DeviceType, OperateCode
+from ..helpers.enums import DeviceType, OperateCode
+from ..helpers.generics import Generics
 
 
 # DTO class
@@ -80,18 +81,20 @@ class TelegramHelper:
         content = data[index_content:index_content + content_length]
         crc = data[-2:]
 
+        generics = Generics()
+
         telegram = Telegram()
         # telegram.source_device_type_hex = source_device_type_hex
-        telegram.source_device_type = self._get_enum_value(DeviceType, source_device_type_hex)
+        telegram.source_device_type = generics.get_enum_value(DeviceType, source_device_type_hex)
         telegram.udp_data = data
         # telegram.raw_data_list = self._hex_to_integer_as_list(data)
         telegram.source_address = (source_subnet_id, source_device_id)
         # telegram.operate_code_hex = operate_code_hex
-        telegram.operate_code = self._get_enum_value(OperateCode, operate_code_hex)
+        telegram.operate_code = generics.get_enum_value(OperateCode, operate_code_hex)
         telegram.target_address = (target_subnet_id, target_device_id)
         telegram.udp_address = address
         # telegram.payload = content
-        telegram.payload = self._hex_to_integer_list(content)
+        telegram.payload = generics.hex_to_integer_list(content)
         telegram.crc = crc
 
         crc_check_pass = self._check_crc(telegram)
@@ -190,27 +193,3 @@ class TelegramHelper:
         if calculated_crc == telegram.crc:
             return True
         return False
-
-    @staticmethod
-    def _hex_to_integer_list(hex_value):
-        list_of_integer = []
-        for string in hex_value:
-            list_of_integer.append(string)
-        return list_of_integer
-
-    @staticmethod
-    def _enum_has_value(enum, value):
-        return any(value == item.value for item in enum)
-
-    def _get_enum_value(self, enum, value):
-        if enum == DeviceType:
-            if self._enum_has_value(enum, value):
-                return DeviceType(value)
-            else:
-                return None
-        elif enum == OperateCode:
-            if self._enum_has_value(enum, value):
-                return OperateCode(value)
-            else:
-                return None
-

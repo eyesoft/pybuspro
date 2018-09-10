@@ -27,8 +27,7 @@ class Buspro:
                 task = self.loop.create_task(self.stop())
                 self.loop.run_until_complete(task)
             except RuntimeError as exp:
-                # print(f"ERROR: Could not close loop, reason: {exp}")
-                err = exp
+                print("ERROR: Could not close loop, reason: {}".format(exp))
 
     async def start(self, state_updater=False):  # , daemon_mode=False):
         self.network_interface = NetworkInterface(self, self.gateway_address_send_receive)

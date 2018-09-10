@@ -19,11 +19,11 @@ class UDPClient:
                 self.data_received_callback(data, address)
 
         def error_received(self, exc):
-            # print('ERROR: Error received: %s', exc)
+            print('ERROR: Error received: %s', exc)
             pass
 
         def connection_lost(self, exc):
-            # print('ERROR: closing transport %s', exc)
+            print('ERROR: closing transport %s', exc)
             pass
 
     def __init__(self, buspro, gateway_address_send_receive, callback):
@@ -59,16 +59,18 @@ class UDPClient:
 
             self.transport = transport
         except Exception as ex:
-            # print(f"ERROR: Could not connect: {ex}")
-            err = ex
-
+            print("ERROR: Could not connect: {}".format(ex))
 
     async def start(self):
         await self._connect()
 
     async def stop(self):
-        self.transport.close()
+        if self.transport is not None:
+            self.transport.close()
 
     async def send_message(self, message):
         gateway_address_send, _ = self.gateway_address_send_receive
-        self.transport.sendto(message, gateway_address_send)
+        if self.transport is not None:
+            self.transport.sendto(message, gateway_address_send)
+        else:
+            print("ERROR: Transport is None")

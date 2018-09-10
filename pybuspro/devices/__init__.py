@@ -1,2 +1,2 @@
-﻿from .base_device import BaseDevice
+﻿from .device import Device
 from .light import Light

@@ -17,7 +17,6 @@ _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'buspro'
 DEPENDENCIES = []
-GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -30,10 +29,6 @@ CONFIG_SCHEMA = vol.Schema({
 
 async def async_setup(hass, config):
     """Setup the Buspro component. """
-
-    host = config[DOMAIN][CONF_HOST]
-    port = config[DOMAIN][CONF_PORT]
-    name = config[DOMAIN][CONF_NAME]
 
     hass.data[DOMAIN] = BusproModule(hass, config)
     await hass.data[DOMAIN].start()
@@ -59,13 +54,22 @@ class BusproModule:
         self.hass = hass
         self.config = config
         self.connected = False
+        self.hdl = None
+
+        host = config[DOMAIN][CONF_HOST]
+        port = config[DOMAIN][CONF_PORT]
+        # name = config[DOMAIN][CONF_NAME]
+        # GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+
+        self.gateway_address_send_receive = ((host, port), ('', port))
         self.init_hdl()
 
     def init_hdl(self):
         """Initialize of Buspro object."""
+        # noinspection PyUnresolvedReferences
         from .pybuspro.buspro import Buspro
-        self.hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, self.hass.loop)
-        self.hdl.register_telegram_received_all_messages_cb(self.telegram_received_cb)
+        self.hdl = Buspro(self.gateway_address_send_receive, self.hass.loop)
+        # self.hdl.register_telegram_received_all_messages_cb(self.telegram_received_cb)
 
     async def start(self):
         """Start Buspro object. Connect to tunneling device."""
@@ -74,10 +78,12 @@ class BusproModule:
         self.connected = True
         # _LOGGER.info(f"Started")
 
+    # noinspection PyUnusedLocal
     async def stop(self, event):
         """Stop Buspro object. Disconnect from tunneling device."""
         await self.hdl.stop()
 
+    '''
     def telegram_received_cb(self, telegram):
         #     """Call invoked after a KNX telegram was received."""
         #     self.hass.bus.fire('knx_event', {
@@ -86,3 +92,4 @@ class BusproModule:
         #     })
         # _LOGGER.info(f"Callback: '{telegram}'")
         return False
+    '''

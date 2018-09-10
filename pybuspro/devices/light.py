@@ -1,12 +1,10 @@
-﻿from binascii import hexlify
-import asyncio
-
-from .base_device import BaseDevice
+﻿from .device import Device
 from ..core.telegram import Telegram
-from ..core.enums import *
+from ..helpers.enums import *
+from ..helpers.generics import Generics
 
 
-class Light(BaseDevice):
+class Light(Device):
     def __init__(self, buspro, device_address, name):
         super().__init__(buspro, device_address, name)
 
@@ -62,18 +60,12 @@ class Light(BaseDevice):
     async def _set(self, intensity, running_time_seconds):
         self._brightness = intensity
 
-        running_time_minutes = 0
+        generics = Generics()
+        (minutes, seconds) = generics.calculate_minutes_seconds(running_time_seconds)
 
         telegram = Telegram()
         telegram.target_address = self._device_address
-        telegram.payload = [self._channel, intensity, running_time_minutes, running_time_seconds]
+        telegram.payload = [self._channel, intensity, minutes, seconds]
         telegram.operate_code = OperateCode.SingleChannelControl
 
         await self.send_telegram(telegram)
-
-    '''
-    @staticmethod
-    def _integer_list_to_hex(list_):
-        hex_ = bytearray(list_)
-        return hex_
-    '''

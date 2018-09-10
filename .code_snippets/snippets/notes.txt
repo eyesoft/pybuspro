@@ -32,16 +32,16 @@ https://github.com/eyesoft/BusproService
 X:\Audun\Google Disk\Audun\PythonVEnv\ASIPC\homeassistant\Lib\site-packages\homeassistant
 
 ## Activate Python virtual environment
-C:\> cd '\Audun\Google Disk\Audun\PythonVEnv\ASIPC\homeassistant\'
-C:\> Scripts\activate.bat
+X:\> cd '\Audun\Google Disk\Audun\PythonVEnv\ASIPC\homeassistant\'
+X:\> .\Scripts\activate.bat
 
 ## Install homeassistant (https://www.home-assistant.io/docs/installation/windows/#Installing_in_a_Python_virtual_environment)
-C:\> py -m pip install homeassistant
+X:\> py -m pip install homeassistant
 
 ## Start homeassistant (https://www.home-assistant.io/docs/tools/hass/)
-#C:\> hass
-#C:\> hass --open-ui
-C:\> py -m homeassistant
+X:\> py -m homeassistant
+#X:\> hass
+#X:\> hass --open-ui
 
 http://10.120.1.66:8123
 
