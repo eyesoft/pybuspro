@@ -18,6 +18,10 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'buspro'
 DEPENDENCIES = []
 
+SERVICE_BUSPRO_SEND = "send"
+SERVICE_BUSPRO_ATTR_ADDRESS = "address"
+SERVICE_BUSPRO_ATTR_PAYLOAD = "payload"
+
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_HOST): cv.string,
@@ -25,6 +29,12 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_NAME, default=''): cv.string
     })
 }, extra=vol.ALLOW_EXTRA)
+
+SERVICE_BUSPRO_SEND_SCHEMA = vol.Schema({
+    vol.Required(SERVICE_BUSPRO_ATTR_ADDRESS): cv.string,
+    vol.Required(SERVICE_BUSPRO_ATTR_PAYLOAD): vol.Any(
+        cv.positive_int, [cv.positive_int]),
+})
 
 
 async def async_setup(hass, config):
@@ -39,6 +49,11 @@ async def async_setup(hass, config):
     # load_platform(hass, 'light', DOMAIN)
     # load_platform(hass, 'sensor', DOMAIN)
     # _LOGGER.info(f"Listening on {host}:{port} with alias '{name}'")
+
+    hass.services.async_register(
+        DOMAIN, SERVICE_BUSPRO_SEND,
+        hass.data[DOMAIN].service_send_to_buspro_bus,
+        schema=SERVICE_BUSPRO_SEND_SCHEMA)
 
     return True
 
@@ -78,6 +93,20 @@ class BusproModule:
     async def stop(self, event):
         """Stop Buspro object. Disconnect from tunneling device."""
         await self.hdl.stop()
+
+    async def service_send_to_buspro_bus(self, call):
+        """Service for sending an arbitrary Buspro message to the Buspro bus."""
+        # noinspection PyUnresolvedReferences
+        from .core.telegram import Telegram
+
+        attr_payload = call.data.get(SERVICE_BUSPRO_ATTR_PAYLOAD)
+        attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
+
+        telegram = Telegram()
+        telegram.payload = attr_payload
+        telegram.target_address = attr_address
+
+        await self.hdl.network_interface.send_telegram(telegram)
 
     '''
     def telegram_received_cb(self, telegram):
