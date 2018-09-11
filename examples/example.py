@@ -4,7 +4,8 @@ import random
 from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
 from pybuspro.devices.switch import Switch
-from pybuspro.devices.scene import Scene
+# from pybuspro.devices.scene import Scene
+from pybuspro.devices.control import *
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -127,7 +128,28 @@ async def main__activate_scene():
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
-    await hdl.network_interface.activate_scene([1, 74], [2, 4])
+
+    scene_control = SceneControl(hdl)
+    scene_control.subnet_id = 1
+    scene_control.device_id = 74
+    scene_control.area_number = 2
+    scene_control.scene_number = 4
+    await scene_control.send()
+    # await hdl.network_interface.send_control(scene_control)
+
+
+async def main__read_status():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    read_status_of_channels = ReadStatusOfChannels(hdl)
+    read_status_of_channels.subnet_id, read_status_of_channels.device_id = (1, 74)
+    await read_status_of_channels.send()
+
+    # await hdl.network_interface.send_control(read_status_of_channels)
+
 
 '''
 async def main__run_scene():
@@ -153,5 +175,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__turn_light_on_off_with_device_updated_cb())
     # loop.run_until_complete(main__turn_switch_on_off())
     # loop.run_until_complete(main__run_scene())
-    loop.run_until_complete(main__activate_scene())
+    # loop.run_until_complete(main__activate_scene())
+    loop.run_until_complete(main__read_status())
     loop.run_forever()

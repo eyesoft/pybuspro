@@ -1,6 +1,7 @@
 from .udp_client import UDPClient
-from ..core.telegram import TelegramHelper, Telegram
-from ..helpers.enums import OperateCode
+from ..helpers.telegram_helper import TelegramHelper
+# from ..devices.control import Control
+
 
 class NetworkInterface:
     def __init__(self, buspro, gateway_address_send_receive):
@@ -14,9 +15,6 @@ class NetworkInterface:
     def _init_udp_client(self):
         self.udp_client = UDPClient(self.buspro, self.gateway_address_send_receive, self._udp_request_received)
 
-    def register_callback(self, callback):
-        self.callback = callback
-
     def _udp_request_received(self, data, address):
         """
         Triggering callback for received data
@@ -25,8 +23,17 @@ class NetworkInterface:
         :return:
         """
         if self.callback is not None:
-            telegram = self._th.build_telegram(data, address)
+            telegram = self._th.build_telegram_from_udp_data(data, address)
             self.callback(telegram)
+
+    async def _send_message(self, message):
+        await self.udp_client.send_message(message)
+
+    """
+    public methods
+    """
+    def register_callback(self, callback):
+        self.callback = callback
 
     async def start(self):
         await self.udp_client.start()
@@ -36,25 +43,16 @@ class NetworkInterface:
             await self.udp_client.stop()
             self.udp_client = None
 
-    async def send_message(self, message):
-        await self.udp_client.send_message(message)
-
     async def send_telegram(self, telegram):
         message = self._th.build_send_buffer(telegram)
         await self.udp_client.send_message(message)
 
-    '''
-    async def activate_scene(self, target_address, scene_address):
-        telegram = Telegram()
-        telegram.target_address = tuple(target_address)
-        telegram.payload = scene_address
-        telegram.operate_code = OperateCode.SceneControl
-        await self.send_telegram(telegram)
-    '''
+    """
+    async def send_control(self, control):
 
-    async def send_message(self, target_address, payload):
-        telegram = Telegram()
-        telegram.target_address = tuple(target_address)
-        telegram.payload = payload
-        telegram.operate_code = OperateCode.SceneControl
-        await self.send_telegram(telegram)
+        print("Control :: {}".format(control))
+
+        if control is not None:
+            telegram = control.telegram
+            await self._send_telegram(telegram)
+    """

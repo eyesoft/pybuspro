@@ -1,11 +1,28 @@
 ﻿import asyncio
 
-from .core.state_updater import StateUpdater
 from .transport.network_interface import NetworkInterface
-
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
+
+
+class StateUpdater:
+    def __init__(self, buspro, sleep=10):
+        self.buspro = buspro
+        self.run_forever = True
+        self.run_task = None
+        self.sleep = sleep
+
+    async def start(self):
+        self.run_task = self.buspro.loop.create_task(self.run())
+
+    async def run(self):
+        await asyncio.sleep(0)
+        # print(f"LOG: Starting StateUpdater with {self.sleep} seconds interval")
+
+        while True:
+            await asyncio.sleep(self.sleep)
+            await self.buspro.sync()
 
 
 class Buspro:
@@ -29,6 +46,7 @@ class Buspro:
             except RuntimeError as exp:
                 print("ERROR: Could not close loop, reason: {}".format(exp))
 
+    # noinspection PyUnusedLocal
     async def start(self, state_updater=False):  # , daemon_mode=False):
         self.network_interface = NetworkInterface(self, self.gateway_address_send_receive)
         await self.network_interface.start()

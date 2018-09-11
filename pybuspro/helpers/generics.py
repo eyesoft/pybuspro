@@ -5,7 +5,7 @@ class Generics:
 
     @staticmethod
     def calculate_minutes_seconds(seconds):
-        return divmod(seconds, 60)
+        return divmod(seconds, 60)  # (minutes, seconds)
 
     @staticmethod
     def integer_list_to_hex(list_):

@@ -21,7 +21,8 @@ DEPENDENCIES = []
 
 SERVICE_BUSPRO_SEND_MESSAGE = "send_message"
 SERVICE_BUSPRO_ACTIVATE_SCENE = "activate_scene"
-SERVICE_BUSPRO_OPERATE_CODE = "operate_code"
+
+SERVICE_BUSPRO_ATTR_OPERATE_CODE = "operate_code"
 SERVICE_BUSPRO_ATTR_ADDRESS = "address"
 SERVICE_BUSPRO_ATTR_PAYLOAD = "payload"
 SERVICE_BUSPRO_ATTR_SCENE_ADDRESS = "scene_address"
@@ -32,9 +33,10 @@ SERVICE_BUSPRO_ACTIVATE_SCENE_SCHEMA = vol.Schema({
     vol.Required(SERVICE_BUSPRO_ATTR_SCENE_ADDRESS): vol.Any([cv.positive_int]),
 })
 
-"""{ "address": [1,74], "payload": [1,75,0,3] }"""
-SERVICE_BUSPRO_SEND_SCHEMA = vol.Schema({
+"""{ "address": [1,74], "operate_code": [4,12], "payload": [1,75,0,3] }"""
+SERVICE_BUSPRO_SEND_MESSAGE_SCHEMA = vol.Schema({
     vol.Required(SERVICE_BUSPRO_ATTR_ADDRESS): vol.Any([cv.positive_int]),
+    vol.Required(SERVICE_BUSPRO_ATTR_OPERATE_CODE): vol.Any([cv.positive_int]),
     vol.Required(SERVICE_BUSPRO_ATTR_PAYLOAD): vol.Any([cv.positive_int]),
 })
 
@@ -104,16 +106,33 @@ class BusproModule:
 
     async def service_activate_scene(self, call):
         """Service for activatign a scene"""
+        # noinspection PyUnresolvedReferences
+        from .pybuspro.devices.control import SceneControl
+
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_scene_address = call.data.get(SERVICE_BUSPRO_ATTR_SCENE_ADDRESS)
-        await self.hdl.network_interface.send_message(attr_address, attr_scene_address)
+
+        scene_control = SceneControl(self.hdl)
+        scene_control.subnet_id, scene_control.device_id = tuple(attr_address)
+        scene_control.area_number, scene_control.scene_number = tuple(attr_scene_address)
+        await scene_control.send()
+        # await self.hdl.network_interface.send_control(scene_control)
 
     async def service_send_message(self, call):
         """Service for send an arbitrary message"""
+        # noinspection PyUnresolvedReferences
+        from .pybuspro.devices.control import GenericControl
+
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_payload = call.data.get(SERVICE_BUSPRO_ATTR_PAYLOAD)
+        attr_operate_code = call.data.get(SERVICE_BUSPRO_ATTR_OPERATE_CODE)
 
-        await self.hdl.network_interface.send_message(attr_address, attr_payload)
+        generic_control = GenericControl(self.hdl)
+        generic_control.subnet_id, generic_control.device_id = tuple(attr_address)
+        generic_control.payload = attr_payload
+        generic_control.operate_code = attr_operate_code
+        await generic_control.send()
+        # await self.hdl.network_interface.send_control(generic_control)
 
     def register_services(self):
 
@@ -127,7 +146,7 @@ class BusproModule:
         self.hass.services.async_register(
             DOMAIN, SERVICE_BUSPRO_SEND_MESSAGE,
             self.service_send_message,
-            schema=SERVICE_BUSPRO_SEND_SCHEMA)
+            schema=SERVICE_BUSPRO_SEND_MESSAGE_SCHEMA)
 
     '''
     def telegram_received_cb(self, telegram):

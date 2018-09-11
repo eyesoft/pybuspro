@@ -1,1 +1,1 @@
-﻿from .telegram import Telegram, TelegramHelper
+﻿from .telegram import Telegram

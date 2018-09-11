@@ -1,5 +1,5 @@
 from .device import Device
-from ..core.telegram import Telegram
+# from ..core.telegram import Telegram
 from ..helpers.enums import *
 
 
@@ -14,7 +14,7 @@ class Scene(Device):
         # self._call_read_current_status_of_channels(run_from_init=True)
 
     def _telegram_received_cb(self, telegram):
-        '''
+        """
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
             channel, success, brightness = tuple(telegram.payload)
             if channel == self._channel:
@@ -24,16 +24,17 @@ class Scene(Device):
             if self._channel <= telegram.payload[0]:
                 self._brightness = telegram.payload[self._channel]
                 self.call_device_updated()
-        '''
+        """
 
         # Litt usikker på dette kallet
         if telegram.operate_code == OperateCode.SceneControlResponse:
             self._call_read_current_status_of_channels()
 
     async def run(self):
-        telegram = Telegram()
-        telegram.target_address = self._device_address
-        telegram.payload = [self._area_number, self._scene_number]
-        telegram.operate_code = OperateCode.SceneControl
+        # telegram = Telegram()
+        # telegram.target_address = self._device_address
+        # telegram.payload = [self._area_number, self._scene_number]
+        # telegram.operate_code = OperateCode.SceneControl
 
-        await self.send_telegram(telegram)
+        # await self._send_telegram(telegram)
+        pass

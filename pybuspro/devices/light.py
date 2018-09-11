@@ -1,7 +1,7 @@
 ﻿from .device import Device
-from ..core.telegram import Telegram
 from ..helpers.enums import *
 from ..helpers.generics import Generics
+from .control import SingleChannelControl
 
 
 class Light(Device):
@@ -9,6 +9,7 @@ class Light(Device):
         super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, channel_number)
 
+        self._buspro = buspro
         self._device_address = device_address[:2]
         _, _, self._channel = device_address
         self._brightness = 0
@@ -20,11 +21,11 @@ class Light(Device):
             channel, success, brightness = tuple(telegram.payload)
             if channel == self._channel:
                 self._brightness = brightness
-                self.call_device_updated()
+                self._call_device_updated()
         elif telegram.operate_code == OperateCode.ReadStatusOfChannelsResponse:
             if self._channel <= telegram.payload[0]:
                 self._brightness = telegram.payload[self._channel]
-                self.call_device_updated()
+                self._call_device_updated()
         elif telegram.operate_code == OperateCode.SceneControlResponse:
             self._call_read_current_status_of_channels()
 
@@ -63,9 +64,11 @@ class Light(Device):
         generics = Generics()
         (minutes, seconds) = generics.calculate_minutes_seconds(running_time_seconds)
 
-        telegram = Telegram()
-        telegram.target_address = self._device_address
-        telegram.payload = [self._channel, intensity, minutes, seconds]
-        telegram.operate_code = OperateCode.SingleChannelControl
-
-        await self.send_telegram(telegram)
+        scc = SingleChannelControl(self._buspro)
+        scc.subnet_id, scc.device_id = self._device_address
+        scc.channel_number = self._channel
+        scc.channel_level = intensity
+        scc.running_time_minutes = minutes
+        scc.running_time_seconds = seconds
+        await scc.send()
+        # await self._send_control(scc)
