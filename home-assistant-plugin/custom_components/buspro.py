@@ -23,11 +23,15 @@ DEFAULT_SEND_MESSAGE_NAME = "BUSPRO MESSAGE"
 
 SERVICE_BUSPRO_SEND_MESSAGE = "send_message"
 SERVICE_BUSPRO_ACTIVATE_SCENE = "activate_scene"
+SERVICE_BUSPRO_UNIVERSAL_SWITCH = "universal_switch"
 
 SERVICE_BUSPRO_ATTR_OPERATE_CODE = "operate_code"
 SERVICE_BUSPRO_ATTR_ADDRESS = "address"
 SERVICE_BUSPRO_ATTR_PAYLOAD = "payload"
 SERVICE_BUSPRO_ATTR_SCENE_ADDRESS = "scene_address"
+SERVICE_BUSPRO_ATTR_SWITCH_NUMBER = "switch_number"
+SERVICE_BUSPRO_ATTR_STATUS = "status"
+
 
 """{ "address": [1,74], "scene_address": [3,5] }"""
 SERVICE_BUSPRO_ACTIVATE_SCENE_SCHEMA = vol.Schema({
@@ -40,6 +44,13 @@ SERVICE_BUSPRO_SEND_MESSAGE_SCHEMA = vol.Schema({
     vol.Required(SERVICE_BUSPRO_ATTR_ADDRESS): vol.Any([cv.positive_int]),
     vol.Required(SERVICE_BUSPRO_ATTR_OPERATE_CODE): vol.Any([cv.positive_int]),
     vol.Required(SERVICE_BUSPRO_ATTR_PAYLOAD): vol.Any([cv.positive_int]),
+})
+
+"""{ "address": [1,100], "switch_number": 100, "status": 1 }"""
+SERVICE_BUSPRO_UNIVERSAL_SWITCH_SCHEMA = vol.Schema({
+    vol.Required(SERVICE_BUSPRO_ATTR_ADDRESS): vol.Any([cv.positive_int]),
+    vol.Required(SERVICE_BUSPRO_ATTR_SWITCH_NUMBER): vol.Any(cv.positive_int),
+    vol.Required(SERVICE_BUSPRO_ATTR_STATUS): vol.Any(cv.positive_int),
 })
 
 
@@ -132,6 +143,23 @@ class BusproModule:
         generic = Generic(self.hdl, attr_address, attr_payload, attr_operate_code, DEFAULT_SEND_MESSAGE_NAME)
         await generic.run()
 
+    async def service_set_universal_switch(self, call):
+        # noinspection PyUnresolvedReferences
+        from .pybuspro.devices.universal_switch import UniversalSwitch
+
+        attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
+        subnet_id, device_id = tuple(attr_address)
+        attr_switch_number = call.data.get(SERVICE_BUSPRO_ATTR_SWITCH_NUMBER)
+        universal_switch_address = (subnet_id, device_id, attr_switch_number)
+        status = call.data.get(SERVICE_BUSPRO_ATTR_STATUS)
+
+        universal_switch = UniversalSwitch(self.hdl, universal_switch_address)
+
+        if status == 1:
+            await universal_switch.set_on()
+        else:
+            await universal_switch.set_off()
+
     def register_services(self):
 
         """ activate_scene """
@@ -145,6 +173,12 @@ class BusproModule:
             DOMAIN, SERVICE_BUSPRO_SEND_MESSAGE,
             self.service_send_message,
             schema=SERVICE_BUSPRO_SEND_MESSAGE_SCHEMA)
+
+        """ universal_switch """
+        self.hass.services.async_register(
+            DOMAIN, SERVICE_BUSPRO_UNIVERSAL_SWITCH,
+            self.service_set_universal_switch,
+            schema=SERVICE_BUSPRO_UNIVERSAL_SWITCH_SCHEMA)
 
     '''
     def telegram_received_cb(self, telegram):

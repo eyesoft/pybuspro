@@ -8,7 +8,7 @@ from ..helpers.enums import *
 class UniversalSwitch(Device):
     def __init__(self, buspro, device_address, name):
         super().__init__(buspro, device_address, name)
-        # device_address = (subnet_id, device_id, channel_number)
+        # device_address = (subnet_id, device_id, switch_number)
 
         self._buspro = buspro
         self._device_address = device_address[:2]
