@@ -22,7 +22,7 @@ class Telegram:
             {"name": "source_device_type", "value": str(self.source_device_type)},
             {"name": "target_address", "value": self.target_address},
             {"name": "operate_code", "value": str(self.operate_code)},
-            {"name": "payload", "value": str(self.payload)},
+            {"name": "payload", "value": self.payload},
             {"name": "udp_address", "value": self.udp_address},
             {"name": "udp_data", "value": str(self.udp_data)},
             {"name": "crc", "value": str(self.crc)},

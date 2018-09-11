@@ -1,16 +1,17 @@
 from .device import Device
 from ..helpers.enums import *
-from ..devices.control import _SceneControl
+from ..devices.control import _GenericControl
 
 
-class Scene(Device):
-    def __init__(self, buspro, scene_address, name):
-        super().__init__(buspro, scene_address, name)
+class Generic(Device):
+    def __init__(self, buspro, device_address, payload, operate_code, name):
+        super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, area_number, scene_number)
 
         self._buspro = buspro
-        self._device_address = scene_address[:2]
-        _, _, self._area_number, self._scene_number = scene_address
+        self._device_address = device_address[:2]
+        self._payload = payload
+        self._operate_code = operate_code
         # self.register_telegram_received_cb(self._telegram_received_cb)
         # self._call_read_current_status_of_channels(run_from_init=True)
 
@@ -32,8 +33,8 @@ class Scene(Device):
             self._call_read_current_status_of_channels()
 
     async def run(self):
-        scene_control = _SceneControl(self._buspro)
-        scene_control.subnet_id, scene_control.device_id = self._device_address
-        scene_control.area_number = self._area_number
-        scene_control.scene_number = self._scene_number
-        await scene_control.send()
+        generic_control = _GenericControl(self._buspro)
+        generic_control.subnet_id, generic_control.device_id = self._device_address
+        generic_control.payload = self._payload
+        generic_control.operate_code = self._operate_code
+        await generic_control.send()

@@ -1,5 +1,5 @@
 ﻿import asyncio
-from .control import *
+from .control import _ReadStatusOfChannels
 
 
 class Device(object):
@@ -45,7 +45,7 @@ class Device(object):
             if run_from_init:
                 await asyncio.sleep(1)
 
-            read_status_of_channels = ReadStatusOfChannels(self._buspro)
+            read_status_of_channels = _ReadStatusOfChannels(self._buspro)
             read_status_of_channels.subnet_id, read_status_of_channels.device_id = self._device_address
             await read_status_of_channels.send()
             # await self._send_control(read_status_of_channels)

@@ -1,7 +1,7 @@
 from .device import Device
 from ..helpers.enums import *
 from ..helpers.generics import Generics
-from .control import SingleChannelControl
+from .control import _SingleChannelControl
 
 
 class Switch(Device):
@@ -57,7 +57,7 @@ class Switch(Device):
         generics = Generics()
         (minutes, seconds) = generics.calculate_minutes_seconds(running_time_seconds)
 
-        scc = SingleChannelControl(self._buspro)
+        scc = _SingleChannelControl(self._buspro)
         scc.subnet_id, scc.device_id = self._device_address
         scc.channel_number = self._channel
         scc.channel_level = intensity

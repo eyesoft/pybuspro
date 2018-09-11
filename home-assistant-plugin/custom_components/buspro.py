@@ -18,6 +18,8 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'buspro'
 DEPENDENCIES = []
 
+DEFAULT_SCENE_NAME = "BUSPRO SCENE"
+DEFAULT_SEND_MESSAGE_NAME = "BUSPRO MESSAGE"
 
 SERVICE_BUSPRO_SEND_MESSAGE = "send_message"
 SERVICE_BUSPRO_ACTIVATE_SCENE = "activate_scene"
@@ -107,32 +109,28 @@ class BusproModule:
     async def service_activate_scene(self, call):
         """Service for activatign a scene"""
         # noinspection PyUnresolvedReferences
-        from .pybuspro.devices.control import SceneControl
+        from pybuspro.devices.scene import Scene
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_scene_address = call.data.get(SERVICE_BUSPRO_ATTR_SCENE_ADDRESS)
+        subnet_id, device_id = tuple(attr_address)
+        area_number, scene_number = tuple(attr_scene_address)
+        scene_address = (subnet_id, device_id, area_number, scene_number)
 
-        scene_control = SceneControl(self.hdl)
-        scene_control.subnet_id, scene_control.device_id = tuple(attr_address)
-        scene_control.area_number, scene_control.scene_number = tuple(attr_scene_address)
-        await scene_control.send()
-        # await self.hdl.network_interface.send_control(scene_control)
+        scene = Scene(self.hdl, scene_address, DEFAULT_SCENE_NAME)
+        await scene.run()
 
     async def service_send_message(self, call):
         """Service for send an arbitrary message"""
         # noinspection PyUnresolvedReferences
-        from .pybuspro.devices.control import GenericControl
+        from .pybuspro.devices.generic import Generic
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_payload = call.data.get(SERVICE_BUSPRO_ATTR_PAYLOAD)
         attr_operate_code = call.data.get(SERVICE_BUSPRO_ATTR_OPERATE_CODE)
 
-        generic_control = GenericControl(self.hdl)
-        generic_control.subnet_id, generic_control.device_id = tuple(attr_address)
-        generic_control.payload = attr_payload
-        generic_control.operate_code = attr_operate_code
-        await generic_control.send()
-        # await self.hdl.network_interface.send_control(generic_control)
+        generic = Generic(self.hdl, attr_address, attr_payload, attr_operate_code, DEFAULT_SEND_MESSAGE_NAME)
+        await generic.run()
 
     def register_services(self):
 

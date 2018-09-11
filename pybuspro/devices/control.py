@@ -2,7 +2,7 @@ from ..core.telegram import Telegram
 from ..helpers.enums import OperateCode
 
 
-class Control:
+class _Control:
     def __init__(self, buspro):
         self._buspro = buspro
         self.subnet_id = None
@@ -15,23 +15,23 @@ class Control:
         if control is None:
             return None
 
-        if type(control) == SingleChannelControl:
+        if type(control) == _SingleChannelControl:
             telegram = Telegram()
             telegram.target_address = (control.subnet_id, control.device_id)
             telegram.operate_code = OperateCode.SingleChannelControl
             telegram.payload = [control.channel_number, control.channel_level,
                                 control.running_time_minutes, control.running_time_seconds]
-        elif type(control) == SceneControl:
+        elif type(control) == _SceneControl:
             telegram = Telegram()
             telegram.target_address = (control.subnet_id, control.device_id)
             telegram.operate_code = OperateCode.SceneControl
             telegram.payload = [control.area_number, control.scene_number]
-        elif type(control) == ReadStatusOfChannels:
+        elif type(control) == _ReadStatusOfChannels:
             telegram = Telegram()
             telegram.target_address = (control.subnet_id, control.device_id)
             telegram.operate_code = OperateCode.ReadStatusOfChannels
             telegram.payload = []
-        elif type(control) == GenericControl:
+        elif type(control) == _GenericControl:
             telegram = Telegram()
             telegram.target_address = (control.subnet_id, control.device_id)
             telegram.operate_code = control.operate_code
@@ -48,7 +48,7 @@ class Control:
         await self._buspro.network_interface.send_telegram(telegram)
 
 
-class GenericControl(Control):
+class _GenericControl(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
 
@@ -56,7 +56,7 @@ class GenericControl(Control):
         self.operate_code = None
 
 
-class SingleChannelControl(Control):
+class _SingleChannelControl(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
 
@@ -66,7 +66,7 @@ class SingleChannelControl(Control):
         self.running_time_seconds = None
 
 
-class SceneControl(Control):
+class _SceneControl(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
 
@@ -74,7 +74,7 @@ class SceneControl(Control):
         self.scene_number = None
 
 
-class ReadStatusOfChannels(Control):
+class _ReadStatusOfChannels(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
         pass
