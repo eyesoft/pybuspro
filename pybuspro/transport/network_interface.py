@@ -1,6 +1,6 @@
 from .udp_client import UDPClient
-from ..core.telegram import TelegramHelper
-
+from ..core.telegram import TelegramHelper, Telegram
+from ..helpers.enums import OperateCode
 
 class NetworkInterface:
     def __init__(self, buspro, gateway_address_send_receive):
@@ -42,3 +42,19 @@ class NetworkInterface:
     async def send_telegram(self, telegram):
         message = self._th.build_send_buffer(telegram)
         await self.udp_client.send_message(message)
+
+    '''
+    async def activate_scene(self, target_address, scene_address):
+        telegram = Telegram()
+        telegram.target_address = tuple(target_address)
+        telegram.payload = scene_address
+        telegram.operate_code = OperateCode.SceneControl
+        await self.send_telegram(telegram)
+    '''
+
+    async def send_message(self, target_address, payload):
+        telegram = Telegram()
+        telegram.target_address = tuple(target_address)
+        telegram.payload = payload
+        telegram.operate_code = OperateCode.SceneControl
+        await self.send_telegram(telegram)

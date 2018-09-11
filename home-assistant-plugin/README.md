@@ -61,23 +61,3 @@ Configuration variables:
 + **devices** _(Required)_: A list of devices to set up
   + **X.X.X** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
     + **name** _(string) (Required)_: The name of the device
-
-Scene platform
--   
-To use your Buspro scene in your installation, add the following to your configuration.yaml file: 
-
-```yaml
-scene:
-  - platform: buspro
-    devices:
-      1.89.1.1:
-        name: Living Room Scene
-      1.89.1.2:
-        name: Front Door Scene
-```
-
-Configuration variables:
-
-+ **devices** _(Required)_: A list of devices to set up
-  + **X.X.X.X** _(Required)_: The address of the scene on the format `<subnet ID>.<device ID>.<area number>.<scene number>`
-    + **name** _(string) (Required)_: The name of the device

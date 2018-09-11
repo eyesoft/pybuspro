@@ -122,6 +122,14 @@ async def main__turn_switch_on_off():
     print(f"{switch.is_on}")
 
 
+async def main__activate_scene():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+    await hdl.network_interface.activate_scene([1, 74], [2, 4])
+
+'''
 async def main__run_scene():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
@@ -136,7 +144,7 @@ async def main__run_scene():
     scene.register_telegram_received_cb(callback_received_for_scene)
 
     await scene.run()
-
+'''
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
@@ -144,5 +152,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__turn_light_on_off())
     # loop.run_until_complete(main__turn_light_on_off_with_device_updated_cb())
     # loop.run_until_complete(main__turn_switch_on_off())
-    loop.run_until_complete(main__run_scene())
+    # loop.run_until_complete(main__run_scene())
+    loop.run_until_complete(main__activate_scene())
     loop.run_forever()

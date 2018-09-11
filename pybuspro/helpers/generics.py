@@ -34,4 +34,3 @@ class Generics:
                 return OperateCode(value)
             else:
                 return None
-
