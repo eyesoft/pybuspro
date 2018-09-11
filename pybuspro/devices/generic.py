@@ -1,5 +1,5 @@
 from .device import Device
-from ..helpers.enums import *
+# from ..helpers.enums import *
 from ..devices.control import _GenericControl
 
 
@@ -29,8 +29,8 @@ class Generic(Device):
         """
 
         # Litt usikker på dette kallet
-        if telegram.operate_code == OperateCode.SceneControlResponse:
-            self._call_read_current_status_of_channels()
+        # if telegram.operate_code == OperateCode.SceneControlResponse:
+        #     self._call_read_current_status_of_channels()
 
     async def run(self):
         generic_control = _GenericControl(self._buspro)

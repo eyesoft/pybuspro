@@ -1,7 +1,7 @@
-﻿from .device import Device
+﻿from .control import _SingleChannelControl
+from .device import Device
 from ..helpers.enums import *
 from ..helpers.generics import Generics
-from .control import _SingleChannelControl
 
 
 class Light(Device):
@@ -71,4 +71,3 @@ class Light(Device):
         scc.running_time_minutes = minutes
         scc.running_time_seconds = seconds
         await scc.send()
-        # await self._send_control(scc)

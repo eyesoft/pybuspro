@@ -3,15 +3,19 @@ import random
 
 from pybuspro.buspro import Buspro
 from pybuspro.devices.light import Light
-from pybuspro.devices.switch import Switch
 from pybuspro.devices.scene import Scene
+from pybuspro.devices.switch import Switch
+from pybuspro.devices.universal_switch import UniversalSwitch
+
+# from pybuspro.helpers.enums import *
 # from pybuspro.devices.control import *
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
 
 def callback_received_for_all_messages(telegram):
@@ -133,6 +137,16 @@ async def main__activate_scene():
     await scene.run()
 
 
+async def main__set_uv_switch():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    universal_switch = UniversalSwitch(hdl, (1, 100, 100), "UV Switch")
+    await universal_switch.set_on()
+
+
 async def main__read_status():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
@@ -170,6 +184,7 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__turn_light_on_off_with_device_updated_cb())
     # loop.run_until_complete(main__turn_switch_on_off())
     # loop.run_until_complete(main__run_scene())
-    loop.run_until_complete(main__activate_scene())
+    # loop.run_until_complete(main__activate_scene())
     # loop.run_until_complete(main__read_status())
+    loop.run_until_complete(main__set_uv_switch())
     loop.run_forever()

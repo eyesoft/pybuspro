@@ -31,6 +31,11 @@ class OnOff(Enum):
     ON = 255
 
 
+class SwitchStatusOnOff(Enum):
+    OFF = 0
+    ON = 1
+
+
 class OperateCode(Enum):
     NotSet = b'\x00'
 
@@ -40,6 +45,10 @@ class OperateCode(Enum):
     ReadStatusOfChannelsResponse = b'\x00\x34'
     SceneControl = b'\x00\x02'
     SceneControlResponse = b'\x00\x03'
+    UniversalSwitchControl = b'\xE0\x1C'
+    UniversalSwitchControlResponse = b'\xE0\x1D'
+    ReadStatusOfUniversalSwitch = b'\xE0\x18'
+    ReadStatusOfUniversalSwitchResponse = b'\xE0\x19'
 
     """
     # 
@@ -52,9 +61,6 @@ class OperateCode(Enum):
     # 
     # 
     """
-
-    UniversalSwitch = b'\xE0\x1C'
-    Response_UniversalSwitch = b'\xE0\x1D'
 
     # Scene = b'\x00\x02'
     # Response_Scene = b'\x00\x03'

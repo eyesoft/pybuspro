@@ -10,33 +10,36 @@ class _Control:
 
     @staticmethod
     def build_telegram_from_control(control):
-        telegram = None
-        print("build")
+
         if control is None:
             return None
 
         if type(control) == _SingleChannelControl:
-            telegram = Telegram()
-            telegram.target_address = (control.subnet_id, control.device_id)
-            telegram.operate_code = OperateCode.SingleChannelControl
-            telegram.payload = [control.channel_number, control.channel_level,
-                                control.running_time_minutes, control.running_time_seconds]
+            operate_code = OperateCode.SingleChannelControl
+            payload = [control.channel_number, control.channel_level, control.running_time_minutes,
+                       control.running_time_seconds]
         elif type(control) == _SceneControl:
-            telegram = Telegram()
-            telegram.target_address = (control.subnet_id, control.device_id)
-            telegram.operate_code = OperateCode.SceneControl
-            telegram.payload = [control.area_number, control.scene_number]
+            operate_code = OperateCode.SceneControl
+            payload = [control.area_number, control.scene_number]
         elif type(control) == _ReadStatusOfChannels:
-            telegram = Telegram()
-            telegram.target_address = (control.subnet_id, control.device_id)
-            telegram.operate_code = OperateCode.ReadStatusOfChannels
-            telegram.payload = []
+            operate_code = OperateCode.ReadStatusOfChannels
+            payload = []
         elif type(control) == _GenericControl:
-            telegram = Telegram()
-            telegram.target_address = (control.subnet_id, control.device_id)
-            telegram.operate_code = control.operate_code
-            telegram.payload = control.payload
+            operate_code = control.operate_code
+            payload = control.payload
+        elif type(control) == _UniversalSwitch:
+            operate_code = OperateCode.UniversalSwitchControl
+            payload = [control.switch_number, control.switch_status.value]
+        elif type(control) == _ReadStatusOfUniversalSwitch:
+            operate_code = OperateCode.ReadStatusOfUniversalSwitch
+            payload = [control.switch_number]
+        else:
+            return None
 
+        telegram = Telegram()
+        telegram.target_address = (control.subnet_id, control.device_id)
+        telegram.operate_code = operate_code
+        telegram.payload = payload
         return telegram
 
     @property
@@ -77,5 +80,21 @@ class _SceneControl(_Control):
 class _ReadStatusOfChannels(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
+        # no more properties
         pass
+
+
+class _UniversalSwitch(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+
+        self.switch_number = None
+        self.switch_status = None
+
+
+class _ReadStatusOfUniversalSwitch(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+
+        self.switch_number = None
 

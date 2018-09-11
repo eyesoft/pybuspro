@@ -1,4 +1,5 @@
 ﻿import asyncio
+
 from .control import _ReadStatusOfChannels
 
 
@@ -48,6 +49,5 @@ class Device(object):
             read_status_of_channels = _ReadStatusOfChannels(self._buspro)
             read_status_of_channels.subnet_id, read_status_of_channels.device_id = self._device_address
             await read_status_of_channels.send()
-            # await self._send_control(read_status_of_channels)
 
         asyncio.ensure_future(read_current_state_of_channels(), loop=self._buspro.loop)
