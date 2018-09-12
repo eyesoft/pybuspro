@@ -110,6 +110,64 @@ Configuration variables:
   + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
   + **name** _(string) (Required)_: The name of the device
   + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'temperature', 'illuminance'.
+  + **unit_of_measurement** _(string) (Optional)_: text to be displayed as unit of measurement
+
+
+
+
+
+
+####Binary sensor platform
+
+To use your Buspro binary sensor in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+sensor:
+  - platform: buspro
+    devices:
+      - address: 1.74
+        name: Living Room
+        type: motion
+        device_class: motion
+      - address: 1.74
+        name: Front Door
+        type: dry_contact_1
+```
+
+Configuration variables:
+
++ **devices** _(Required)_: A list of devices to set up
+  + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
+  + **name** _(string) (Required)_: The name of the device
+  + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'motion', 'dry_contact_1', 'dry_contact_2'.
+  + **device_class** _(string) (Optional)_: HASS device class e.g., "motion".
+
+
+
+
+
+
+
+####Climate platform
+
+To use your Buspro panel climate control in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+climate:
+  - platform: buspro
+    devices:
+      - address: 1.74
+        name: Living Room
+      - address: 1.74
+        name: Front Door
+``
+
+Configuration variables:
+
++ **devices** _(Required)_: A list of devices to set up
+  + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
+  + **name** _(string) (Required)_: The name of the device
+
 
 
 

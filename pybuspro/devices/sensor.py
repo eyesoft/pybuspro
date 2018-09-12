@@ -6,12 +6,11 @@ from .control import _ReadSensorStatus
 
 
 class Sensor(Device):
-    def __init__(self, buspro, device_address, sensor_type, name=""):
+    def __init__(self, buspro, device_address, name=""):
         super().__init__(buspro, device_address, name)
 
         self._buspro = buspro
         self._device_address = device_address
-        self._sensor_type = sensor_type
 
         self._current_temperature = None
         self._brightness = None

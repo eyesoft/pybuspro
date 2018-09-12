@@ -7,6 +7,7 @@ from pybuspro.devices.scene import Scene
 from pybuspro.devices.switch import Switch
 from pybuspro.devices.universal_switch import UniversalSwitch
 from pybuspro.devices.sensor import Sensor
+from pybuspro.devices.climate import Climate, ControlFloorHeatingStatus
 
 # from pybuspro.helpers.enums import *
 # from pybuspro.devices.control import *
@@ -170,11 +171,26 @@ async def main__read_pir_status():
     def callback_received_for_pir_status(telegram):
         print(f'Callback switch: {telegram}')
 
-    sensor = Sensor(hdl, (1, 80), 'temperature', 'temp sensor')
+    sensor = Sensor(hdl, (1, 80), 'temp sensor')
     sensor.register_telegram_received_cb(callback_received_for_pir_status)
     await sensor.read_sensor_status()
     print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
           f"{sensor.movement}, '{sensor.name}'")
+
+
+async def main__climate():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    climate = Climate(hdl, (1, 34))
+    await climate.read_heating_status()
+    print(f"{climate.temperature}")
+
+    climate_control = ControlFloorHeatingStatus()
+    climate_control.away_temperature = 15
+    await climate.control_heating_status(climate_control)
 
 
 '''
@@ -204,5 +220,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__activate_scene())
     # loop.run_until_complete(main__read_status())
     # loop.run_until_complete(main__set_uv_switch())
-    loop.run_until_complete(main__read_pir_status())
+    # loop.run_until_complete(main__read_pir_status())
+    loop.run_until_complete(main__climate())
     loop.run_forever()

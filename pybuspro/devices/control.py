@@ -43,6 +43,15 @@ class _Control:
             operate_code = OperateCode.ReadSensorStatus
             payload = []
 
+        elif type(control) == _ReadFloorHeatingStatus:
+            operate_code = OperateCode.ReadFloorHeatingStatus
+            payload = []
+
+        elif type(control) == _ControlFloorHeatingStatus:
+            operate_code = OperateCode.ControlFloorHeatingStatus
+            payload = [control.temperature_type, control.status, control.mode, control.normal_temperature,
+                       control.day_temperature, control.night_temperature, control.away_temperature]
+
         else:
             return None
 
@@ -112,4 +121,23 @@ class _ReadSensorStatus(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
         # no more properties
+
+
+class _ReadFloorHeatingStatus(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+        # no more properties
+
+
+class _ControlFloorHeatingStatus(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+
+        self.temperature_type = None
+        self.status = None
+        self.mode = None
+        self.normal_temperature = None
+        self.day_temperature = None
+        self.night_temperature = None
+        self.away_temperature = None
 

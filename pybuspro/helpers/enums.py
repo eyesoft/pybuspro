@@ -36,6 +36,24 @@ class SwitchStatusOnOff(Enum):
     ON = 1
 
 
+class OnOffStatus(Enum):
+    OFF = 0
+    ON = 1
+
+
+class TemperatureType(Enum):
+    Celsius = 0
+    Fahrenheit = 1
+
+
+class TemperatureMode(Enum):
+    Normal = 1
+    Day = 2
+    Night = 3
+    Away = 4
+    Timer = 5
+
+
 class OperateCode(Enum):
     NotSet = b'\x00'
 
@@ -49,10 +67,14 @@ class OperateCode(Enum):
     UniversalSwitchControlResponse = b'\xE0\x1D'
     ReadStatusOfUniversalSwitch = b'\xE0\x18'
     ReadStatusOfUniversalSwitchResponse = b'\xE0\x19'
-
     ReadSensorStatus = b'\x16\x45'
     ReadSensorStatusResponse = b'\x16\x46'
     BroadcastSensorsStatusResponse = b'\x16\x44'
+
+    ReadFloorHeatingStatus = b'\x19\x44'
+    ReadFloorHeatingStatusResponse = b'\x19\x45'
+    ControlFloorHeatingStatus = b'\x19\x46'
+    ControlFloorHeatingStatusResponse = b'\x19\x47'
 
     """
     # 
