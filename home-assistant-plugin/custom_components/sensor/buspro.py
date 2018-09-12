@@ -50,6 +50,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         address = device_config[CONF_ADDRESS]
         name = device_config[CONF_NAME]
         sensor_type = device_config[CONF_TYPE]
+        unit_of_measurement = device_config[CONF_UNIT_OF_MEASUREMENT]
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
@@ -59,7 +60,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         sensor = Sensor(hdl, device_address, sensor_type, name)
 
-        devices.append(BusproSensor(hass, sensor))
+        devices.append(BusproSensor(hass, sensor, unit_of_measurement))
 
     add_devices(devices)
 
@@ -68,9 +69,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BusproSensor(Entity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device):
+    def __init__(self, hass, device, unit_of_measurement):
         self._hass = hass
         self._device = device
+        self._unit_of_measurement = unit_of_measurement
         self.async_register_callbacks()
 
     @callback
@@ -99,15 +101,16 @@ class BusproSensor(Entity):
         """Return True if entity is available."""
         return self._hass.data[DOMAIN].connected
 
+
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._device.resolve_state()
+        return self._device.temperature
 
     @property
     def unit_of_measurement(self):
         """Return the unit this state is expressed in."""
-        return self._device.unit_of_measurement()
+        return self._unit_of_measurement
 
     @property
     def device_state_attributes(self):
