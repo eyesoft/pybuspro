@@ -23,7 +23,7 @@ DEFAULT_SEND_MESSAGE_NAME = "BUSPRO MESSAGE"
 
 SERVICE_BUSPRO_SEND_MESSAGE = "send_message"
 SERVICE_BUSPRO_ACTIVATE_SCENE = "activate_scene"
-SERVICE_BUSPRO_UNIVERSAL_SWITCH = "universal_switch"
+SERVICE_BUSPRO_UNIVERSAL_SWITCH = "set_universal_switch"
 
 SERVICE_BUSPRO_ATTR_OPERATE_CODE = "operate_code"
 SERVICE_BUSPRO_ATTR_ADDRESS = "address"
@@ -120,15 +120,11 @@ class BusproModule:
     async def service_activate_scene(self, call):
         """Service for activatign a scene"""
         # noinspection PyUnresolvedReferences
-        from pybuspro.devices.scene import Scene
+        from .pybuspro.devices.scene import Scene
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_scene_address = call.data.get(SERVICE_BUSPRO_ATTR_SCENE_ADDRESS)
-        subnet_id, device_id = tuple(attr_address)
-        area_number, scene_number = tuple(attr_scene_address)
-        scene_address = (subnet_id, device_id, area_number, scene_number)
-
-        scene = Scene(self.hdl, scene_address, DEFAULT_SCENE_NAME)
+        scene = Scene(self.hdl, attr_address, attr_scene_address, DEFAULT_SCENE_NAME)
         await scene.run()
 
     async def service_send_message(self, call):
@@ -139,7 +135,6 @@ class BusproModule:
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_payload = call.data.get(SERVICE_BUSPRO_ATTR_PAYLOAD)
         attr_operate_code = call.data.get(SERVICE_BUSPRO_ATTR_OPERATE_CODE)
-
         generic = Generic(self.hdl, attr_address, attr_payload, attr_operate_code, DEFAULT_SEND_MESSAGE_NAME)
         await generic.run()
 
@@ -148,13 +143,10 @@ class BusproModule:
         from .pybuspro.devices.universal_switch import UniversalSwitch
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
-        subnet_id, device_id = tuple(attr_address)
         attr_switch_number = call.data.get(SERVICE_BUSPRO_ATTR_SWITCH_NUMBER)
-        universal_switch_address = (subnet_id, device_id, attr_switch_number)
+        universal_switch = UniversalSwitch(self.hdl, attr_address, attr_switch_number)
+
         status = call.data.get(SERVICE_BUSPRO_ATTR_STATUS)
-
-        universal_switch = UniversalSwitch(self.hdl, universal_switch_address)
-
         if status == 1:
             await universal_switch.set_on()
         else:

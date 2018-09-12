@@ -38,11 +38,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     for address, device_config in config[CONF_DEVICES].items():
         name = device_config[CONF_NAME]
 
-        adress2 = address.split('.')
-        device_address = (int(adress2[0]), int(adress2[1]), int(adress2[2]))
-        _LOGGER.info("Appending switch with name '{}' and address '{}'".format(name, device_address))
+        address2 = address.split('.')
+        device_address = (int(address2[0]), int(address2[1]))
+        channel_number = int(address2[2])
+        _LOGGER.info("Adding switch with name '{}', address {} and channel number {}".format(
+            name, device_address, channel_number))
 
-        switch = Switch(hdl, device_address, name)
+        switch = Switch(hdl, device_address, channel_number, name)
 
         devices.append(BusproSwitch(hass, switch))
 

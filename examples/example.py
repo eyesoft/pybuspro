@@ -6,6 +6,7 @@ from pybuspro.devices.light import Light
 from pybuspro.devices.scene import Scene
 from pybuspro.devices.switch import Switch
 from pybuspro.devices.universal_switch import UniversalSwitch
+from pybuspro.devices.sensor import Sensor
 
 # from pybuspro.helpers.enums import *
 # from pybuspro.devices.control import *
@@ -14,8 +15,8 @@ from pybuspro.devices.universal_switch import UniversalSwitch
 # subnet_id, device_id, channel = device_address
 
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
-GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
 
 def callback_received_for_all_messages(telegram):
@@ -64,7 +65,7 @@ async def main__turn_light_on_off():
         print(f'Callback light: {telegram}')
 
     # Lys kino
-    light = Light(hdl, (1, 74, 1), "kino")
+    light = Light(hdl, (1, 74), 1, "kino")
     light.register_telegram_received_cb(callback_received_for_light)
 
     await light.set_on(3)
@@ -95,7 +96,7 @@ async def main__turn_light_on_off_with_device_updated_cb():
         print(f'Callback light: {telegram}')
 
     # Lys kino
-    light = Light(hdl, (1, 74, 1), "kino")
+    light = Light(hdl, (1, 74), 1, "kino")
     light.register_device_updated_cb(device_updated_callback)
     light.register_telegram_received_cb(callback_received_for_light)
 
@@ -116,7 +117,7 @@ async def main__turn_switch_on_off():
         print(f'Callback switch: {telegram}')
 
     # Lys kino
-    switch = Switch(hdl, (1, 74, 1), "kino")
+    switch = Switch(hdl, (1, 74), 1, "kino")
     switch.register_telegram_received_cb(callback_received_for_switch)
 
     await switch.set_on()
@@ -133,7 +134,7 @@ async def main__activate_scene():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    scene = Scene(hdl, (1, 74, 2, 5), "my_scene")
+    scene = Scene(hdl, (1, 74), (2, 5), "my_scene")
     await scene.run()
 
 
@@ -143,7 +144,7 @@ async def main__set_uv_switch():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    universal_switch = UniversalSwitch(hdl, (1, 100, 100), "UV Switch")
+    universal_switch = UniversalSwitch(hdl, (1, 100), 100, "UV Switch")
     await universal_switch.set_on()
 
 
@@ -158,6 +159,22 @@ async def main__read_status():
     # await read_status_of_channels.send()
 
     # await hdl.network_interface.send_control(read_status_of_channels)
+
+
+async def main__read_pir_status():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    def callback_received_for_pir_status(telegram):
+        print(f'Callback switch: {telegram}')
+
+    sensor = Sensor(hdl, (1, 80), 'temperature', 'temp sensor')
+    sensor.register_telegram_received_cb(callback_received_for_pir_status)
+    await sensor.read_sensor_status()
+    print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
+          f"{sensor.movement}, '{sensor.name}'")
 
 
 '''
@@ -186,5 +203,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__run_scene())
     # loop.run_until_complete(main__activate_scene())
     # loop.run_until_complete(main__read_status())
-    loop.run_until_complete(main__set_uv_switch())
+    # loop.run_until_complete(main__set_uv_switch())
+    loop.run_until_complete(main__read_pir_status())
     loop.run_forever()

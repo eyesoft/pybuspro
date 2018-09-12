@@ -45,7 +45,7 @@ async def main():
     # buspro.register_telegram_received_cb_2(callback_all_messages)
     await buspro.start()
     
-    light = Light(buspro, device_address=(1, 100, 9), name="name of light")
+    light = Light(buspro, device_address=(1, 100), channel_number=9, name="name of light")
     await light.set_on()
     await asyncio.sleep(2)
     await light.set_off()

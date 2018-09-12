@@ -4,10 +4,10 @@ from .control import _ReadStatusOfChannels
 
 
 class Device(object):
-    def __init__(self, buspro, device_address, name):
+    def __init__(self, buspro, device_address, name=""):
         # device_address = (subnet_id, device_id, ...)
 
-        self._device_address = device_address[:2]
+        self._device_address = device_address
         self._buspro = buspro
         self._name = name
         self.device_updated_cbs = []

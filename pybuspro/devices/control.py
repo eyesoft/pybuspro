@@ -18,21 +18,31 @@ class _Control:
             operate_code = OperateCode.SingleChannelControl
             payload = [control.channel_number, control.channel_level, control.running_time_minutes,
                        control.running_time_seconds]
+
         elif type(control) == _SceneControl:
             operate_code = OperateCode.SceneControl
             payload = [control.area_number, control.scene_number]
+
         elif type(control) == _ReadStatusOfChannels:
             operate_code = OperateCode.ReadStatusOfChannels
             payload = []
+
         elif type(control) == _GenericControl:
             operate_code = control.operate_code
             payload = control.payload
+
         elif type(control) == _UniversalSwitch:
             operate_code = OperateCode.UniversalSwitchControl
             payload = [control.switch_number, control.switch_status.value]
+
         elif type(control) == _ReadStatusOfUniversalSwitch:
             operate_code = OperateCode.ReadStatusOfUniversalSwitch
             payload = [control.switch_number]
+
+        elif type(control) == _ReadSensorStatus:
+            operate_code = OperateCode.ReadSensorStatus
+            payload = []
+
         else:
             return None
 
@@ -81,7 +91,6 @@ class _ReadStatusOfChannels(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
         # no more properties
-        pass
 
 
 class _UniversalSwitch(_Control):
@@ -97,4 +106,10 @@ class _ReadStatusOfUniversalSwitch(_Control):
         super().__init__(buspro)
 
         self.switch_number = None
+
+
+class _ReadSensorStatus(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+        # no more properties
 

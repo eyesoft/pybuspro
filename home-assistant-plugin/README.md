@@ -1,8 +1,15 @@
-configuration.yaml
-=
+# Configuration of Buspro plug-in
 
-Component
--
+##configuration.yaml
+
+
+
+
+
+
+
+####Component
+
 To enable the use of the Buspro component in your installation, add the following to your configuration.yaml file:
 
 ```yaml
@@ -18,8 +25,15 @@ Configuration variables:
 + **port** _(int) (Required)_: The UDP port to your Buspro Ethernet gateway
 + **name** _(string) (Optional)_: The name of the installation
 
-Light platform
--   
+
+
+
+
+
+
+
+####Light platform
+   
 To use your Buspro light in your installation, add the following to your configuration.yaml file: 
 
 ```yaml
@@ -42,8 +56,13 @@ Configuration variables:
     + **name** _(string) (Required)_: The name of the device
     + **running_time** _(int) (Optional)_: The running time in seconds for the device. If omitted, the default running time for all devices is used.
 
-Switch platform
--   
+
+
+
+
+
+####Switch platform
+
 To use your Buspro switch in your installation, add the following to your configuration.yaml file: 
 
 ```yaml
@@ -61,3 +80,62 @@ Configuration variables:
 + **devices** _(Required)_: A list of devices to set up
   + **X.X.X** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
     + **name** _(string) (Required)_: The name of the device
+
+
+
+
+
+
+####Sensor platform
+
+To use your Buspro sensor in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+sensor:
+  - platform: buspro
+    devices:
+      - address: 1.74
+        name: Living Room
+        type: temperature
+        unit_of_measurement: °C
+      - address: 1.74
+        name: Front Door
+        type: illuminance
+        unit_of_measurement: lux
+```
+
+Configuration variables:
+
++ **devices** _(Required)_: A list of devices to set up
+  + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
+  + **name** _(string) (Required)_: The name of the device
+  + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'temperature', 'illuminance'.
+
+
+
+
+
+
+
+    
+---
+##Services
+
+####Sending an arbitrary message:
+```
+Domain: buspro
+Service: send_message
+Service Data: {"address": [1,74], "operate_code": [4,78], "payload": [1,100,0,3]}
+```
+####Activating a scene:
+```
+Domain: buspro
+Service: activate_scene
+Service Data: {"address": [1,74], "scene_address": [3,5]}
+```
+####Setting an universal switch:
+```
+Domain: buspro
+Service: set_universal_switch
+Service Data: {"address": [1,74], "switch_number": 100, "status": 1}
+```

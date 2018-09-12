@@ -6,13 +6,13 @@ from ..helpers.enums import *
 
 
 class UniversalSwitch(Device):
-    def __init__(self, buspro, device_address, name):
+    def __init__(self, buspro, device_address, switch_number, name=""):
         super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, switch_number)
 
         self._buspro = buspro
-        self._device_address = device_address[:2]
-        _, _, self._switch_number = device_address
+        self._device_address = device_address
+        self._switch_number = switch_number
         self._switch_status = SwitchStatusOnOff.OFF
         self.register_telegram_received_cb(self._telegram_received_cb)
         self._call_read_current_status_of_universal_switch(run_from_init=True)

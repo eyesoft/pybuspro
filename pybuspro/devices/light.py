@@ -5,13 +5,13 @@ from ..helpers.generics import Generics
 
 
 class Light(Device):
-    def __init__(self, buspro, device_address, name):
+    def __init__(self, buspro, device_address, channel_number, name=""):
         super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, channel_number)
 
         self._buspro = buspro
-        self._device_address = device_address[:2]
-        _, _, self._channel = device_address
+        self._device_address = device_address
+        self._channel = channel_number
         self._brightness = 0
         self.register_telegram_received_cb(self._telegram_received_cb)
         self._call_read_current_status_of_channels(run_from_init=True)

@@ -4,12 +4,12 @@ from ..devices.control import _GenericControl
 
 
 class Generic(Device):
-    def __init__(self, buspro, device_address, payload, operate_code, name):
+    def __init__(self, buspro, device_address, payload, operate_code, name=""):
         super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, area_number, scene_number)
 
         self._buspro = buspro
-        self._device_address = device_address[:2]
+        self._device_address = device_address
         self._payload = payload
         self._operate_code = operate_code
         # self.register_telegram_received_cb(self._telegram_received_cb)

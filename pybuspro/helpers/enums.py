@@ -50,6 +50,10 @@ class OperateCode(Enum):
     ReadStatusOfUniversalSwitch = b'\xE0\x18'
     ReadStatusOfUniversalSwitchResponse = b'\xE0\x19'
 
+    ReadSensorStatus = b'\x16\x45'
+    ReadSensorStatusResponse = b'\x16\x46'
+    BroadcastSensorsStatusResponse = b'\x16\x44'
+
     """
     # 
     # 
