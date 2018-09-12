@@ -1,5 +1,5 @@
 """
-This component provides scene support for Buspro.
+This component provides __scene support for Buspro.
 
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/...
@@ -42,7 +42,7 @@ PLATFORM_SCHEMA = vol.Schema({
 
 # noinspection PyUnusedLocal
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up Buspro scene devices."""
+    """Set up Buspro __scene devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Scene
 
@@ -54,7 +54,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     scene_number = config.get(CONF_SCENE_NUMBER).split('.')
     device_address = (int(address[0]), int(address[1]), int(scene_number[0]), int(scene_number[1]))
 
-    _LOGGER.info("Appending scene with name '{}' and address '{}'".format(name, device_address))
+    _LOGGER.info("Appending __scene with name '{}' and address '{}'".format(name, device_address))
     scene = Scene(hdl, device_address, name)
     add_devices([BusproScene(scene)])
 

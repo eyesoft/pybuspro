@@ -201,13 +201,13 @@ async def main__run_scene():
     await hdl.start()
 
     def callback_received_for_scene(telegram):
-        print(f'Callback scene: {telegram}')
+        print(f'Callback __scene: {telegram}')
 
     # Scene kino
-    scene = Scene(hdl, (1, 74, 1, 2), "kino")
-    scene.register_telegram_received_cb(callback_received_for_scene)
+    __scene = Scene(hdl, (1, 74, 1, 2), "kino")
+    __scene.register_telegram_received_cb(callback_received_for_scene)
 
-    await scene.run()
+    await __scene.run()
 '''
 
 if __name__ == "__main__":

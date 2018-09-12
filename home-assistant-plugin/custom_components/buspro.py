@@ -118,7 +118,7 @@ class BusproModule:
         await self.hdl.stop()
 
     async def service_activate_scene(self, call):
-        """Service for activatign a scene"""
+        """Service for activatign a __scene"""
         # noinspection PyUnresolvedReferences
         from .pybuspro.devices.scene import Scene
 
