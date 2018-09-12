@@ -2,21 +2,21 @@ import asyncio
 import random
 
 from pybuspro.buspro import Buspro
+from pybuspro.devices.climate import Climate, ControlFloorHeatingStatus
 from pybuspro.devices.light import Light
 from pybuspro.devices.scene import Scene
+from pybuspro.devices.sensor import Sensor
 from pybuspro.devices.switch import Switch
 from pybuspro.devices.universal_switch import UniversalSwitch
-from pybuspro.devices.sensor import Sensor
-from pybuspro.devices.climate import Climate, ControlFloorHeatingStatus
+from pybuspro.helpers.enums import *
 
-# from pybuspro.helpers.enums import *
 # from pybuspro.devices.control import *
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
 
@@ -193,6 +193,45 @@ async def main__climate():
     await climate.control_heating_status(climate_control)
 
 
+async def main__kino():
+    # taklys 1, 74, 1
+    # se film scene 1, 74, 1, 1
+    # høre musikk scene 1, 74, 1, 2
+    # spille scene 1, 74, 1, 3
+    # dlp media 1, 23
+
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    light = Light(hdl, (1, 74), 1)
+    # await light.set_on(0)
+
+    scene = Scene(hdl, (1, 74), (1, 1))
+    # await scene.run()
+
+    scene = Scene(hdl, (1, 74), (1, 3))
+    # await scene.run()
+
+    # await light.set_off()
+
+    # def heat_received(telegram):
+    #     print(telegram)
+
+    heat = Climate(hdl, (1, 23))
+    # heat.register_telegram_received_cb(heat_received)
+    # await heat.read_heating_status()
+
+    # await asyncio.sleep(5)
+    # print("temo kino: {}".format(heat.temperature))
+
+    fhs = ControlFloorHeatingStatus
+    # fhs.normal_temperature = 22
+    fhs.status = OnOffStatus.OFF.value
+    await heat.control_heating_status(floor_heating_status=fhs)
+
+
 '''
 async def main__run_scene():
     loop__ = asyncio.get_event_loop()
@@ -221,5 +260,6 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__read_status())
     # loop.run_until_complete(main__set_uv_switch())
     # loop.run_until_complete(main__read_pir_status())
-    loop.run_until_complete(main__climate())
+    # loop.run_until_complete(main__climate())
+    loop.run_until_complete(main__kino())
     loop.run_forever()

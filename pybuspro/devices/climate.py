@@ -1,8 +1,9 @@
 import asyncio
+
+from .control import _ReadFloorHeatingStatus, _ControlFloorHeatingStatus
 from .device import Device
 from ..helpers.enums import *
 from ..helpers.generics import Generics
-from .control import _ReadFloorHeatingStatus, _ControlFloorHeatingStatus
 
 
 class ControlFloorHeatingStatus:
@@ -26,6 +27,7 @@ class Climate(Device):
         self._temperature_type = None
         self._status = None
         self._mode = None
+        self._current_temperature = None
         self._normal_temperature = None
         self._day_temperature = None
         self._night_temperature = None
@@ -36,8 +38,8 @@ class Climate(Device):
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.ReadFloorHeatingStatusResponse:
-            self._temperature_type, self._status, self._mode, self._normal_temperature, self._day_temperature, \
-                self._night_temperature, self._away_temperature = tuple(telegram.payload)
+            self._temperature_type, self._current_temperature, self._status, self._mode, self._normal_temperature, \
+                self._day_temperature, self._night_temperature, self._away_temperature = tuple(telegram.payload)
 
             self._call_device_updated()
 
@@ -59,23 +61,30 @@ class Climate(Device):
             self.unregister_telegram_received_cb(
                 self._telegram_received_control_heating_status_cb, floor_heating_status)
 
-            temperature_type, status, mode, normal_temperature, day_temperature, night_temperature, \
+            temperature_type, current_temperature, status, mode, normal_temperature, day_temperature, night_temperature, \
                 away_temperature = tuple(telegram.payload)
 
-            if floor_heating_status.temperature_type is not None:
-                temperature_type = floor_heating_status.temperature_type
-            if floor_heating_status.status is not None:
-                status = floor_heating_status.status
-            if floor_heating_status.mode is not None:
-                mode = floor_heating_status.mode
-            if floor_heating_status.normal_temperature is not None:
-                normal_temperature = floor_heating_status.normal_temperature
-            if floor_heating_status.day_temperature is not None:
-                day_temperature = floor_heating_status.day_temperature
-            if floor_heating_status.night_temperature is not None:
-                night_temperature = floor_heating_status.night_temperature
-            if floor_heating_status.away_temperature is not None:
-                away_temperature = floor_heating_status.away_temperature
+            if hasattr(floor_heating_status, 'temperature_type'):
+                if floor_heating_status.temperature_type is not None:
+                    temperature_type = floor_heating_status.temperature_type
+            if hasattr(floor_heating_status, 'status'):
+                if floor_heating_status.status is not None:
+                    status = floor_heating_status.status
+            if hasattr(floor_heating_status, 'mode'):
+                if floor_heating_status.mode is not None:
+                    mode = floor_heating_status.mode
+            if hasattr(floor_heating_status, 'normal_temperature'):
+                if floor_heating_status.normal_temperature is not None:
+                    normal_temperature = floor_heating_status.normal_temperature
+            if hasattr(floor_heating_status, 'day_temperature'):
+                if floor_heating_status.day_temperature is not None:
+                    day_temperature = floor_heating_status.day_temperature
+            if hasattr(floor_heating_status, 'night_temperature'):
+                if floor_heating_status.night_temperature is not None:
+                    night_temperature = floor_heating_status.night_temperature
+            if hasattr(floor_heating_status, 'away_temperature'):
+                if floor_heating_status.away_temperature is not None:
+                    away_temperature = floor_heating_status.away_temperature
 
             cfhs_ = _ControlFloorHeatingStatus(self._buspro)
             cfhs_.subnet_id, cfhs_.device_id = self._device_address
@@ -128,7 +137,7 @@ class Climate(Device):
 
     @property
     def temperature(self):
-        return self._normal_temperature
+        return self._current_temperature
 
     @property
     def day_temperature(self):
