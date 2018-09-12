@@ -232,6 +232,28 @@ async def main__kino():
     await heat.control_heating_status(floor_heating_status=fhs)
 
 
+async def lys_garasje():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    switch = Switch(hdl, (1, 80), 4)
+    #await switch.set_on()
+    await switch.set_off()
+
+
+async def lys_kino():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    await hdl.start()
+
+    switch = Switch(hdl, (1, 74), 1)
+    #await switch.set_on()
+    await switch.set_off()
+
+
 '''
 async def main__run_scene():
     loop__ = asyncio.get_event_loop()
@@ -261,5 +283,7 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__set_uv_switch())
     # loop.run_until_complete(main__read_pir_status())
     # loop.run_until_complete(main__climate())
-    loop.run_until_complete(main__kino())
+    # loop.run_until_complete(main__kino())
+    loop.run_until_complete(lys_garasje())
+    # loop.run_until_complete(lys_kino())
     loop.run_forever()
