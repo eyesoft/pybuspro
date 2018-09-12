@@ -18,12 +18,13 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'buspro'
 
 DEVICE_SCHEMA = vol.Schema({
-    vol.Optional("running_time", default=0): cv.string,
+    vol.Optional("running_time", default=0): cv.positive_int,
+    vol.Optional("dimmable", default=True): cv.boolean,
     vol.Required(CONF_NAME): cv.string,
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional("running_time", default=0): cv.string,
+    vol.Optional("running_time", default=0): cv.positive_int,
     vol.Required(CONF_DEVICES): {cv.string: DEVICE_SCHEMA},
 })
 
@@ -41,9 +42,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     for address, device_config in config[CONF_DEVICES].items():
         name = device_config[CONF_NAME]
         device_running_time = int(device_config["running_time"])
+        dimmable = bool(device_config["dimmable"])
 
         if device_running_time == 0:
             device_running_time = platform_running_time
+        if dimmable:
+            device_running_time = 0
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
@@ -53,7 +57,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         light = Light(hdl, device_address, channel_number, name)
 
-        devices.append(BusproLight(hass, light, device_running_time))
+        devices.append(BusproLight(hass, light, device_running_time, dimmable))
 
     add_devices(devices)
 
@@ -62,10 +66,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BusproLight(Light):
     """Representation of a Buspro light."""
 
-    def __init__(self, hass, device, running_time):
+    def __init__(self, hass, device, running_time, dimmable):
         self._hass = hass
         self._device = device
         self._running_time = running_time
+        self._dimmable = dimmable
         self.async_register_callbacks()
 
     @callback
@@ -104,7 +109,9 @@ class BusproLight(Light):
     def supported_features(self):
         """Flag supported features."""
         flags = 0
-        if self._device.supports_brightness:
+        # if self._device.supports_brightness:
+        #     flags |= SUPPORT_BRIGHTNESS
+        if self._dimmable:
             flags |= SUPPORT_BRIGHTNESS
         return flags
 

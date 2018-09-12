@@ -18,7 +18,9 @@ class Light(Device):
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
-            channel, success, brightness = tuple(telegram.payload)
+            channel = telegram.payload[0]
+            success = telegram.payload[1]
+            brightness = telegram.payload[2]
             if channel == self._channel:
                 self._brightness = brightness
                 self._call_device_updated()

@@ -46,6 +46,7 @@ light:
         running_time = 5
       1.89.2:
         name: Front Door Light
+        dimmable = False
 ```
 
 Configuration variables:
@@ -55,6 +56,7 @@ Configuration variables:
   + **X.X.X** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
     + **name** _(string) (Required)_: The name of the device
     + **running_time** _(int) (Optional)_: The running time in seconds for the device. If omitted, the default running time for all devices is used.
+    + **dimmable** _(boolean) (Optional)_: Is the device dimmable? Default is True. 
 
 
 
