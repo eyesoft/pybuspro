@@ -15,8 +15,8 @@ from pybuspro.helpers.enums import *
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
 
@@ -145,8 +145,8 @@ async def main__set_uv_switch():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    universal_switch = UniversalSwitch(hdl, (1, 100), 100, "UV Switch")
-    # await universal_switch.set_on()
+    universal_switch = UniversalSwitch(hdl, (1, 100), 104, "UV Switch")
+    await universal_switch.set_on()
     print("==>{}".format(universal_switch.is_on))
 
 
@@ -169,15 +169,16 @@ async def main__read_sensor_status():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    def callback_received_for_pir_status(telegram):
-        print(f'Callback switch: {telegram}')
+    #def callback_received_for_sensor_status(telegram):
+    #    print(f'Callback switch: {telegram}')
 
-    sensor = Sensor(hdl, (1, 80), name='temp sensor')
-    sensor.register_telegram_received_cb(callback_received_for_pir_status)
+    sensor = Sensor(hdl, (1, 130), channel_number=1, name='temp sensor')
+    #sensor.register_telegram_received_cb(callback_received_for_sensor_status)
     await sensor.read_sensor_status()
-    print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
-          f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
-
+    # print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
+    #       f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
+    #await asyncio.sleep(3)
+    #print(sensor.single_channel_is_on)
 
 async def main__climate():
     loop__ = asyncio.get_event_loop()
@@ -283,8 +284,8 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__run_scene())
     # loop.run_until_complete(main__activate_scene())
     # loop.run_until_complete(main__read_status())
-    # loop.run_until_complete(main__set_uv_switch())
-    loop.run_until_complete(main__read_sensor_status())
+    loop.run_until_complete(main__set_uv_switch())
+    # loop.run_until_complete(main__read_sensor_status())
     # loop.run_until_complete(main__climate())
     # loop.run_until_complete(main__kino())
     # loop.run_until_complete(lys_garasje())

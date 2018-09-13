@@ -29,10 +29,10 @@ class UniversalSwitch(Device):
                 self._call_device_updated()
 
     async def set_on(self):
-        await self._set(SwitchStatusOnOff.ON)
+        await self._set(OnOff.ON)
 
     async def set_off(self):
-        await self._set(SwitchStatusOnOff.OFF)
+        await self._set(OnOff.OFF)
 
     async def read_status(self):
         raise NotImplementedError
