@@ -61,8 +61,8 @@ class Climate(Device):
             self.unregister_telegram_received_cb(
                 self._telegram_received_control_heating_status_cb, floor_heating_status)
 
-            temperature_type, current_temperature, status, mode, normal_temperature, day_temperature, night_temperature, \
-                away_temperature = tuple(telegram.payload)
+            temperature_type, current_temperature, status, mode, normal_temperature, day_temperature, \
+                night_temperature, away_temperature = tuple(telegram.payload)
 
             if hasattr(floor_heating_status, 'temperature_type'):
                 if floor_heating_status.temperature_type is not None:

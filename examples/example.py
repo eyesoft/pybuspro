@@ -15,8 +15,8 @@ from pybuspro.helpers.enums import *
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
 
@@ -146,7 +146,8 @@ async def main__set_uv_switch():
     await hdl.start()
 
     universal_switch = UniversalSwitch(hdl, (1, 100), 100, "UV Switch")
-    await universal_switch.set_on()
+    # await universal_switch.set_on()
+    print("==>{}".format(universal_switch.is_on))
 
 
 async def main__read_status():
@@ -162,7 +163,7 @@ async def main__read_status():
     # await hdl.network_interface.send_control(read_status_of_channels)
 
 
-async def main__read_pir_status():
+async def main__read_sensor_status():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
@@ -171,11 +172,11 @@ async def main__read_pir_status():
     def callback_received_for_pir_status(telegram):
         print(f'Callback switch: {telegram}')
 
-    sensor = Sensor(hdl, (1, 80), 'temp sensor')
+    sensor = Sensor(hdl, (1, 80), name='temp sensor')
     sensor.register_telegram_received_cb(callback_received_for_pir_status)
     await sensor.read_sensor_status()
     print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
-          f"{sensor.movement}, '{sensor.name}'")
+          f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
 
 
 async def main__climate():
@@ -193,6 +194,7 @@ async def main__climate():
     await climate.control_heating_status(climate_control)
 
 
+# noinspection PyUnusedLocal
 async def main__kino():
     # taklys 1, 74, 1
     # se film scene 1, 74, 1, 1
@@ -229,6 +231,7 @@ async def main__kino():
     fhs = ControlFloorHeatingStatus
     # fhs.normal_temperature = 22
     fhs.status = OnOffStatus.OFF.value
+    # noinspection PyTypeChecker
     await heat.control_heating_status(floor_heating_status=fhs)
 
 
@@ -239,7 +242,7 @@ async def lys_garasje():
     await hdl.start()
 
     switch = Switch(hdl, (1, 80), 4)
-    #await switch.set_on()
+    # await switch.set_on()
     await switch.set_off()
 
 
@@ -250,7 +253,7 @@ async def lys_kino():
     await hdl.start()
 
     switch = Switch(hdl, (1, 74), 1)
-    #await switch.set_on()
+    # await switch.set_on()
     await switch.set_off()
 
 
@@ -281,9 +284,9 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__activate_scene())
     # loop.run_until_complete(main__read_status())
     # loop.run_until_complete(main__set_uv_switch())
-    # loop.run_until_complete(main__read_pir_status())
+    loop.run_until_complete(main__read_sensor_status())
     # loop.run_until_complete(main__climate())
     # loop.run_until_complete(main__kino())
-    loop.run_until_complete(lys_garasje())
+    # loop.run_until_complete(lys_garasje())
     # loop.run_until_complete(lys_kino())
     loop.run_forever()

@@ -100,6 +100,7 @@ sensor:
         name: Living Room
         type: temperature
         unit_of_measurement: °C
+        device_class: temperature
       - address: 1.74
         name: Front Door
         type: illuminance
@@ -113,6 +114,8 @@ Configuration variables:
   + **name** _(string) (Required)_: The name of the device
   + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'temperature', 'illuminance'.
   + **unit_of_measurement** _(string) (Optional)_: text to be displayed as unit of measurement
+  + **device_class** _(string) (Optional)_: HASS device class e.g., "temperature" 
+  (https://www.home-assistant.io/components/sensor/)
 
 
 
@@ -131,18 +134,25 @@ sensor:
         name: Living Room
         type: motion
         device_class: motion
-      - address: 1.74
+      - address: 1.74.100
         name: Front Door
-        type: dry_contact_1
+        type: universal_switch
 ```
 
 Configuration variables:
 
 + **devices** _(Required)_: A list of devices to set up
-  + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
+  + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`. If 
+  'type' = 'universal_switch' universal switch number must be appended to the address. 
   + **name** _(string) (Required)_: The name of the device
-  + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'motion', 'dry_contact_1', 'dry_contact_2'.
-  + **device_class** _(string) (Optional)_: HASS device class e.g., "motion".
+  + **type** _(string) (Required)_: Type of sensor to monitor. 
+    + Available sensors: 
+      + motion 
+      + dry_contact_1 
+      + dry_contact_2
+      + universal_switch
+  + **device_class** _(string) (Optional)_: HASS device class e.g., "motion" 
+  (https://www.home-assistant.io/components/binary_sensor/)
 
 
 
@@ -162,7 +172,7 @@ climate:
         name: Living Room
       - address: 1.74
         name: Front Door
-``
+```
 
 Configuration variables:
 

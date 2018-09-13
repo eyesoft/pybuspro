@@ -19,7 +19,7 @@ class Switch(Device):
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
             channel = telegram.payload[0]
-            success = telegram.payload[1]
+            # success = telegram.payload[1]
             brightness = telegram.payload[2]
             if channel == self._channel:
                 self._brightness = brightness

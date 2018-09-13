@@ -11,7 +11,7 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_UNIT_OF_MEASUREMENT,
-                                 ILLUMINANCE, TEMPERATURE)
+                                 ILLUMINANCE, TEMPERATURE, CONF_DEVICE_CLASS)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
 
@@ -32,6 +32,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_NAME): cv.string,
                 vol.Required(CONF_TYPE): vol.In(SENSOR_TYPES),
                 vol.Optional(CONF_UNIT_OF_MEASUREMENT, default=''): cv.string,
+                vol.Optional(CONF_DEVICE_CLASS, default='None'): cv.string,
             })
         ])
 })
@@ -51,16 +52,17 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         name = device_config[CONF_NAME]
         sensor_type = device_config[CONF_TYPE]
         unit_of_measurement = device_config[CONF_UNIT_OF_MEASUREMENT]
+        device_class = device_config[CONF_DEVICE_CLASS]
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
 
-        _LOGGER.info("Adding sensor with name '{}', address {} and sensor type '{}'".format(
-            name, device_address, sensor_type))
+        _LOGGER.info("Adding sensor with name '{}', address {}, sensor type '{}' and device_class '{}'".format(
+            name, device_address, sensor_type, device_class))
 
-        sensor = Sensor(hdl, device_address, name)
+        sensor = Sensor(hdl, device_address, name=name)
 
-        devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement))
+        devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class))
 
     add_devices(devices)
 
@@ -69,11 +71,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class BusproSensor(Entity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device, sensor_type, unit_of_measurement):
+    def __init__(self, hass, device, sensor_type, unit_of_measurement, device_class):
         self._hass = hass
         self._device = device
         self._unit_of_measurement = unit_of_measurement
         self._sensor_type = sensor_type
+        self._device_class = device_class
         self.async_register_callbacks()
 
     @callback
@@ -109,6 +112,11 @@ class BusproSensor(Entity):
             return self._device.temperature
         if self._sensor_type == ILLUMINANCE:
             return self._device.brightness
+
+    @property
+    def device_class(self):
+        """Return the class of this sensor."""
+        return self._device_class
 
     @property
     def unit_of_measurement(self):

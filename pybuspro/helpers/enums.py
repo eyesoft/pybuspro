@@ -65,11 +65,14 @@ class OperateCode(Enum):
     SceneControlResponse = b'\x00\x03'
     UniversalSwitchControl = b'\xE0\x1C'
     UniversalSwitchControlResponse = b'\xE0\x1D'
+
     ReadStatusOfUniversalSwitch = b'\xE0\x18'
     ReadStatusOfUniversalSwitchResponse = b'\xE0\x19'
+    BroadcastStatusOfUniversalSwitch = b'\xE0\x17'
+
     ReadSensorStatus = b'\x16\x45'
     ReadSensorStatusResponse = b'\x16\x46'
-    BroadcastSensorsStatusResponse = b'\x16\x44'
+    BroadcastSensorStatusResponse = b'\x16\x44'
 
     ReadFloorHeatingStatus = b'\x19\x44'
     ReadFloorHeatingStatusResponse = b'\x19\x45'
