@@ -112,7 +112,10 @@ Configuration variables:
 + **devices** _(Required)_: A list of devices to set up
   + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
   + **name** _(string) (Required)_: The name of the device
-  + **type** _(string) (Required)_: Type of sensor to monitor. Available sensors: 'temperature', 'illuminance'.
+  + **type** _(string) (Required)_: Type of sensor to monitor. 
+    + Available sensors: 
+     + temperature
+     + illuminance
   + **unit_of_measurement** _(string) (Optional)_: text to be displayed as unit of measurement
   + **device_class** _(string) (Optional)_: HASS device class e.g., "temperature" 
   (https://www.home-assistant.io/components/sensor/)
@@ -127,7 +130,7 @@ Configuration variables:
 To use your Buspro binary sensor in your installation, add the following to your configuration.yaml file: 
 
 ```yaml
-sensor:
+binary_sensor:
   - platform: buspro
     devices:
       - address: 1.74
@@ -137,6 +140,9 @@ sensor:
       - address: 1.74.100
         name: Front Door
         type: universal_switch
+      - address: 1.75.3
+        name: Kitchen switch
+        type: single_channel
 ```
 
 Configuration variables:
@@ -151,6 +157,7 @@ Configuration variables:
       + dry_contact_1 
       + dry_contact_2
       + universal_switch
+      + single_channel
   + **device_class** _(string) (Optional)_: HASS device class e.g., "motion" 
   (https://www.home-assistant.io/components/binary_sensor/)
 
