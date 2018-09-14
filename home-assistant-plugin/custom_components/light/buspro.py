@@ -15,6 +15,8 @@ from homeassistant.core import callback
 
 _LOGGER = logging.getLogger(__name__)
 
+ENABLE_EXPERIMENTAL_PREVIOUS_BRIGHTNESS = True
+
 DOMAIN = 'buspro'
 
 DEVICE_SCHEMA = vol.Schema({
@@ -123,6 +125,11 @@ class BusproLight(Light):
     async def async_turn_on(self, **kwargs):
         """Instruct the light to turn on."""
         brightness = int(kwargs.get(ATTR_BRIGHTNESS, 255) / 255 * 100)
+
+        if ENABLE_EXPERIMENTAL_PREVIOUS_BRIGHTNESS:
+            if not self.is_on and self._device.previous_brightness is not None and brightness == 100:
+                brightness = self._device.previous_brightness
+
         await self._device.set_brightness(brightness, self._running_time)
 
     async def async_turn_off(self, **kwargs):
