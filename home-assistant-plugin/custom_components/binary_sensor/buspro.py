@@ -12,10 +12,11 @@ import voluptuous as vol
 from homeassistant.components.binary_sensor import (PLATFORM_SCHEMA, BinarySensorDevice)
 from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_DEVICE_CLASS)
 from homeassistant.core import callback
+from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = 'buspro'
+DEFAULT_CONF_DEVICE_CLASS = "None"
 
 CONF_MOTION = 'motion'
 CONF_DRY_CONTACT_1 = 'dry_contact_1'
@@ -38,19 +39,19 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_ADDRESS): cv.string,
                 vol.Required(CONF_NAME): cv.string,
                 vol.Required(CONF_TYPE): vol.In(SENSOR_TYPES),
-                vol.Optional(CONF_DEVICE_CLASS, default='None'): cv.string,
+                vol.Optional(CONF_DEVICE_CLASS, default=DEFAULT_CONF_DEVICE_CLASS): cv.string,
             })
         ])
 })
 
 
 # noinspection PyUnusedLocal
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro switch devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Sensor
 
-    hdl = hass.data[DOMAIN].hdl
+    hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
 
     for device_config in config[CONF_DEVICES]:
@@ -66,23 +67,22 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         if sensor_type == CONF_UNIVERSAL_SWITCH:
             universal_switch_number = int(address2[2])
-            _LOGGER.info("Adding binary sensor with name '{}', address {}, universal_switch_number {}, "
-                         "sensor type '{}' and device class '{}'".format(name, device_address, universal_switch_number,
-                                                                         sensor_type, device_class))
+            _LOGGER.debug("Adding binary sensor '{}' with address {}, universal_switch_number {}, sensor type '{}' "
+                          "and device class '{}'".format(name, device_address, universal_switch_number, sensor_type,
+                                                         device_class))
         elif sensor_type == CONF_SINGLE_CHANNEL:
             channel_number = int(address2[2])
-            _LOGGER.info("Adding binary sensor with name '{}', address {}, channel_number {}, "
-                         "sensor type '{}' and device class '{}'".format(name, device_address, channel_number,
-                                                                         sensor_type, device_class))
+            _LOGGER.debug("Adding binary sensor '{}' with address {}, channel_number {}, sensor type '{}' and "
+                          "device class '{}'".format(name, device_address, channel_number, sensor_type, device_class))
         else:
-            _LOGGER.info("Adding binary sensor with name '{}', address {}, sensor type '{}' and device class '{}'".
-                         format(name, device_address, sensor_type, device_class))
+            _LOGGER.debug("Adding binary sensor '{}' with address {}, sensor type '{}' and device class '{}'".
+                          format(name, device_address, sensor_type, device_class))
 
         sensor = Sensor(hdl, device_address, universal_switch_number, channel_number, name)
 
         devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class))
 
-    add_devices(devices)
+    async_add_entites(devices)
 
 
 # noinspection PyAbstractClass
@@ -120,7 +120,7 @@ class BusproBinarySensor(BinarySensorDevice):
     @property
     def available(self):
         """Return True if entity is available."""
-        return self._hass.data[DOMAIN].connected
+        return self._hass.data[DATA_BUSPRO].connected
 
     @property
     def device_class(self):

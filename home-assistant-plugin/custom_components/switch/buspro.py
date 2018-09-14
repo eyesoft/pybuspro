@@ -12,10 +12,9 @@ import voluptuous as vol
 from homeassistant.components.switch import SwitchDevice, PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
+from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
-
-DOMAIN = 'buspro'
 
 DEVICE_SCHEMA = vol.Schema({
     vol.Required(CONF_NAME): cv.string,
@@ -27,12 +26,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 # noinspection PyUnusedLocal
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro switch devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Switch
 
-    hdl = hass.data[DOMAIN].hdl
+    hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
 
     for address, device_config in config[CONF_DEVICES].items():
@@ -41,14 +40,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
         channel_number = int(address2[2])
-        _LOGGER.info("Adding switch with name '{}', address {} and channel number {}".format(
-            name, device_address, channel_number))
+        _LOGGER.debug("Adding switch '{}' with address {} and channel number {}".format(name, device_address,
+                                                                                        channel_number))
 
         switch = Switch(hdl, device_address, channel_number, name)
 
         devices.append(BusproSwitch(hass, switch))
 
-    add_devices(devices)
+    async_add_entites(devices)
 
 
 # noinspection PyAbstractClass
@@ -84,7 +83,7 @@ class BusproSwitch(SwitchDevice):
     @property
     def available(self):
         """Return True if entity is available."""
-        return self._hass.data[DOMAIN].connected
+        return self._hass.data[DATA_BUSPRO].connected
 
     @property
     def is_on(self):

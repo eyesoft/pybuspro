@@ -14,10 +14,11 @@ from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYP
                                  ILLUMINANCE, TEMPERATURE)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
+from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = 'buspro'
+DEFAULT_CONF_UNIT_OF_MEASUREMENT = ""
 
 SENSOR_TYPES = {
     ILLUMINANCE,
@@ -31,19 +32,19 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_ADDRESS): cv.string,
                 vol.Required(CONF_NAME): cv.string,
                 vol.Required(CONF_TYPE): vol.In(SENSOR_TYPES),
-                vol.Optional(CONF_UNIT_OF_MEASUREMENT, default=''): cv.string,
+                vol.Optional(CONF_UNIT_OF_MEASUREMENT, default=DEFAULT_CONF_UNIT_OF_MEASUREMENT): cv.string,
             })
         ])
 })
 
 
 # noinspection PyUnusedLocal
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro switch devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Sensor
 
-    hdl = hass.data[DOMAIN].hdl
+    hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
 
     for device_config in config[CONF_DEVICES]:
@@ -55,14 +56,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
 
-        _LOGGER.info("Adding sensor with name '{}', address {} and sensor type '{}'".format(
-            name, device_address, sensor_type))
+        _LOGGER.debug("Adding sensor '{}' with address {} and sensor type '{}'".format(name, device_address,
+                                                                                       sensor_type))
 
         sensor = Sensor(hdl, device_address, name)
 
         devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement))
 
-    add_devices(devices)
+    async_add_entites(devices)
 
 
 # noinspection PyAbstractClass
@@ -100,7 +101,7 @@ class BusproSensor(Entity):
     @property
     def available(self):
         """Return True if entity is available."""
-        return self._hass.data[DOMAIN].connected
+        return self._hass.data[DATA_BUSPRO].connected
 
     @property
     def state(self):

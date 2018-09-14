@@ -54,9 +54,6 @@ class Sensor(Device):
                 self._call_device_updated()
 
         elif telegram.operate_code == OperateCode.ReadStatusOfChannelsResponse:
-            #print("ReadStatusOfChannelsResponse telegram: {}".format(telegram))
-            #print("Channel_number: {}".format(self._channel_number))
-            #print("Name: {}".format(self._name))
             if self._channel_number <= telegram.payload[0]:
                 self._channel_status = telegram.payload[self._channel_number]
                 self._call_device_updated()

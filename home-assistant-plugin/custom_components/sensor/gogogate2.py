@@ -23,6 +23,7 @@ SENSOR_SCHEMA = vol.Schema({
 })
 
 
+# noinspection PyUnusedLocal,PyUnresolvedReferences,PyPep8Naming
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Gogogate2 component."""
     from pygogogate2 import Gogogate2API as pygogogate2

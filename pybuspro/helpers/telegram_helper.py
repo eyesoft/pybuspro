@@ -46,15 +46,20 @@ class TelegramHelper:
 
         crc_check_pass = self._check_crc(telegram)
         if not crc_check_pass:
-            # print("ERROR: CRC check of received data failed")
             return None
 
-        # print(crc)
-        # print(self._calculate_crc(telegram))
-        # print(f"LOG: Data: {self.hex_to_integer(data)}")
-        # print(f"LOG: DeviceType: {DeviceType(source_device_type_hex)}")  # Returns DeviceType
-        # print(f"LOG: SendBuf: {self.build_send_buffer(telegram)}")
+        return telegram
 
+    @staticmethod
+    def replace_none_values(telegram: Telegram):
+        if telegram is None:
+            return None
+        if telegram.payload is None:
+            telegram.payload = []
+        if telegram.source_address is None:
+            telegram.source_address = [200, 200]
+        if telegram.source_device_type is None:
+            telegram.source_device_type = DeviceType.PyBusPro
         return telegram
 
     # noinspection SpellCheckingInspection
@@ -64,10 +69,6 @@ class TelegramHelper:
         send_buf.extend('HDLMIRACLE'.encode())
         send_buf.append(0xAA)
         send_buf.append(0xAA)
-
-        # print(telegram)
-        # print(telegram.payload)
-        # print(len(telegram.payload))
 
         if telegram is None:
             return None

@@ -1,4 +1,5 @@
 ﻿import asyncio
+import logging
 
 from .transport.network_interface import NetworkInterface
 
@@ -18,7 +19,7 @@ class StateUpdater:
 
     async def run(self):
         await asyncio.sleep(0)
-        # print(f"LOG: Starting StateUpdater with {self.sleep} seconds interval")
+        self.buspro.logger.info(f"Starting StateUpdater with {self.sleep} seconds interval")
 
         while True:
             await asyncio.sleep(self.sleep)
@@ -32,6 +33,8 @@ class Buspro:
         self.state_updater = None
         self.started = False
         self.network_interface = None
+        self.logger = logging.getLogger("buspro.log")
+        self.telegram_logger = logging.getLogger("buspro.telegram")
 
         self.callback_all_messages = None
         self._telegram_received_cbs = []
@@ -44,7 +47,7 @@ class Buspro:
                 task = self.loop.create_task(self.stop())
                 self.loop.run_until_complete(task)
             except RuntimeError as exp:
-                print("ERROR: Could not close loop, reason: {}".format(exp))
+                self.buspro.logger.warning("Could not close loop, reason: {}".format(exp))
 
     # noinspection PyUnusedLocal
     async def start(self, state_updater=False):  # , daemon_mode=False):
@@ -71,6 +74,8 @@ class Buspro:
         self.started = False
 
     def _callback_all_messages(self, telegram):
+        self.buspro.telegram_logger.debug(telegram)
+
         if self.callback_all_messages is not None:
             self.callback_all_messages(telegram)
 

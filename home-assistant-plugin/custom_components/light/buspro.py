@@ -12,32 +12,34 @@ import voluptuous as vol
 from homeassistant.components.light import Light, PLATFORM_SCHEMA, SUPPORT_BRIGHTNESS, ATTR_BRIGHTNESS
 from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
+from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
 
 ENABLE_EXPERIMENTAL_PREVIOUS_BRIGHTNESS = True
-
-DOMAIN = 'buspro'
+DEFAULT_DEVICE_RUNNING_TIME = 0
+DEFAULT_PLATFORM_RUNNING_TIME = 0
+DEFAULT_DIMMABLE = True
 
 DEVICE_SCHEMA = vol.Schema({
-    vol.Optional("running_time", default=0): cv.positive_int,
-    vol.Optional("dimmable", default=True): cv.boolean,
+    vol.Optional("running_time", default=DEFAULT_DEVICE_RUNNING_TIME): cv.positive_int,
+    vol.Optional("dimmable", default=DEFAULT_DIMMABLE): cv.boolean,
     vol.Required(CONF_NAME): cv.string,
 })
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Optional("running_time", default=0): cv.positive_int,
+    vol.Optional("running_time", default=DEFAULT_PLATFORM_RUNNING_TIME): cv.positive_int,
     vol.Required(CONF_DEVICES): {cv.string: DEVICE_SCHEMA},
 })
 
 
 # noinspection PyUnusedLocal
-def setup_platform(hass, config, add_devices, discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro light devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Light
 
-    hdl = hass.data[DOMAIN].hdl
+    hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
     platform_running_time = int(config["running_time"])
 
@@ -54,14 +56,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
         channel_number = int(address2[2])
-        _LOGGER.info("Adding light with name '{}', address {} and channel number {}".format(
-            name, device_address, channel_number))
+        _LOGGER.debug("Adding light '{}' with address {} and channel number {}".format(name, device_address,
+                                                                                       channel_number))
 
         light = Light(hdl, device_address, channel_number, name)
-
         devices.append(BusproLight(hass, light, device_running_time, dimmable))
 
-    add_devices(devices)
+    async_add_entites(devices)
 
 
 # noinspection PyAbstractClass
@@ -99,7 +100,7 @@ class BusproLight(Light):
     @property
     def available(self):
         """Return True if entity is available."""
-        return self._hass.data[DOMAIN].connected
+        return self._hass.data[DATA_BUSPRO].connected
 
     @property
     def brightness(self):
@@ -111,8 +112,6 @@ class BusproLight(Light):
     def supported_features(self):
         """Flag supported features."""
         flags = 0
-        # if self._device.supports_brightness:
-        #     flags |= SUPPORT_BRIGHTNESS
         if self._dimmable:
             flags |= SUPPORT_BRIGHTNESS
         return flags

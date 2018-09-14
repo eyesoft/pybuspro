@@ -15,8 +15,11 @@ from homeassistant.const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = 'buspro'
+DOMAIN = "buspro"
+DATA_BUSPRO = "data_buspro"
 DEPENDENCIES = []
+
+DEFAULT_CONF_NAME = ""
 
 DEFAULT_SCENE_NAME = "BUSPRO SCENE"
 DEFAULT_SEND_MESSAGE_NAME = "BUSPRO MESSAGE"
@@ -58,7 +61,7 @@ CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_HOST): cv.string,
         vol.Required(CONF_PORT): cv.port,
-        vol.Optional(CONF_NAME, default=''): cv.string
+        vol.Optional(CONF_NAME, default=DEFAULT_CONF_NAME): cv.string
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -66,8 +69,8 @@ CONFIG_SCHEMA = vol.Schema({
 async def async_setup(hass, config):
     """Setup the Buspro component. """
 
-    hass.data[DOMAIN] = BusproModule(hass, config)
-    await hass.data[DOMAIN].start()
+    hass.data[DATA_BUSPRO] = BusproModule(hass, config)
+    await hass.data[DATA_BUSPRO].start()
 
     # load_platform(hass, 'light', DOMAIN, {'optional': 'arguments'})
     # load_platform(hass, 'light', DOMAIN, busprodevice, config)
@@ -76,7 +79,7 @@ async def async_setup(hass, config):
     # load_platform(hass, 'sensor', DOMAIN)
     # _LOGGER.info(f"Listening on {host}:{port} with alias '{name}'")
 
-    hass.data[DOMAIN].register_services()
+    hass.data[DATA_BUSPRO].register_services()
 
     return True
 
