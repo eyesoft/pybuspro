@@ -12,6 +12,7 @@ import voluptuous as vol
 from homeassistant.components.binary_sensor import (PLATFORM_SCHEMA, BinarySensorDevice)
 from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_DEVICE_CLASS)
 from homeassistant.core import callback
+
 from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,7 +79,8 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
             _LOGGER.debug("Adding binary sensor '{}' with address {}, sensor type '{}' and device class '{}'".
                           format(name, device_address, sensor_type, device_class))
 
-        sensor = Sensor(hdl, device_address, universal_switch_number, channel_number, name)
+        sensor = Sensor(hdl, device_address, universal_switch_number=universal_switch_number,
+                        channel_number=channel_number, name=name)
 
         devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class))
 

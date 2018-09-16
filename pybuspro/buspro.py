@@ -1,7 +1,9 @@
 ﻿import asyncio
 import logging
 
+from .helpers.enums import *
 from .transport.network_interface import NetworkInterface
+
 
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
@@ -19,7 +21,7 @@ class StateUpdater:
 
     async def run(self):
         await asyncio.sleep(0)
-        self.buspro.logger.info(f"Starting StateUpdater with {self.sleep} seconds interval")
+        self.buspro.logger.info("Starting StateUpdater with {} seconds interval".format(self.sleep))
 
         while True:
             await asyncio.sleep(self.sleep)
@@ -47,7 +49,7 @@ class Buspro:
                 task = self.loop.create_task(self.stop())
                 self.loop.run_until_complete(task)
             except RuntimeError as exp:
-                self.buspro.logger.warning("Could not close loop, reason: {}".format(exp))
+                self.logger.warning("Could not close loop, reason: {}".format(exp))
 
     # noinspection PyUnusedLocal
     async def start(self, state_updater=False):  # , daemon_mode=False):
@@ -74,16 +76,16 @@ class Buspro:
         self.started = False
 
     def _callback_all_messages(self, telegram):
-        self.buspro.telegram_logger.debug(telegram)
+        self.telegram_logger.debug(telegram)
 
         if self.callback_all_messages is not None:
             self.callback_all_messages(telegram)
 
         for telegram_received_cb in self._telegram_received_cbs:
             device_address = telegram_received_cb['device_address']
-
             # Sender callback kun for oppgitt kanal
-            if device_address == telegram.source_address:
+            if device_address == telegram.source_address and \
+                    telegram.operate_code is not OperateCode.TIME_IF_FROM_LOGIC_OR_SECURITY:
 
                 postfix = telegram_received_cb['postfix']
                 if postfix is not None:

@@ -1,13 +1,13 @@
 import asyncio
 
 # from ..helpers.generics import Generics
-from .control import _ReadSensorStatus, _ReadStatusOfUniversalSwitch, _ReadStatusOfChannels
+from .control import _ReadSensorStatus, _ReadStatusOfUniversalSwitch, _ReadStatusOfChannels, _ReadFloorHeatingStatus
 from .device import Device
 from ..helpers.enums import *
 
 
 class Sensor(Device):
-    def __init__(self, buspro, device_address, universal_switch_number=None, channel_number=None, name=""):
+    def __init__(self, buspro, device_address, universal_switch_number=None, channel_number=None, device=None, name=""):
         super().__init__(buspro, device_address, name)
 
         self._buspro = buspro
@@ -15,6 +15,7 @@ class Sensor(Device):
         self._universal_switch_number = universal_switch_number
         self._channel_number = channel_number
         self._name = name
+        self._device = device
 
         self._current_temperature = None
         self._brightness = None
@@ -30,27 +31,63 @@ class Sensor(Device):
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.ReadSensorStatusResponse:
-            success_or_fail, self._current_temperature, brightness_high, brightness_low, self._motion_sensor, \
-                self._sonic, self._dry_contact_1_status, self._dry_contact_2_status = tuple(telegram.payload)
-
+            success_or_fail = telegram.payload[0]
+            self._current_temperature = telegram.payload[1]
+            brightness_high = telegram.payload[2]
+            brightness_low = telegram.payload[3]
+            self._motion_sensor = telegram.payload[4]
+            self._sonic = telegram.payload[5]
+            self._dry_contact_1_status = telegram.payload[6]
+            self._dry_contact_2_status = telegram.payload[7]
             if success_or_fail == SuccessOrFailure.Success:
                 self._brightness = brightness_high + brightness_low
                 self._call_device_updated()
 
         elif telegram.operate_code == OperateCode.BroadcastSensorStatusResponse:
-            self._current_temperature, brightness_high, brightness_low, self._motion_sensor, \
-                self._sonic, self._dry_contact_1_status, self._dry_contact_2_status = tuple(telegram.payload)
-
+            self._current_temperature = telegram.payload[0]
+            brightness_high = telegram.payload[1]
+            brightness_low = telegram.payload[2]
+            self._motion_sensor = telegram.payload[3]
+            self._sonic = telegram.payload[4]
+            self._dry_contact_1_status = telegram.payload[5]
+            self._dry_contact_2_status = telegram.payload[6]
             self._brightness = brightness_high + brightness_low
             self._call_device_updated()
 
-        elif telegram.operate_code == OperateCode.ReadStatusOfUniversalSwitchResponse:
-            _, self._universal_switch_status = tuple(telegram.payload)
+        elif telegram.operate_code == OperateCode.BroadcastSensorStatusAutoResponse:
+            self._current_temperature = telegram.payload[0]
+            brightness_high = telegram.payload[1]
+            brightness_low = telegram.payload[2]
+            self._motion_sensor = telegram.payload[3]
+            self._sonic = telegram.payload[4]
+            self._dry_contact_1_status = telegram.payload[5]
+            self._dry_contact_2_status = telegram.payload[6]
+            self._brightness = brightness_high + brightness_low
             self._call_device_updated()
 
+        elif telegram.operate_code == OperateCode.ReadFloorHeatingStatusResponse:
+            self._current_temperature = telegram.payload[1]
+            self._call_device_updated()
+
+        elif telegram.operate_code == OperateCode.ReadStatusOfUniversalSwitchResponse:
+            switch_number = telegram.payload[0]
+            universal_switch_status = telegram.payload[1]
+
+            if switch_number == self._universal_switch_number:
+                self._universal_switch_status = universal_switch_status
+                self._call_device_updated()
+
         elif telegram.operate_code == OperateCode.BroadcastStatusOfUniversalSwitch:
-            if self._universal_switch_number <= telegram.payload[0]:
+            if self._universal_switch_number is not None and self._universal_switch_number <= telegram.payload[0]:
                 self._universal_switch_status = telegram.payload[self._universal_switch_number]
+                self._call_device_updated()
+
+        elif telegram.operate_code == OperateCode.UniversalSwitchControlResponse:
+            switch_number = telegram.payload[0]
+            universal_switch_status = telegram.payload[1]
+
+            if switch_number == self._universal_switch_number:
+                self._universal_switch_status = universal_switch_status
                 self._call_device_updated()
 
         elif telegram.operate_code == OperateCode.ReadStatusOfChannelsResponse:
@@ -74,6 +111,10 @@ class Sensor(Device):
             rsoc = _ReadStatusOfChannels(self._buspro)
             rsoc.subnet_id, rsoc.device_id = self._device_address
             await rsoc.send()
+        elif self._device is not None and self._device == "dlp":
+            rfhs = _ReadFloorHeatingStatus(self._buspro)
+            rfhs.subnet_id, rfhs.device_id = self._device_address
+            await rfhs.send()
         else:
             rss = _ReadSensorStatus(self._buspro)
             rss.subnet_id, rss.device_id = self._device_address
@@ -83,6 +124,8 @@ class Sensor(Device):
     def temperature(self):
         if self._current_temperature is None:
             return 0
+        if self._device is not None and self._device == "dlp":
+            return self._current_temperature
         return self._current_temperature - 20
 
     @property

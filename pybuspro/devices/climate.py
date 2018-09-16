@@ -38,14 +38,26 @@ class Climate(Device):
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.ReadFloorHeatingStatusResponse:
-            self._temperature_type, self._current_temperature, self._status, self._mode, self._normal_temperature, \
-                self._day_temperature, self._night_temperature, self._away_temperature = tuple(telegram.payload)
-
+            self._temperature_type = telegram.payload[0]
+            self._current_temperature = telegram.payload[1]
+            self._status = telegram.payload[2]
+            self._mode = telegram.payload[3]
+            self._normal_temperature = telegram.payload[4]
+            self._day_temperature = telegram.payload[5]
+            self._night_temperature = telegram.payload[6]
+            self._away_temperature = telegram.payload[7]
             self._call_device_updated()
 
         elif telegram.operate_code == OperateCode.ControlFloorHeatingStatusResponse:
-            success_or_fail, self._temperature_type, self._status, self._mode, self._normal_temperature, \
-                self._day_temperature, self._night_temperature, self._away_temperature = tuple(telegram.payload)
+            success_or_fail = telegram.payload[0]
+            self._temperature_type = telegram.payload[1]
+            self._status = telegram.payload[2]
+            self._mode = telegram.payload[3]
+            self._normal_temperature = telegram.payload[4]
+            self._day_temperature = telegram.payload[5]
+            self._night_temperature = telegram.payload[6]
+            self._away_temperature = telegram.payload[7]
+            self._call_device_updated()
 
             if success_or_fail == SuccessOrFailure.Success:
                 self._call_device_updated()
@@ -61,8 +73,14 @@ class Climate(Device):
             self.unregister_telegram_received_cb(
                 self._telegram_received_control_heating_status_cb, floor_heating_status)
 
-            temperature_type, current_temperature, status, mode, normal_temperature, day_temperature, \
-                night_temperature, away_temperature = tuple(telegram.payload)
+            temperature_type = telegram.payload[0]
+            # current_temperature = telegram.payload[1]
+            status = telegram.payload[2]
+            mode = telegram.payload[3]
+            normal_temperature = telegram.payload[4]
+            day_temperature = telegram.payload[5]
+            night_temperature = telegram.payload[6]
+            away_temperature = telegram.payload[7]
 
             if hasattr(floor_heating_status, 'temperature_type'):
                 if floor_heating_status.temperature_type is not None:
@@ -111,7 +129,7 @@ class Climate(Device):
 
         async def read_current_heating_status():
             if run_from_init:
-                await asyncio.sleep(1)
+                await asyncio.sleep(5)
 
             rfhs = _ReadFloorHeatingStatus(self._buspro)
             rfhs.subnet_id, rfhs.device_id = self._device_address
@@ -150,3 +168,14 @@ class Climate(Device):
     @property
     def away_temperature(self):
         return self._away_temperature
+
+    @property
+    def target_temperature(self):
+        if self._mode == TemperatureMode.Normal.value:
+            return self._normal_temperature
+        elif self._mode == TemperatureMode.Day.value:
+            return self._day_temperature
+        elif self._mode == TemperatureMode.Away.value:
+            return self._away_temperature
+        elif self._mode == TemperatureMode.Night.value:
+            return self._night_temperature

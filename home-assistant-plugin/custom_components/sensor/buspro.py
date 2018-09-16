@@ -14,10 +14,12 @@ from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYP
                                  ILLUMINANCE, TEMPERATURE, CONF_DEVICE_CLASS)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
+
 from ..buspro import DATA_BUSPRO
 
 DEFAULT_CONF_UNIT_OF_MEASUREMENT = ""
 DEFAULT_CONF_DEVICE_CLASS = "None"
+CONF_DEVICE = "device"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,6 +37,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_TYPE): vol.In(SENSOR_TYPES),
                 vol.Optional(CONF_UNIT_OF_MEASUREMENT, default=DEFAULT_CONF_UNIT_OF_MEASUREMENT): cv.string,
                 vol.Optional(CONF_DEVICE_CLASS, default=DEFAULT_CONF_DEVICE_CLASS): cv.string,
+                vol.Optional(CONF_DEVICE, default=None): cv.string,
             })
         ])
 })
@@ -55,6 +58,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         sensor_type = device_config[CONF_TYPE]
         unit_of_measurement = device_config[CONF_UNIT_OF_MEASUREMENT]
         device_class = device_config[CONF_DEVICE_CLASS]
+        device = device_config[CONF_DEVICE]
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
@@ -62,7 +66,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding sensor '{}' with address {}, sensor type '{}' and device_class '{}'".format(
             name, device_address, sensor_type, device_class))
 
-        sensor = Sensor(hdl, device_address, name=name)
+        sensor = Sensor(hdl, device_address, device=device, name=name)
 
         devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class))
 

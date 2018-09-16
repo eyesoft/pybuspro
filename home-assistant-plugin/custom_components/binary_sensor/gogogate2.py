@@ -2,8 +2,8 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.const import (CONF_USERNAME, CONF_PASSWORD, CONF_IP_ADDRESS, CONF_NAME, TEMP_CELSIUS)
-from homeassistant.helpers.entity import Entity
+from homeassistant.components.binary_sensor import (BinarySensorDevice)
+from homeassistant.const import (CONF_USERNAME, CONF_PASSWORD, CONF_IP_ADDRESS, CONF_NAME)
 
 REQUIREMENTS = ['pygogogate2==0.1.1']
 
@@ -40,7 +40,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             raise ValueError(
                 "Username or Password is incorrect or no devices found")
 
-        add_entities(MyGogogate2Sensor(
+        add_entities(MyGogogate2BinarySensor(
             mygogogate2, door, name) for door in devices)
 
     except (TypeError, KeyError, NameError, ValueError) as ex:
@@ -53,7 +53,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             notification_id=NOTIFICATION_ID)
 
 
-class MyGogogate2Sensor(Entity):
+class MyGogogate2BinarySensor(BinarySensorDevice):
     """Representation of a Gogogate2 sensor."""
 
     def __init__(self, mygogogate2, device, name):
@@ -62,7 +62,6 @@ class MyGogogate2Sensor(Entity):
         self.device_id = device['door']
         self._name = name or device['name']
         self._status = device['status']
-        self._temperature = device['temperature']
         self._available = None
 
     @property
@@ -73,7 +72,7 @@ class MyGogogate2Sensor(Entity):
     @property
     def device_class(self):
         """Return the class of this device, from component DEVICE_CLASSES."""
-        return 'temperature'
+        return 'garage_door'
 
     @property
     def available(self):
@@ -81,27 +80,13 @@ class MyGogogate2Sensor(Entity):
         return self._available
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self._temperature
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit this state is expressed in."""
-        return TEMP_CELSIUS
+    def is_on(self):
+        if self._status == "closed":
+            return False
+        else:
+            return True
 
     def update(self):
-        """Update temperature."""
-        try:
-            devices = self.mygogogate2.get_devices()
-            self._available = True
-            if devices is False:
-                raise ValueError(
-                    "Username or Password is incorrect or no devices found")
-
-            for device in devices:
-                if device['door'] == self.device_id:
-                    self._temperature = device['temperature']
-        except (TypeError, KeyError, NameError, ValueError) as ex:
-            _LOGGER.error("%s", ex)
-            self._available = False
+        """Update status."""
+        self._status = self.mygogogate2.get_status(self.device_id)
+        self._available = True

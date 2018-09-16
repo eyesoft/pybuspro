@@ -70,9 +70,12 @@ class OperateCode(Enum):
     ReadStatusOfUniversalSwitchResponse = b'\xE0\x19'
     BroadcastStatusOfUniversalSwitch = b'\xE0\x17'
 
+    BroadcastSensorStatusResponse = b'\x16\x44'
     ReadSensorStatus = b'\x16\x45'
     ReadSensorStatusResponse = b'\x16\x46'
-    BroadcastSensorStatusResponse = b'\x16\x44'
+    BroadcastSensorStatusAutoResponse = b'\x16\x47'
+
+    BroadcastTemperatureResponse = b'\xE3\xE5'
 
     ReadFloorHeatingStatus = b'\x19\x44'
     ReadFloorHeatingStatusResponse = b'\x19\x45'
@@ -97,8 +100,7 @@ class OperateCode(Enum):
     TIME_IF_FROM_LOGIC_OR_SECURITY = b'\xDA\x44'
 
     # b'\x1947'
-    INFO_IF_FROM_12in1__1 = b'\x16\x47'
-    INFO_IF_FROM_12in1__2 = b'\xE3\xE5'
+    # INFO_IF_FROM_12in1__1 = b'\x16\x47'
     INFO_IF_FROM_RELE_10V = b'\xEF\xFF'
     # b'\xF036'
 

@@ -3,6 +3,8 @@ import random
 
 from pybuspro.buspro import Buspro
 from pybuspro.devices.climate import Climate, ControlFloorHeatingStatus
+# noinspection PyProtectedMember
+from pybuspro.devices.control import _ReadStatusOfChannels
 from pybuspro.devices.light import Light
 from pybuspro.devices.scene import Scene
 from pybuspro.devices.sensor import Sensor
@@ -10,13 +12,11 @@ from pybuspro.devices.switch import Switch
 from pybuspro.devices.universal_switch import UniversalSwitch
 from pybuspro.helpers.enums import *
 
-# from pybuspro.devices.control import *
-
 # ip, port = gateway_address
 # subnet_id, device_id, channel = device_address
 
-GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.34.123', 6000), ('192.168.34.121', 6000))
-# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
+# GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.34.123', 6000), ('192.168.34.121', 6000))
+GATEWAY_ADDRESS_SEND_RECEIVE = (('192.168.1.15', 6000), ('', 6000))
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('10.120.1.66', 6000), ('10.120.1.66', 6000))
 # GATEWAY_ADDRESS_SEND_RECEIVE = (('127.0.0.1', 6000), ('127.0.0.1', 6000))
 
@@ -71,15 +71,15 @@ async def main__turn_light_on_off():
     light.register_telegram_received_cb(callback_received_for_light)
 
     await light.set_on(3)
-    print(f"{light.current_brightness} {light.is_on}")
+    print("{} {}".format(light.current_brightness, light.is_on))
 
     await asyncio.sleep(5)
     await light.set_off()
-    print(f"{light.current_brightness} {light.is_on}")
+    print("{} {}".format(light.current_brightness, light.is_on))
 
     await asyncio.sleep(5)
     await light.set_brightness(20, 5)
-    print(f"{light.current_brightness} {light.is_on}")
+    print("{} {}".format(light.current_brightness, light.is_on))
 
     await asyncio.sleep(10)
     await light.set_off()
@@ -146,8 +146,8 @@ async def main__set_uv_switch():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    universal_switch = UniversalSwitch(hdl, (1, 100), 104, "UV Switch")
-    await universal_switch.set_on()
+    universal_switch = UniversalSwitch(hdl, (1, 100), 101, "UV Switch")
+    # await universal_switch.set_on()
     print("==>{}".format(universal_switch.is_on))
 
 
@@ -157,9 +157,12 @@ async def main__read_status():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    # read_status_of_channels = ReadStatusOfChannels(hdl)
-    # read_status_of_channels.subnet_id, read_status_of_channels.device_id = (1, 74)
-    # await read_status_of_channels.send()
+    # 1.80
+    # 1.72
+
+    read_status_of_channels = _ReadStatusOfChannels(hdl)
+    read_status_of_channels.subnet_id, read_status_of_channels.device_id = (1, 72)
+    await read_status_of_channels.send()
 
     # await hdl.network_interface.send_control(read_status_of_channels)
 
@@ -170,16 +173,16 @@ async def main__read_sensor_status():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    # def callback_received_for_sensor_status(telegram):
-    #    print(f'Callback switch: {telegram}')
+    def callback_received_for_sensor_status(telegram):
+        print(f'Callback switch: {telegram}')
 
-    sensor = Sensor(hdl, (1, 130), channel_number=1, name='temp sensor')
-    # sensor.register_telegram_received_cb(callback_received_for_sensor_status)
+    sensor = Sensor(hdl, (1, 10))
+    sensor.register_telegram_received_cb(callback_received_for_sensor_status)
     await sensor.read_sensor_status()
     # print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
     #       f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
-    # await asyncio.sleep(3)
-    # print(sensor.single_channel_is_on)
+    await asyncio.sleep(3)
+    print(sensor.temperature)
 
 
 async def main__climate():
@@ -188,13 +191,16 @@ async def main__climate():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    climate = Climate(hdl, (1, 34))
+    climate = Climate(hdl, (1, 11))
     await climate.read_heating_status()
-    print(f"{climate.temperature}")
+    await asyncio.sleep(3)
+    print(f"{climate.is_on}")
 
-    climate_control = ControlFloorHeatingStatus()
-    climate_control.away_temperature = 15
-    await climate.control_heating_status(climate_control)
+    # climate_control = ControlFloorHeatingStatus()
+    # climate_control.away_temperature = 15
+    # climate_control.normal_temperature = 22
+    # climate_control.status = OnOffStatus.ON
+    # await climate.control_heating_status(climate_control)
 
 
 # noinspection PyUnusedLocal
@@ -285,8 +291,8 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__turn_switch_on_off())
     # loop.run_until_complete(main__run_scene())
     # loop.run_until_complete(main__activate_scene())
-    # loop.run_until_complete(main__read_status())
-    loop.run_until_complete(main__set_uv_switch())
+    loop.run_until_complete(main__read_status())
+    # loop.run_until_complete(main__set_uv_switch())
     # loop.run_until_complete(main__read_sensor_status())
     # loop.run_until_complete(main__climate())
     # loop.run_until_complete(main__kino())
