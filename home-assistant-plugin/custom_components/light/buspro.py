@@ -59,7 +59,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding light '{}' with address {} and channel number {}".format(name, device_address,
                                                                                        channel_number))
 
-        light = Light(hdl, device_address, channel_number, name)
+        light = Light(hdl, device_address, channel_number, name, delay_read_current_state_seconds=1)
         devices.append(BusproLight(hass, light, device_running_time, dimmable))
 
     async_add_entites(devices)

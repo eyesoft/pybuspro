@@ -43,7 +43,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding switch '{}' with address {} and channel number {}".format(name, device_address,
                                                                                         channel_number))
 
-        switch = Switch(hdl, device_address, channel_number, name)
+        switch = Switch(hdl, device_address, channel_number, name, delay_read_current_state_seconds=1)
 
         devices.append(BusproSwitch(hass, switch))
 

@@ -66,7 +66,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding sensor '{}' with address {}, sensor type '{}' and device_class '{}'".format(
             name, device_address, sensor_type, device_class))
 
-        sensor = Sensor(hdl, device_address, device=device, name=name)
+        sensor = Sensor(hdl, device_address, device=device, name=name, delay_read_current_state_seconds=1)
 
         devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class))
 

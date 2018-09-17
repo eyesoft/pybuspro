@@ -80,7 +80,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
                           format(name, device_address, sensor_type, device_class))
 
         sensor = Sensor(hdl, device_address, universal_switch_number=universal_switch_number,
-                        channel_number=channel_number, name=name)
+                        channel_number=channel_number, name=name, delay_read_current_state_seconds=1)
 
         devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class))
 

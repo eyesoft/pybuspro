@@ -101,6 +101,7 @@ sensor:
         type: temperature
         unit_of_measurement: °C
         device_class: temperature
+        device: dlp
       - address: 1.74
         name: Front Door
         type: illuminance
@@ -119,6 +120,8 @@ Configuration variables:
   + **unit_of_measurement** _(string) (Optional)_: text to be displayed as unit of measurement
   + **device_class** _(string) (Optional)_: HASS device class e.g., "temperature" 
   (https://www.home-assistant.io/components/sensor/)
+  + **device** _(string) (Optional)_: The type of sensor device:
+    + dlp 
 
 
 
@@ -177,6 +180,7 @@ climate:
     devices:
       - address: 1.74
         name: Living Room
+        supports_operation_mode: False
       - address: 1.74
         name: Front Door
 ```
@@ -186,6 +190,8 @@ Configuration variables:
 + **devices** _(Required)_: A list of devices to set up
   + **address** _(string) (Required)_: The address of the sensor device on the format `<subnet ID>.<device ID>`
   + **name** _(string) (Required)_: The name of the device
+  + **supports_operation_mode** _(boolean) (Optional)_: Does the climate control support change of operation mode? 
+  Default is True if not set.
 
 
 

@@ -57,7 +57,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
         _LOGGER.debug("Adding climate '{}' with address {}".format(name, device_address))
 
-        climate = Climate(hdl, device_address, name)
+        climate = Climate(hdl, device_address, name, delay_read_current_state_seconds=5)
 
         devices.append(BusproClimate(hass, climate, supports_operation_mode))
 

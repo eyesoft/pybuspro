@@ -5,7 +5,7 @@ from ..helpers.generics import Generics
 
 
 class Switch(Device):
-    def __init__(self, buspro, device_address, channel_number, name=""):
+    def __init__(self, buspro, device_address, channel_number, name="", delay_read_current_state_seconds=0):
         super().__init__(buspro, device_address, name)
         # device_address = (subnet_id, device_id, channel_number)
 
@@ -14,7 +14,7 @@ class Switch(Device):
         self._channel = channel_number
         self._brightness = 0
         self.register_telegram_received_cb(self._telegram_received_cb)
-        self._call_read_current_status_of_channels(run_from_init=True)
+        self._call_read_current_status_of_channels(delay_read_current_state_seconds)
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:

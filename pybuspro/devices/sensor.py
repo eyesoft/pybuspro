@@ -7,7 +7,8 @@ from ..helpers.enums import *
 
 
 class Sensor(Device):
-    def __init__(self, buspro, device_address, universal_switch_number=None, channel_number=None, device=None, name=""):
+    def __init__(self, buspro, device_address, universal_switch_number=None, channel_number=None, device=None, name="",
+                 delay_read_current_state_seconds=0):
         super().__init__(buspro, device_address, name)
 
         self._buspro = buspro
@@ -27,7 +28,7 @@ class Sensor(Device):
         self._channel_status = 0
 
         self.register_telegram_received_cb(self._telegram_received_cb)
-        self._call_read_current_status_of_sensor(run_from_init=True)
+        self._call_read_current_status_of_sensor(delay_read_current_state_seconds)
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.ReadSensorStatusResponse:
@@ -169,11 +170,11 @@ class Sensor(Device):
         else:
             return False
 
-    def _call_read_current_status_of_sensor(self, run_from_init=False):
+    def _call_read_current_status_of_sensor(self, delay_read_current_state_seconds=0):
 
         async def read_current_status_of_sensor():
-            if run_from_init:
-                await asyncio.sleep(1)
+            if delay_read_current_state_seconds > 0:
+                await asyncio.sleep(delay_read_current_state_seconds)
             await self.read_sensor_status()
 
         asyncio.ensure_future(read_current_status_of_sensor(), loop=self._buspro.loop)
