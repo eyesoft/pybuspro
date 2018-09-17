@@ -1,56 +1,28 @@
+"""
+Support for Gogogate2 garage Doors.
+
+For more details about this platform, please refer to the documentation
+https://home-assistant.io/components/sensor.gogogate2/
+"""
 import logging
 
-import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
-from homeassistant.const import (CONF_USERNAME, CONF_PASSWORD, CONF_IP_ADDRESS, CONF_NAME, TEMP_CELSIUS)
+from homeassistant.const import (CONF_NAME, TEMP_CELSIUS)
 from homeassistant.helpers.entity import Entity
-
-REQUIREMENTS = ['pygogogate2==0.1.1']
+from ..gogogate2 import DATA_GOGOGATE2, DEFAULT_NAME, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_NAME = 'gogogate2'
 
-NOTIFICATION_ID = 'gogogate2_notification'
-NOTIFICATION_TITLE = 'Gogogate2 Cover Setup'
-
-SENSOR_SCHEMA = vol.Schema({
-    vol.Required(CONF_IP_ADDRESS): cv.string,
-    vol.Required(CONF_PASSWORD): cv.string,
-    vol.Required(CONF_USERNAME): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-})
-
-
-# noinspection PyUnusedLocal,PyUnresolvedReferences,PyPep8Naming
+# noinspection PyUnusedLocal
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the Gogogate2 component."""
-    from pygogogate2 import Gogogate2API as pygogogate2
 
-    ip_address = config.get(CONF_IP_ADDRESS)
     name = config.get(CONF_NAME)
-    password = config.get(CONF_PASSWORD)
-    username = config.get(CONF_USERNAME)
+    mygogogate2_list = hass.data[DATA_GOGOGATE2]
+    mygogogate2 = hass.data[DOMAIN]
 
-    mygogogate2 = pygogogate2(username, password, ip_address)
-
-    try:
-        devices = mygogogate2.get_devices()
-        if devices is False:
-            raise ValueError(
-                "Username or Password is incorrect or no devices found")
-
-        add_entities(MyGogogate2Sensor(
-            mygogogate2, door, name) for door in devices)
-
-    except (TypeError, KeyError, NameError, ValueError) as ex:
-        _LOGGER.error("%s", ex)
-        hass.components.persistent_notification.create(
-            'Error: {}<br />'
-            'You will need to restart hass after fixing.'
-            ''.format(ex),
-            title=NOTIFICATION_TITLE,
-            notification_id=NOTIFICATION_ID)
+    add_entities(MyGogogate2Sensor(
+        mygogogate2, door, name) for door in mygogogate2_list)
 
 
 class MyGogogate2Sensor(Entity):
@@ -92,16 +64,21 @@ class MyGogogate2Sensor(Entity):
 
     def update(self):
         """Update temperature."""
+        self._temperature = self._get_temperature(self.device_id)
+        self._available = True
+
+    def _get_temperature(self, device_id):
+        temperature = None
+
         try:
             devices = self.mygogogate2.get_devices()
-            self._available = True
             if devices is False:
-                raise ValueError(
-                    "Username or Password is incorrect or no devices found")
+                return None
 
             for device in devices:
-                if device['door'] == self.device_id:
-                    self._temperature = device['temperature']
+                if device['door'] == device_id:
+                    temperature = device['temperature']
         except (TypeError, KeyError, NameError, ValueError) as ex:
             _LOGGER.error("%s", ex)
-            self._available = False
+
+        return temperature

@@ -2,12 +2,6 @@
 
 ##configuration.yaml
 
-
-
-
-
-
-
 ####Component
 
 To enable the use of the Buspro component in your installation, add the following to your configuration.yaml file:
@@ -24,13 +18,6 @@ Configuration variables:
 + **host** _(string) (Required)_: The ip address of your Buspro Ethernet gateway
 + **port** _(int) (Required)_: The UDP port to your Buspro Ethernet gateway
 + **name** _(string) (Optional)_: The name of the installation
-
-
-
-
-
-
-
 
 ####Light platform
    
@@ -58,11 +45,6 @@ Configuration variables:
     + **running_time** _(int) (Optional)_: The running time in seconds for the device. If omitted, the default running time for all devices is used.
     + **dimmable** _(boolean) (Optional)_: Is the device dimmable? Default is True. 
 
-
-
-
-
-
 ####Switch platform
 
 To use your Buspro switch in your installation, add the following to your configuration.yaml file: 
@@ -82,11 +64,6 @@ Configuration variables:
 + **devices** _(Required)_: A list of devices to set up
   + **X.X.X** _(Required)_: The address of the device on the format `<subnet ID>.<device ID>.<channel number>`
     + **name** _(string) (Required)_: The name of the device
-
-
-
-
-
 
 ####Sensor platform
 
@@ -122,11 +99,6 @@ Configuration variables:
   (https://www.home-assistant.io/components/sensor/)
   + **device** _(string) (Optional)_: The type of sensor device:
     + dlp 
-
-
-
-
-
 
 ####Binary sensor platform
 
@@ -164,12 +136,6 @@ Configuration variables:
   + **device_class** _(string) (Optional)_: HASS device class e.g., "motion" 
   (https://www.home-assistant.io/components/binary_sensor/)
 
-
-
-
-
-
-
 ####Climate platform
 
 To use your Buspro panel climate control in your installation, add the following to your configuration.yaml file: 
@@ -192,14 +158,6 @@ Configuration variables:
   + **name** _(string) (Required)_: The name of the device
   + **supports_operation_mode** _(boolean) (Optional)_: Does the climate control support change of operation mode? 
   Default is True if not set.
-
-
-
-
-
-
-
-
     
 ---
 ##Services
@@ -221,4 +179,45 @@ Service Data: {"address": [1,74], "scene_address": [3,5]}
 Domain: buspro
 Service: set_universal_switch
 Service Data: {"address": [1,74], "switch_number": 100, "status": 1}
+```
+
+# Configuration of GoGoGate2 plug-in
+
+##configuration.yaml
+
+####Component
+
+To enable the use of the GoGoGate2 component in your installation, add the following to your configuration.yaml file:
+
+```yaml
+gogogate2:
+  username: MY_USERNAME
+  password: MY_PASSWORD
+  ip_address: IP_ADDRESS
+  name: My Gate
+```
+
+Configuration variables:
+
++ **username** _(string) (Required)_: Your Gogogate2 account username.
++ **password** _(string) (Required)_: Your Gogogate2 account password.
++ **ip_address** _(string) (Required)_: The IP Address of your Gogogate2 device.
++ **name** _(string) (Optional)_: Allows you to override the default name. Default value: gogogate2
+
+####Sensor platform
+
+To use your GoGoGate2 temperature sensor in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+sensor:
+  - platform: gogogate2
+```
+
+####Binary sensor platform
+
+To use your GoGoGate2 opened/closed binary sensor in your installation, add the following to your configuration.yaml file: 
+
+```yaml
+binary_sensor:
+  - platform: gogogate2
 ```
