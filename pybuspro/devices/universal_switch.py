@@ -15,7 +15,7 @@ class UniversalSwitch(Device):
         self._switch_number = switch_number
         self._switch_status = SwitchStatusOnOff.OFF
         self.register_telegram_received_cb(self._telegram_received_cb)
-        self._call_read_current_status_of_universal_switch(delay_read_current_state_seconds)
+        self._call_read_current_status_of_universal_switch(run_from_init=True)
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.UniversalSwitchControlResponse:
@@ -56,11 +56,11 @@ class UniversalSwitch(Device):
         us.switch_status = self._switch_status
         await us.send()
 
-    def _call_read_current_status_of_universal_switch(self, delay_read_current_state_seconds=0):
+    def _call_read_current_status_of_universal_switch(self, run_from_init=False):
 
         async def read_current_state_of_universal_switch():
-            if delay_read_current_state_seconds > 0:
-                await asyncio.sleep(delay_read_current_state_seconds)
+            if run_from_init:
+                await asyncio.sleep(1)
 
             read_status_of_universal_switch = _ReadStatusOfUniversalSwitch(self._buspro)
             read_status_of_universal_switch.subnet_id, read_status_of_universal_switch.device_id = self._device_address

@@ -18,7 +18,7 @@ class ControlFloorHeatingStatus:
 
 
 class Climate(Device):
-    def __init__(self, buspro, device_address, name="", delay_read_current_state_seconds=0):
+    def __init__(self, buspro, device_address, name=""):
         super().__init__(buspro, device_address, name)
 
         self._buspro = buspro
@@ -34,7 +34,7 @@ class Climate(Device):
         self._away_temperature = None
 
         self.register_telegram_received_cb(self._telegram_received_cb)
-        self._call_read_current_heating_status(delay_read_current_state_seconds)
+        self._call_read_current_heating_status(run_from_init=True)
 
     def _telegram_received_cb(self, telegram):
         if telegram.operate_code == OperateCode.ReadFloorHeatingStatusResponse:
@@ -61,6 +61,11 @@ class Climate(Device):
 
             if success_or_fail == SuccessOrFailure.Success:
                 self._call_device_updated()
+
+        elif telegram.operate_code == OperateCode.BroadcastTemperatureResponse:
+            # channel_number = telegram.payload[0]
+            self._current_temperature = telegram.payload[1]
+            self._call_device_updated()
 
     async def read_heating_status(self):
         rfhs = _ReadFloorHeatingStatus(self._buspro)
@@ -125,11 +130,11 @@ class Climate(Device):
         rfhs.subnet_id, rfhs.device_id = self._device_address
         await rfhs.send()
 
-    def _call_read_current_heating_status(self, delay_read_current_state_seconds=0):
+    def _call_read_current_heating_status(self, run_from_init=False):
 
         async def read_current_heating_status():
-            if delay_read_current_state_seconds > 0:
-                await asyncio.sleep(delay_read_current_state_seconds)
+            if run_from_init:
+                await asyncio.sleep(5)
 
             rfhs = _ReadFloorHeatingStatus(self._buspro)
             rfhs.subnet_id, rfhs.device_id = self._device_address

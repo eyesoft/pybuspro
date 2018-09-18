@@ -25,6 +25,12 @@ def callback_received_for_all_messages(telegram):
     print(f'Callback all messages: {telegram}')
 
 
+def callback_received_for_all_messages_to_file(telegram):
+    print(f'Callback all messages: {telegram}')
+    with open('telegrams.txt', 'a') as the_file:
+        the_file.write('{}\n\n'.format(str(telegram)))
+
+
 async def main__send_and_receive_random_messages():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
@@ -157,9 +163,6 @@ async def main__read_status():
     hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
-    # 1.80
-    # 1.72
-
     read_status_of_channels = _ReadStatusOfChannels(hdl)
     read_status_of_channels.subnet_id, read_status_of_channels.device_id = (1, 72)
     await read_status_of_channels.send()
@@ -170,19 +173,44 @@ async def main__read_status():
 async def main__read_sensor_status():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
-    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
+    # hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
     def callback_received_for_sensor_status(telegram):
-        print(f'Callback switch: {telegram}')
+        print(f'==> 1: Callback switch: {telegram}')
 
-    sensor = Sensor(hdl, (1, 10))
+    async def callback_received_for_sensor_updated(device):
+        print(f'==> 2: Callback switch: {device._universal_switch_status}')
+
+    sensor = Sensor(hdl, (1, 49), universal_switch_number=210)
+    # sensor = Sensor(hdl, (1, 100), universal_switch_number=101)
     sensor.register_telegram_received_cb(callback_received_for_sensor_status)
+    sensor.register_device_updated_cb(callback_received_for_sensor_updated)
+    print("START")
     await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    await asyncio.sleep(1)
+    await sensor.read_sensor_status()
+    print("KJØRT")
     # print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
     #       f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
-    await asyncio.sleep(3)
-    print(sensor.temperature)
+    # await asyncio.sleep(3)
+    # print(sensor.temperature)
 
 
 async def main__climate():
@@ -266,6 +294,15 @@ async def lys_kino():
     await switch.set_off()
 
 
+async def receive_telegrams():
+    loop__ = asyncio.get_event_loop()
+    hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
+    hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages_to_file)
+    await hdl.start()
+
+
+
+
 '''
 async def main__run_scene():
     loop__ = asyncio.get_event_loop()
@@ -291,11 +328,12 @@ if __name__ == "__main__":
     # loop.run_until_complete(main__turn_switch_on_off())
     # loop.run_until_complete(main__run_scene())
     # loop.run_until_complete(main__activate_scene())
-    loop.run_until_complete(main__read_status())
+    # loop.run_until_complete(main__read_status())
     # loop.run_until_complete(main__set_uv_switch())
-    # loop.run_until_complete(main__read_sensor_status())
+    loop.run_until_complete(main__read_sensor_status())
     # loop.run_until_complete(main__climate())
     # loop.run_until_complete(main__kino())
     # loop.run_until_complete(lys_garasje())
     # loop.run_until_complete(lys_kino())
+    # loop.run_until_complete(receive_telegrams())
     loop.run_forever()

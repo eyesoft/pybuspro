@@ -1,54 +1,63 @@
+import traceback
 from struct import *
+
 from crc16 import *
+
 from .enums import DeviceType
 from .generics import Generics
-from ..devices.control import *
 from ..core.telegram import Telegram
+from ..devices.control import *
 
 
 class TelegramHelper:
 
     def build_telegram_from_udp_data(self, data, address):
         if not data:
+            print("build_telegram_from_udp_data: not data")
             return None
 
-        index_length_of_data_package = 16
-        index_original_subnet_id = 17
-        index_original_device_id = 18
-        index_original_device_type = 19
-        index_operate_code = 21
-        index_target_subnet_id = 23
-        index_target_device_id = 24
-        index_content = 25
-        length_of_data_package = data[index_length_of_data_package]
+        try:
+            index_length_of_data_package = 16
+            index_original_subnet_id = 17
+            index_original_device_id = 18
+            index_original_device_type = 19
+            index_operate_code = 21
+            index_target_subnet_id = 23
+            index_target_device_id = 24
+            index_content = 25
+            length_of_data_package = data[index_length_of_data_package]
 
-        source_device_id = data[index_original_device_id]
-        content_length = length_of_data_package - 1 - 1 - 1 - 2 - 2 - 1 - 1 - 1 - 1
-        source_subnet_id = data[index_original_subnet_id]
-        source_device_type_hex = data[index_original_device_type:index_original_device_type + 2]
-        operate_code_hex = data[index_operate_code:index_operate_code + 2]
-        target_subnet_id = data[index_target_subnet_id]
-        target_device_id = data[index_target_device_id]
-        content = data[index_content:index_content + content_length]
-        crc = data[-2:]
+            source_device_id = data[index_original_device_id]
+            content_length = length_of_data_package - 1 - 1 - 1 - 2 - 2 - 1 - 1 - 1 - 1
+            source_subnet_id = data[index_original_subnet_id]
+            source_device_type_hex = data[index_original_device_type:index_original_device_type + 2]
+            operate_code_hex = data[index_operate_code:index_operate_code + 2]
+            target_subnet_id = data[index_target_subnet_id]
+            target_device_id = data[index_target_device_id]
+            content = data[index_content:index_content + content_length]
+            crc = data[-2:]
 
-        generics = Generics()
+            generics = Generics()
 
-        telegram = Telegram()
-        telegram.source_device_type = generics.get_enum_value(DeviceType, source_device_type_hex)
-        telegram.udp_data = data
-        telegram.source_address = (source_subnet_id, source_device_id)
-        telegram.operate_code = generics.get_enum_value(OperateCode, operate_code_hex)
-        telegram.target_address = (target_subnet_id, target_device_id)
-        telegram.udp_address = address
-        telegram.payload = generics.hex_to_integer_list(content)
-        telegram.crc = crc
+            telegram = Telegram()
+            telegram.source_device_type = generics.get_enum_value(DeviceType, source_device_type_hex)
+            telegram.udp_data = data
+            telegram.source_address = (source_subnet_id, source_device_id)
+            telegram.operate_code = generics.get_enum_value(OperateCode, operate_code_hex)
+            telegram.target_address = (target_subnet_id, target_device_id)
+            telegram.udp_address = address
+            telegram.payload = generics.hex_to_integer_list(content)
+            telegram.crc = crc
 
-        crc_check_pass = self._check_crc(telegram)
-        if not crc_check_pass:
+            crc_check_pass = self._check_crc(telegram)
+            if not crc_check_pass:
+                print("crc check failed")
+                return None
+
+            return telegram
+        except Exception as e:
+            print("error building telegram: {}".format(traceback.format_exc()))
             return None
-
-        return telegram
 
     @staticmethod
     def replace_none_values(telegram: Telegram):

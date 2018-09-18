@@ -54,8 +54,8 @@ class Buspro:
     # noinspection PyUnusedLocal
     async def start(self, state_updater=False):  # , daemon_mode=False):
         self.network_interface = NetworkInterface(self, self.gateway_address_send_receive)
-        await self.network_interface.start()
         self.network_interface.register_callback(self._callback_all_messages)
+        await self.network_interface.start()
 
         if state_updater:
             self.state_updater = StateUpdater(self)

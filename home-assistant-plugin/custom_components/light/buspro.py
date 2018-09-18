@@ -12,6 +12,7 @@ import voluptuous as vol
 from homeassistant.components.light import Light, PLATFORM_SCHEMA, SUPPORT_BRIGHTNESS, ATTR_BRIGHTNESS
 from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
+
 from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,7 +60,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding light '{}' with address {} and channel number {}".format(name, device_address,
                                                                                        channel_number))
 
-        light = Light(hdl, device_address, channel_number, name, delay_read_current_state_seconds=1)
+        light = Light(hdl, device_address, channel_number, name)
         devices.append(BusproLight(hass, light, device_running_time, dimmable))
 
     async_add_entites(devices)

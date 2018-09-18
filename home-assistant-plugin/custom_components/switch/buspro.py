@@ -12,6 +12,7 @@ import voluptuous as vol
 from homeassistant.components.switch import SwitchDevice, PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
+
 from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         _LOGGER.debug("Adding switch '{}' with address {} and channel number {}".format(name, device_address,
                                                                                         channel_number))
 
-        switch = Switch(hdl, device_address, channel_number, name, delay_read_current_state_seconds=1)
+        switch = Switch(hdl, device_address, channel_number, name)
 
         devices.append(BusproSwitch(hass, switch))
 

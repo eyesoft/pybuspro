@@ -67,6 +67,10 @@ class _Control:
 
     async def send(self):
         telegram = self.telegram
+
+        # if telegram.target_address[1] == 100:
+        #     print("==== {}".format(str(telegram)))
+
         await self._buspro.network_interface.send_telegram(telegram)
 
 

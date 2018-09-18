@@ -15,9 +15,13 @@ class Light(Device):
         self._brightness = 0
         self._previous_brightness = None
         self.register_telegram_received_cb(self._telegram_received_cb)
-        self._call_read_current_status_of_channels(delay_read_current_state_seconds)
+        self._call_read_current_status_of_channels(run_from_init=True)
 
     def _telegram_received_cb(self, telegram):
+
+        # if telegram.target_address[1] == 72:
+        #    print("==== {}".format(str(telegram)))
+
         if telegram.operate_code == OperateCode.SingleChannelControlResponse:
             channel = telegram.payload[0]
             # success = telegram.payload[1]
