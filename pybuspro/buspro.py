@@ -83,15 +83,15 @@ class Buspro:
 
         for telegram_received_cb in self._telegram_received_cbs:
             device_address = telegram_received_cb['device_address']
-            # Sender callback kun for oppgitt kanal
-            if device_address == telegram.source_address and \
-                    telegram.operate_code is not OperateCode.TIME_IF_FROM_LOGIC_OR_SECURITY:
 
-                postfix = telegram_received_cb['postfix']
-                if postfix is not None:
-                    telegram_received_cb['callback'](telegram, postfix)
-                else:
-                    telegram_received_cb['callback'](telegram)
+            # Sender callback kun for oppgitt kanal
+            if device_address == telegram.target_address or device_address == telegram.source_address:
+                if telegram.operate_code is not OperateCode.TIME_IF_FROM_LOGIC_OR_SECURITY:
+                    postfix = telegram_received_cb['postfix']
+                    if postfix is not None:
+                        telegram_received_cb['callback'](telegram, postfix)
+                    else:
+                        telegram_received_cb['callback'](telegram)
 
     async def _stop_network_interface(self):
         if self.network_interface is not None:
