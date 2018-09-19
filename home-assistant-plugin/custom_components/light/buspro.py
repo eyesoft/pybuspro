@@ -17,7 +17,6 @@ from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
 
-ENABLE_EXPERIMENTAL_PREVIOUS_BRIGHTNESS = True
 DEFAULT_DEVICE_RUNNING_TIME = 0
 DEFAULT_PLATFORM_RUNNING_TIME = 0
 DEFAULT_DIMMABLE = True
@@ -126,9 +125,8 @@ class BusproLight(Light):
         """Instruct the light to turn on."""
         brightness = int(kwargs.get(ATTR_BRIGHTNESS, 255) / 255 * 100)
 
-        if ENABLE_EXPERIMENTAL_PREVIOUS_BRIGHTNESS:
-            if not self.is_on and self._device.previous_brightness is not None and brightness == 100:
-                brightness = self._device.previous_brightness
+        if not self.is_on and self._device.previous_brightness is not None and brightness == 100:
+            brightness = self._device.previous_brightness
 
         await self._device.set_brightness(brightness, self._running_time)
 
