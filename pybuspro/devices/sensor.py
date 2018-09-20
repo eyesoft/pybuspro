@@ -141,7 +141,7 @@ class Sensor(Device):
 
     @property
     def movement(self):
-        if self._motion_sensor == 1:
+        if self._motion_sensor == 1 and self._sonic == 1:
             return True
         else:
             return False
