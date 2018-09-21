@@ -24,6 +24,7 @@ CONF_DRY_CONTACT_1 = 'dry_contact_1'
 CONF_DRY_CONTACT_2 = 'dry_contact_2'
 CONF_UNIVERSAL_SWITCH = 'universal_switch'
 CONF_SINGLE_CHANNEL = 'single_channel'
+CONF_DRY_CONTACT = 'dry_contact'
 
 SENSOR_TYPES = {
     CONF_MOTION,
@@ -31,6 +32,7 @@ SENSOR_TYPES = {
     CONF_DRY_CONTACT_2,
     CONF_UNIVERSAL_SWITCH,
     CONF_SINGLE_CHANNEL,
+    CONF_DRY_CONTACT,
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -62,6 +64,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         device_class = device_config[CONF_DEVICE_CLASS]
         universal_switch_number = None
         channel_number = None
+        switch_number = None
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
@@ -75,12 +78,16 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
             channel_number = int(address2[2])
             _LOGGER.debug("Adding binary sensor '{}' with address {}, channel_number {}, sensor type '{}' and "
                           "device class '{}'".format(name, device_address, channel_number, sensor_type, device_class))
+        elif sensor_type == CONF_DRY_CONTACT:
+            switch_number = int(address2[2])
+            _LOGGER.debug("Adding binary sensor '{}' with address {}, switch_number '{}' and "
+                          "device class '{}'".format(name, device_address, switch_number, device_class))
         else:
             _LOGGER.debug("Adding binary sensor '{}' with address {}, sensor type '{}' and device class '{}'".
                           format(name, device_address, sensor_type, device_class))
 
         sensor = Sensor(hdl, device_address, universal_switch_number=universal_switch_number,
-                        channel_number=channel_number, name=name)
+                        channel_number=channel_number, switch_number=switch_number, name=name)
 
         devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class))
 
@@ -144,3 +151,5 @@ class BusproBinarySensor(BinarySensorDevice):
             return self._device.universal_switch_is_on
         if self._sensor_type == CONF_SINGLE_CHANNEL:
             return self._device.single_channel_is_on
+        if self._sensor_type == CONF_DRY_CONTACT:
+            return self._device.switch_status

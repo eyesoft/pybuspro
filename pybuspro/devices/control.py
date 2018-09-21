@@ -47,6 +47,10 @@ class _Control:
             operate_code = OperateCode.ReadFloorHeatingStatus
             payload = []
 
+        elif type(control) == _ReadDryContactStatus:
+            operate_code = OperateCode.ReadDryContactStatus
+            payload = [1, control.switch_number]
+
         elif type(control) == _ControlFloorHeatingStatus:
             operate_code = OperateCode.ControlFloorHeatingStatus
             payload = [control.temperature_type, control.status, control.mode, control.normal_temperature,
@@ -145,3 +149,9 @@ class _ControlFloorHeatingStatus(_Control):
         self.night_temperature = None
         self.away_temperature = None
 
+
+class _ReadDryContactStatus(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+
+        self.switch_number = None

@@ -82,6 +82,9 @@ class OperateCode(Enum):
     ControlFloorHeatingStatus = b'\x19\x46'
     ControlFloorHeatingStatusResponse = b'\x19\x47'
 
+    ReadDryContactStatus = b'\x15\xCE'
+    ReadDryContactStatusResponse = b'\x15\xCF'
+
     """
     # 
     # 
