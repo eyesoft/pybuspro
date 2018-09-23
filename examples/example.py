@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import random
 
 from pybuspro.buspro import Buspro
@@ -177,36 +178,43 @@ async def main__read_sensor_status():
     await hdl.start()
 
     def callback_received_for_sensor_status(telegram):
-        print(f'==> 1: Callback switch: {telegram}')
+        print(f'==> 1: {datetime.datetime.now()} Callback telegram: {telegram}')
 
     async def callback_received_for_sensor_updated(device):
-        print(f'==> 2: Callback switch: {device._universal_switch_status}')
+        print(f'==> 2: Callback sonic: {device._sonic}')
+        print(f'==> 2: Callback motion sensor: {device._motion_sensor}')
 
-    sensor = Sensor(hdl, (1, 49), universal_switch_number=210)
+        if device._sonic == 1 or device._motion_sensor == 1:
+            print(f'==> 2: Bevegelse')
+        if device._sonic == 0 and device._motion_sensor == 0:
+            print(f'==> 2: Ingen bevegelse')
+
+    sensor = Sensor(hdl, (1, 50))
     # sensor = Sensor(hdl, (1, 100), universal_switch_number=101)
     sensor.register_telegram_received_cb(callback_received_for_sensor_status)
     sensor.register_device_updated_cb(callback_received_for_sensor_updated)
-    print("START")
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    await asyncio.sleep(1)
-    await sensor.read_sensor_status()
-    print("KJØRT")
+
+    # print("START")
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # await asyncio.sleep(1)
+    # await sensor.read_sensor_status()
+    # print("KJØRT")
     # print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
     #       f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
     # await asyncio.sleep(3)
