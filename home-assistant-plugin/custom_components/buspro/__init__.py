@@ -105,7 +105,7 @@ class BusproModule:
     def init_hdl(self):
         """Initialize of Buspro object."""
         # noinspection PyUnresolvedReferences
-        from .pybuspro.buspro import Buspro
+        from ..pybuspro.buspro import Buspro
         self.hdl = Buspro(self.gateway_address_send_receive, self.hass.loop)
         # self.hdl.register_telegram_received_all_messages_cb(self.telegram_received_cb)
 
@@ -123,7 +123,7 @@ class BusproModule:
     async def service_activate_scene(self, call):
         """Service for activatign a __scene"""
         # noinspection PyUnresolvedReferences
-        from .pybuspro.devices.scene import Scene
+        from ..pybuspro.devices.scene import Scene
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_scene_address = call.data.get(SERVICE_BUSPRO_ATTR_SCENE_ADDRESS)
@@ -133,7 +133,7 @@ class BusproModule:
     async def service_send_message(self, call):
         """Service for send an arbitrary message"""
         # noinspection PyUnresolvedReferences
-        from .pybuspro.devices.generic import Generic
+        from ..pybuspro.devices.generic import Generic
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_payload = call.data.get(SERVICE_BUSPRO_ATTR_PAYLOAD)
@@ -143,7 +143,7 @@ class BusproModule:
 
     async def service_set_universal_switch(self, call):
         # noinspection PyUnresolvedReferences
-        from .pybuspro.devices.universal_switch import UniversalSwitch
+        from ..pybuspro.devices.universal_switch import UniversalSwitch
 
         attr_address = call.data.get(SERVICE_BUSPRO_ATTR_ADDRESS)
         attr_switch_number = call.data.get(SERVICE_BUSPRO_ATTR_SWITCH_NUMBER)
