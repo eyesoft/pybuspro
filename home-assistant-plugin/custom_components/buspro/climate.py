@@ -17,9 +17,9 @@ from homeassistant.core import callback
 # from homeassistant.helpers.entity import Entity
 from ..buspro import DATA_BUSPRO
 # noinspection PyUnresolvedReferences
-from ..pybuspro.devices.climate import ControlFloorHeatingStatus
+from pybuspro.devices.climate import ControlFloorHeatingStatus
 # noinspection PyUnresolvedReferences
-from ..pybuspro.helpers.enums import OnOffStatus
+from pybuspro.helpers.enums import OnOffStatus
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro switch devices."""
     # noinspection PyUnresolvedReferences
-    from ..pybuspro.devices import Climate
+    from pybuspro.devices import Climate
 
     hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
