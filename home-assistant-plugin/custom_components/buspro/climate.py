@@ -6,12 +6,15 @@ https://home-assistant.io/components/...
 """
 
 import logging
+from typing import Optional, List
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.climate import (PLATFORM_SCHEMA, ClimateDevice)
-from homeassistant.components.climate.const import (SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE, STATE_HEAT)
-from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, TEMP_CELSIUS, ATTR_TEMPERATURE, STATE_OFF)
+from homeassistant.components.climate.const import (
+    SUPPORT_PRESET_MODE, SUPPORT_TARGET_TEMPERATURE,
+    HVAC_MODE_HEAT, HVAC_MODE_OFF)
+from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, TEMP_CELSIUS, ATTR_TEMPERATURE)
 from homeassistant.core import callback
 
 # from homeassistant.helpers.entity import Entity
@@ -89,14 +92,6 @@ class BusproClimate(ClimateDevice):
         self._device.register_device_updated_cb(after_update_callback)
 
     @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        support = SUPPORT_TARGET_TEMPERATURE
-        if self._supports_operation_mode:
-            support |= SUPPORT_OPERATION_MODE
-        return support
-
-    @property
     def should_poll(self):
         """No polling needed within Buspro."""
         return False
@@ -131,47 +126,62 @@ class BusproClimate(ClimateDevice):
         return target_temperature
 
     @property
-    def current_operation(self):
-        """Return current operation."""
-        is_on = self._is_on
-        if is_on is None:
-            is_on = self._device.is_on
+    def supported_features(self):
+        """Return the list of supported features."""
+        support = SUPPORT_TARGET_TEMPERATURE
+        if self._supports_operation_mode:
+            support |= SUPPORT_PRESET_MODE
+        return support
 
-        if is_on:
-            return STATE_HEAT
+    @property
+    def preset_mode(self) -> Optional[str]:
+        """Return the current preset mode, e.g., home, away, temp.
+        Requires SUPPORT_PRESET_MODE.
+        """
+        return None
+
+    @property
+    def preset_modes(self) -> Optional[List[str]]:
+        """Return a list of available preset modes.
+        Requires SUPPORT_PRESET_MODE.
+        """
+        return None
+
+    @property
+    def hvac_mode(self) -> Optional[str]:
+        """Return current operation ie. heat, cool, idle."""
+        if self._device.is_on:
+            return HVAC_MODE_HEAT
         else:
-            return STATE_OFF
+            return HVAC_MODE_OFF
 
     @property
-    def operation_list(self):
-        """List of available operation modes."""
-        return [STATE_HEAT, STATE_OFF]
+    def hvac_modes(self) -> Optional[List[str]]:
+        """Return the list of available operation modes."""
+        return [HVAC_MODE_HEAT, HVAC_MODE_OFF]
 
-    @property
-    def target_temperature_step(self):
-        """Return the supported step of target temperature."""
-        return 1
-
-    async def async_set_operation_mode(self, operation_mode):
+    async def async_set_hvac_mode(self, hvac_mode: str) -> None:
         """Set operation mode."""
-
-        if operation_mode == STATE_HEAT:
-            self._is_on = True
-            climate_control = ControlFloorHeatingStatus()
-            climate_control.status = OnOffStatus.ON.value
-            await self._device.control_heating_status(climate_control)
-            await self.async_update_ha_state()
-
-        elif operation_mode == STATE_OFF:
+        if hvac_mode == HVAC_MODE_OFF:
             self._is_on = False
             climate_control = ControlFloorHeatingStatus()
             climate_control.status = OnOffStatus.OFF.value
             await self._device.control_heating_status(climate_control)
             await self.async_update_ha_state()
-
+        elif hvac_mode == HVAC_MODE_HEAT:
+            self._is_on = True
+            climate_control = ControlFloorHeatingStatus()
+            climate_control.status = OnOffStatus.ON.value
+            await self._device.control_heating_status(climate_control)
+            await self.async_update_ha_state()
         else:
             _LOGGER.error("Unrecognized operation mode: %s", operation_mode)
             return
+
+    @property
+    def target_temperature_step(self):
+        """Return the supported step of target temperature."""
+        return 1
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
