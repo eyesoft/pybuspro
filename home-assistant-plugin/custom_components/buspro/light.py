@@ -37,7 +37,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 async def async_setup_platform(hass, config, async_add_entites, discovery_info=None):
     """Set up Buspro light devices."""
     # noinspection PyUnresolvedReferences
-    from ..pybuspro.devices import Light
+    from pybuspro.devices import Light
 
     hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
