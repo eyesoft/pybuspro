@@ -43,6 +43,10 @@ class _Control:
             operate_code = OperateCode.ReadSensorStatus
             payload = []
 
+        elif type(control) == _ReadSensorsInOneStatus:
+            operate_code = OperateCode.ReadSensorsInOneStatus
+            payload = []
+
         elif type(control) == _ReadFloorHeatingStatus:
             operate_code = OperateCode.ReadFloorHeatingStatus
             payload = []
@@ -126,6 +130,12 @@ class _ReadStatusOfUniversalSwitch(_Control):
 
 
 class _ReadSensorStatus(_Control):
+    def __init__(self, buspro):
+        super().__init__(buspro)
+        # no more properties
+
+
+class _ReadSensorsInOneStatus(_Control):
     def __init__(self, buspro):
         super().__init__(buspro)
         # no more properties

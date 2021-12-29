@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import random
 
 from pybuspro.buspro import Buspro
@@ -171,30 +170,42 @@ async def main__read_status():
     # await hdl.network_interface.send_control(read_status_of_channels)
 
 
+
+
 async def main__read_sensor_status():
     loop__ = asyncio.get_event_loop()
     hdl = Buspro(GATEWAY_ADDRESS_SEND_RECEIVE, loop__)
     # hdl.register_telegram_received_all_messages_cb(callback_received_for_all_messages)
     await hdl.start()
 
+    '''
     def callback_received_for_sensor_status(telegram):
         print(f'==> 1: {datetime.datetime.now()} Callback telegram: {telegram}')
+    '''
 
     async def callback_received_for_sensor_updated(device):
-        print(f'==> 2: Callback sonic: {device._sonic}')
+        # print(f'==> 2: Callback sonic: {device._sonic}')
+
+        current_temperature = device._current_temperature - 20
+        print(f'==> 2: Callback temperature: {current_temperature}')
         print(f'==> 2: Callback motion sensor: {device._motion_sensor}')
 
-        if device._sonic == 1 or device._motion_sensor == 1:
+        # if device._sonic == 1 or device._motion_sensor == 1:
+        #     print(f'==> 2: Bevegelse')
+        # if device._sonic == 0 and device._motion_sensor == 0:
+        #     print(f'==> 2: Ingen bevegelse')
+
+        if device._motion_sensor == 1:
             print(f'==> 2: Bevegelse')
-        if device._sonic == 0 and device._motion_sensor == 0:
+        if device._motion_sensor == 0:
             print(f'==> 2: Ingen bevegelse')
 
-    sensor = Sensor(hdl, (1, 50))
+    sensor = Sensor(hdl, (1, 48), device='sensors_in_one')
     # sensor = Sensor(hdl, (1, 100), universal_switch_number=101)
-    sensor.register_telegram_received_cb(callback_received_for_sensor_status)
+    # sensor.register_telegram_received_cb(callback_received_for_sensor_status)
     sensor.register_device_updated_cb(callback_received_for_sensor_updated)
 
-    # print("START")
+    print("START")
     # await sensor.read_sensor_status()
     # await asyncio.sleep(1)
     # await sensor.read_sensor_status()
@@ -212,13 +223,17 @@ async def main__read_sensor_status():
     # await sensor.read_sensor_status()
     # await asyncio.sleep(1)
     # await sensor.read_sensor_status()
+    # await asyncio.sleep(3)
+    await sensor.read_sensor_status()
     # await asyncio.sleep(1)
-    # await sensor.read_sensor_status()
-    # print("KJØRT")
+    print("KJØRT")
     # print(f"{sensor.temperature}, {sensor.brightness}, {sensor.dry_contact_1_is_on}, {sensor.dry_contact_2_is_on}, "
     #       f"{sensor.movement}, '{sensor.name}', '{sensor.universal_switch_is_on}'")
     # await asyncio.sleep(3)
     # print(sensor.temperature)
+
+
+
 
 
 async def main__climate():

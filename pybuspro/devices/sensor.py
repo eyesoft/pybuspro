@@ -2,7 +2,7 @@ import asyncio
 
 # from ..helpers.generics import Generics
 from .control import _ReadSensorStatus, _ReadStatusOfUniversalSwitch, _ReadStatusOfChannels, _ReadFloorHeatingStatus, \
-    _ReadDryContactStatus
+    _ReadDryContactStatus, _ReadSensorsInOneStatus
 from .device import Device
 from ..helpers.enums import *
 
@@ -46,6 +46,13 @@ class Sensor(Device):
             if success_or_fail == SuccessOrFailure.Success:
                 self._brightness = brightness_high + brightness_low
                 self._call_device_updated()
+
+        elif telegram.operate_code == OperateCode.ReadSensorsInOneStatusResponse:
+            self._current_temperature = telegram.payload[1]
+            self._motion_sensor = telegram.payload[7]
+            self._dry_contact_1_status = telegram.payload[8]
+            self._dry_contact_2_status = telegram.payload[9]
+            self._call_device_updated()
 
         elif telegram.operate_code == OperateCode.BroadcastSensorStatusResponse:
             self._current_temperature = telegram.payload[0]
@@ -133,6 +140,10 @@ class Sensor(Device):
             rdcs.subnet_id, rdcs.device_id = self._device_address
             rdcs.switch_number = self._switch_number
             await rdcs.send()
+        elif self._device is not None and self._device == "sensors_in_one":
+            rsios = _ReadSensorsInOneStatus(self._buspro)
+            rsios.subnet_id, rsios.device_id = self._device_address
+            await rsios.send()
         else:
             rss = _ReadSensorStatus(self._buspro)
             rss.subnet_id, rss.device_id = self._device_address
@@ -143,6 +154,8 @@ class Sensor(Device):
         if self._current_temperature is None:
             return 0
         if self._device is not None and self._device == "dlp":
+            return self._current_temperature
+        if self._device is not None and self._device == "12in1":
             return self._current_temperature
         return self._current_temperature - 20
 

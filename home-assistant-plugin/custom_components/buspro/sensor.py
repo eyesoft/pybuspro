@@ -11,14 +11,22 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_UNIT_OF_MEASUREMENT,
-                                 ILLUMINANCE, TEMPERATURE, CONF_DEVICE_CLASS)
+                                 ILLUMINANCE, TEMPERATURE, CONF_DEVICE_CLASS, CONF_SCAN_INTERVAL)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
 
 from ..buspro import DATA_BUSPRO
 
+# from homeassistant.helpers.update_coordinator import (
+#     CoordinatorEntity,
+#     DataUpdateCoordinator,
+#     UpdateFailed,
+# )
+# from datetime import timedelta
+
 DEFAULT_CONF_UNIT_OF_MEASUREMENT = ""
 DEFAULT_CONF_DEVICE_CLASS = "None"
+DEFAULT_CONF_SCAN_INTERVAL = "None"
 CONF_DEVICE = "device"
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,6 +46,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Optional(CONF_UNIT_OF_MEASUREMENT, default=DEFAULT_CONF_UNIT_OF_MEASUREMENT): cv.string,
                 vol.Optional(CONF_DEVICE_CLASS, default=DEFAULT_CONF_DEVICE_CLASS): cv.string,
                 vol.Optional(CONF_DEVICE, default=None): cv.string,
+                vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_CONF_SCAN_INTERVAL): cv.string,
             })
         ])
 })
@@ -59,6 +68,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         unit_of_measurement = device_config[CONF_UNIT_OF_MEASUREMENT]
         device_class = device_config[CONF_DEVICE_CLASS]
         device = device_config[CONF_DEVICE]
+        scan_interval = device_config[CONF_SCAN_INTERVAL]
 
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
@@ -67,6 +77,18 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
             name, device_address, sensor_type, device_class))
 
         sensor = Sensor(hdl, device_address, device=device, name=name)
+
+        # async def async_update_data():
+        #     # sensor.read_sensor_status()
+        #     _LOGGER.info("async_update_data called...read_sensor_status")
+
+        # coordinator = DataUpdateCoordinator(
+        #     hass, _LOGGER, name=name,
+        #     update_method=async_update_data(sensor),
+        #     update_interval=timedelta(seconds=scan_interval)
+        # )
+        # await coordinator.async_config_entry_first_refresh()
+        # await coordinator.async_refresh()
 
         devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class))
 
@@ -77,13 +99,17 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 class BusproSensor(Entity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device, sensor_type, unit_of_measurement, device_class):
+    def __init__(self, hass, device, sensor_type, unit_of_measurement, device_class, scan_interval):
         self._hass = hass
         self._device = device
         self._unit_of_measurement = unit_of_measurement
         self._sensor_type = sensor_type
         self._device_class = device_class
         self.async_register_callbacks()
+
+        self._should_poll = False
+        if scan_interval > 0:
+            self._should_poll = True
 
     @callback
     def async_register_callbacks(self):
@@ -98,8 +124,8 @@ class BusproSensor(Entity):
 
     @property
     def should_poll(self):
-        """No polling needed within Buspro."""
-        return False
+        """No polling needed within Buspro unless explicitly set."""
+        return self._should_poll
 
     @property
     def name(self):
