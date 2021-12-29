@@ -6,6 +6,7 @@ https://home-assistant.io/components/...
 """
 
 import logging
+from datetime import timedelta
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -22,12 +23,13 @@ from ..buspro import DATA_BUSPRO
 #     DataUpdateCoordinator,
 #     UpdateFailed,
 # )
-# from datetime import timedelta
 
 DEFAULT_CONF_UNIT_OF_MEASUREMENT = ""
 DEFAULT_CONF_DEVICE_CLASS = "None"
-DEFAULT_CONF_SCAN_INTERVAL = "None"
+DEFAULT_CONF_SCAN_INTERVAL = 0
+DEFAULT_CONF_OFFSET = 0
 CONF_DEVICE = "device"
+CONF_OFFSET = "offset"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,6 +49,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Optional(CONF_DEVICE_CLASS, default=DEFAULT_CONF_DEVICE_CLASS): cv.string,
                 vol.Optional(CONF_DEVICE, default=None): cv.string,
                 vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_CONF_SCAN_INTERVAL): cv.string,
+                vol.Optional(CONF_OFFSET, default=DEFAULT_CONF_OFFSET): cv.string,
             })
         ])
 })
@@ -68,8 +71,16 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         unit_of_measurement = device_config[CONF_UNIT_OF_MEASUREMENT]
         device_class = device_config[CONF_DEVICE_CLASS]
         device = device_config[CONF_DEVICE]
+        offset = device_config[CONF_OFFSET]
+        
         scan_interval = device_config[CONF_SCAN_INTERVAL]
-
+        interval = 0
+        if scan_interval is not None:
+            interval = int(scan_interval)
+            
+        if interval > 0:
+            SCAN_INTERVAL = timedelta(seconds=interval)
+        
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
 
@@ -78,19 +89,21 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
         sensor = Sensor(hdl, device_address, device=device, name=name)
 
-        # async def async_update_data():
-        #     # sensor.read_sensor_status()
-        #     _LOGGER.info("async_update_data called...read_sensor_status")
+        '''
+        async def async_update_data():
+            # sensor.read_sensor_status()
+            _LOGGER.error("async_update_data called...read_sensor_status")
 
-        # coordinator = DataUpdateCoordinator(
-        #     hass, _LOGGER, name=name,
-        #     update_method=async_update_data(sensor),
-        #     update_interval=timedelta(seconds=scan_interval)
-        # )
-        # await coordinator.async_config_entry_first_refresh()
+        coordinator = DataUpdateCoordinator(
+            hass, _LOGGER, name=name,
+            update_method=async_update_data,
+            update_interval=timedelta(seconds=interval)
+        )
+        await coordinator.async_config_entry_first_refresh()
         # await coordinator.async_refresh()
-
-        devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class))
+        '''
+        
+        devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class, interval, offset))
 
     async_add_entites(devices)
 
@@ -99,13 +112,14 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 class BusproSensor(Entity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device, sensor_type, unit_of_measurement, device_class, scan_interval):
+    def __init__(self, hass, device, sensor_type, unit_of_measurement, device_class, scan_interval, offset):
         self._hass = hass
         self._device = device
         self._unit_of_measurement = unit_of_measurement
         self._sensor_type = sensor_type
         self._device_class = device_class
         self.async_register_callbacks()
+        self._offset = offset
 
         self._should_poll = False
         if scan_interval > 0:
@@ -127,6 +141,9 @@ class BusproSensor(Entity):
         """No polling needed within Buspro unless explicitly set."""
         return self._should_poll
 
+    async def async_update(self):
+        await self._device.read_sensor_status()
+
     @property
     def name(self):
         """Return the display name of this light."""
@@ -141,7 +158,13 @@ class BusproSensor(Entity):
     def state(self):
         """Return the state of the sensor."""
         if self._sensor_type == TEMPERATURE:
-            return self._device.temperature
+            temperature = self._device.temperature
+            
+            if self._offset is not None and temperature != 0:
+                temperature = temperature + int(self._offset)
+
+            return temperature
+            
         if self._sensor_type == ILLUMINANCE:
             return self._device.brightness
 

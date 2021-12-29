@@ -9,7 +9,7 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.light import Light, PLATFORM_SCHEMA, SUPPORT_BRIGHTNESS, ATTR_BRIGHTNESS
+from homeassistant.components.light import LightEntity, PLATFORM_SCHEMA, SUPPORT_BRIGHTNESS, ATTR_BRIGHTNESS
 from homeassistant.const import (CONF_NAME, CONF_DEVICES)
 from homeassistant.core import callback
 
@@ -66,7 +66,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
 
 # noinspection PyAbstractClass
-class BusproLight(Light):
+class BusproLight(LightEntity):
     """Representation of a Buspro light."""
 
     def __init__(self, hass, device, running_time, dimmable):

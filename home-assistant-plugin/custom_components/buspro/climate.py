@@ -10,7 +10,7 @@ from typing import Optional, List
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.climate import (PLATFORM_SCHEMA, ClimateDevice)
+from homeassistant.components.climate import (PLATFORM_SCHEMA, ClimateEntity)
 from homeassistant.components.climate.const import (
     SUPPORT_PRESET_MODE, SUPPORT_TARGET_TEMPERATURE,
     HVAC_MODE_HEAT, HVAC_MODE_OFF)
@@ -67,7 +67,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
 
 # noinspection PyAbstractClass
-class BusproClimate(ClimateDevice):
+class BusproClimate(ClimateEntity):
     """Representation of a Buspro switch."""
 
     def __init__(self, hass, device, supports_operation_mode):
@@ -175,7 +175,7 @@ class BusproClimate(ClimateDevice):
             await self._device.control_heating_status(climate_control)
             await self.async_update_ha_state()
         else:
-            _LOGGER.error("Unrecognized operation mode: %s", operation_mode)
+            _LOGGER.error("Unrecognized hvac mode: %s", hvac_mode)
             return
 
     @property

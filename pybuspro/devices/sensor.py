@@ -67,6 +67,9 @@ class Sensor(Device):
 
         elif telegram.operate_code == OperateCode.BroadcastSensorStatusAutoResponse:
             self._current_temperature = telegram.payload[0]
+            if self._device == "12in1":
+                self._current_temperature = self._current_temperature - 20
+            
             brightness_high = telegram.payload[1]
             brightness_low = telegram.payload[2]
             self._motion_sensor = telegram.payload[3]

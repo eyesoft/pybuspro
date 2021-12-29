@@ -9,7 +9,7 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.binary_sensor import (PLATFORM_SCHEMA, BinarySensorDevice)
+from homeassistant.components.binary_sensor import (PLATFORM_SCHEMA, BinarySensorEntity)
 from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_DEVICE_CLASS)
 from homeassistant.core import callback
 
@@ -95,7 +95,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
 
 # noinspection PyAbstractClass
-class BusproBinarySensor(BinarySensorDevice):
+class BusproBinarySensor(BinarySensorEntity):
     """Representation of a Buspro switch."""
 
     def __init__(self, hass, device, sensor_type, device_class):
