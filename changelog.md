@@ -7,5 +7,6 @@ Changelog
 * Initial version
 
 1.0.0 - Release 2021-01-25
+--------------------------
 
 * First stable release
