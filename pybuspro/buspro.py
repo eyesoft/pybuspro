@@ -1,4 +1,6 @@
-﻿import asyncio
+﻿''' pybuspro version 1.0.0  '''
+
+import asyncio
 import logging
 
 from .helpers.enums import *

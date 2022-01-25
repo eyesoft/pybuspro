@@ -25,9 +25,7 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    # download_url='https://github.com/eyesoft/pybuspro/archive/{}.zip'.format(VERSION),
     license='MIT',
     install_requires=REQUIRES,
     keywords='hdl buspro home automation',
-    # python_requires=">=3.5.2",
 )
