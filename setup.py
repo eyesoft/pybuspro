@@ -1,6 +1,6 @@
 import setuptools
 
-VERSION = '0.0.1'
+VERSION = '1.0.0'
 REQUIRES = ['crc16>=0.1.1']
 
 with open("README.md", "r") as fh:
