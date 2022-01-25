@@ -53,6 +53,10 @@ class Light(Device):
         raise NotImplementedError
 
     @property
+    def device_identifier(self):
+        return f"{self._device_address}-{self._channel}"
+
+    @property
     def supports_brightness(self):
         return True
 

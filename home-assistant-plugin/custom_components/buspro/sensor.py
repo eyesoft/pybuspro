@@ -18,12 +18,6 @@ from homeassistant.helpers.entity import Entity
 
 from ..buspro import DATA_BUSPRO
 
-# from homeassistant.helpers.update_coordinator import (
-#     CoordinatorEntity,
-#     DataUpdateCoordinator,
-#     UpdateFailed,
-# )
-
 DEFAULT_CONF_UNIT_OF_MEASUREMENT = ""
 DEFAULT_CONF_DEVICE_CLASS = "None"
 DEFAULT_CONF_SCAN_INTERVAL = 0
@@ -89,20 +83,6 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
         sensor = Sensor(hdl, device_address, device=device, name=name)
 
-        '''
-        async def async_update_data():
-            # sensor.read_sensor_status()
-            _LOGGER.error("async_update_data called...read_sensor_status")
-
-        coordinator = DataUpdateCoordinator(
-            hass, _LOGGER, name=name,
-            update_method=async_update_data,
-            update_interval=timedelta(seconds=interval)
-        )
-        await coordinator.async_config_entry_first_refresh()
-        # await coordinator.async_refresh()
-        '''
-        
         devices.append(BusproSensor(hass, sensor, sensor_type, unit_of_measurement, device_class, interval, offset))
 
     async_add_entites(devices)
@@ -132,7 +112,8 @@ class BusproSensor(Entity):
         # noinspection PyUnusedLocal
         async def after_update_callback(device):
             """Call after device was updated."""
-            await self.async_update_ha_state()
+            if self._hass is not None:
+                await self.async_update_ha_state()
 
         self._device.register_device_updated_cb(after_update_callback)
 
@@ -182,3 +163,8 @@ class BusproSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return None
+
+    @property
+    def unique_id(self):
+        """Return the unique id."""
+        return f"{self._device.device_identifier}-{self._sensor_type}"

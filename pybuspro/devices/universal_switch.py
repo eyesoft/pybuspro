@@ -47,6 +47,10 @@ class UniversalSwitch(Device):
         else:
             return True
 
+    @property
+    def device_identifier(self):
+        return f"{self._device_address}-{self._switch_number}"
+
     async def _set(self, switch_status):
         self._switch_status = switch_status
 

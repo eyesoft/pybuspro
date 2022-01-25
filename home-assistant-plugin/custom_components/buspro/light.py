@@ -133,3 +133,8 @@ class BusproLight(LightEntity):
     async def async_turn_off(self, **kwargs):
         """Instruct the light to turn off."""
         await self._device.set_off(self._running_time)
+
+    @property
+    def unique_id(self):
+        """Return the unique id."""
+        return self._device.device_identifier

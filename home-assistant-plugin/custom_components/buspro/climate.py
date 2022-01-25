@@ -10,11 +10,26 @@ from typing import Optional, List
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.climate import (PLATFORM_SCHEMA, ClimateEntity)
+from homeassistant.components.climate import (
+    PLATFORM_SCHEMA, 
+    ClimateEntity,
+)
 from homeassistant.components.climate.const import (
-    SUPPORT_PRESET_MODE, SUPPORT_TARGET_TEMPERATURE,
-    HVAC_MODE_HEAT, HVAC_MODE_OFF)
-from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, TEMP_CELSIUS, ATTR_TEMPERATURE)
+    SUPPORT_PRESET_MODE, 
+    SUPPORT_TARGET_TEMPERATURE,
+    HVAC_MODE_HEAT, 
+    HVAC_MODE_OFF,
+    CURRENT_HVAC_IDLE,
+    CURRENT_HVAC_HEAT,
+    CURRENT_HVAC_OFF,
+)
+from homeassistant.const import (
+    CONF_NAME, 
+    CONF_DEVICES, 
+    CONF_ADDRESS, 
+    TEMP_CELSIUS, 
+    ATTR_TEMPERATURE,
+)
 from homeassistant.core import callback
 
 # from homeassistant.helpers.entity import Entity
@@ -27,6 +42,7 @@ from ..pybuspro.helpers.enums import OnOffStatus
 _LOGGER = logging.getLogger(__name__)
 
 CONF_SUPPORTS_OPERATION_MODE = "supports_operation_mode"
+CONF_RELAY_ADDRESS = "relay_address"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_DEVICES):
@@ -35,6 +51,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_ADDRESS): cv.string,
                 vol.Required(CONF_NAME): cv.string,
                 vol.Optional(CONF_SUPPORTS_OPERATION_MODE, default=True): cv.boolean,
+                vol.Optional(CONF_RELAY_ADDRESS, default=''): cv.string,
             })
         ])
 })
@@ -45,6 +62,7 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
     """Set up Buspro switch devices."""
     # noinspection PyUnresolvedReferences
     from ..pybuspro.devices import Climate
+    from ..pybuspro.devices import Sensor
 
     hdl = hass.data[DATA_BUSPRO].hdl
     devices = []
@@ -61,7 +79,15 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 
         climate = Climate(hdl, device_address, name)
 
-        devices.append(BusproClimate(hass, climate, supports_operation_mode))
+        relay_sensor = None
+        relay_address = device_config[CONF_RELAY_ADDRESS]
+        if relay_address: 
+            relay_address2 = relay_address.split('.')
+            relay_device_address = (int(relay_address2[0]), int(relay_address2[1]))
+            relay_channel_number = int(relay_address2[2])
+            relay_sensor = Sensor(hdl, relay_device_address, channel_number=relay_channel_number)
+
+        devices.append(BusproClimate(hass, climate, supports_operation_mode, relay_sensor))
 
     async_add_entites(devices)
 
@@ -70,12 +96,18 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 class BusproClimate(ClimateEntity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device, supports_operation_mode):
+    def __init__(self, hass, device, supports_operation_mode, relay_sensor):
         self._hass = hass
         self._device = device
         self._target_temperature = self._device.target_temperature
         self._is_on = self._device.is_on
         self._supports_operation_mode = supports_operation_mode
+
+        self._relay_sensor = relay_sensor
+        self._relay_sensor_is_on = None
+        if (self._relay_sensor is not None):
+            self._relay_sensor_is_on = self._relay_sensor.single_channel_is_on
+
         self.async_register_callbacks()
 
     @callback
@@ -89,7 +121,15 @@ class BusproClimate(ClimateEntity):
             self._is_on = device.is_on
             await self.async_update_ha_state()
 
+        async def after_relay_sensor_update_callback(device):
+            """Call after device was updated."""
+            self._relay_sensor_is_on = device.single_channel_is_on
+            await self.async_update_ha_state()
+
         self._device.register_device_updated_cb(after_update_callback)
+        
+        if self._relay_sensor is not None:
+            self._relay_sensor.register_device_updated_cb(after_relay_sensor_update_callback)
 
     @property
     def should_poll(self):
@@ -148,6 +188,21 @@ class BusproClimate(ClimateEntity):
         return None
 
     @property
+    def hvac_action(self) -> Optional[str]:
+        """Return current action ie. heating, idle, off."""
+        if self._device.is_on:
+            
+            if self._relay_sensor_is_on is None:
+                return CURRENT_HVAC_HEAT
+            else:
+                if self._relay_sensor_is_on:
+                    return CURRENT_HVAC_HEAT
+                else:
+                    return CURRENT_HVAC_IDLE
+        else:
+            return CURRENT_HVAC_OFF
+
+    @property
     def hvac_mode(self) -> Optional[str]:
         """Return current operation ie. heat, cool, idle."""
         if self._device.is_on:
@@ -175,13 +230,18 @@ class BusproClimate(ClimateEntity):
             await self._device.control_heating_status(climate_control)
             await self.async_update_ha_state()
         else:
-            _LOGGER.error("Unrecognized hvac mode: %s", hvac_mode)
+            _LOGGER.error("Unrecognized operation mode: %s", operation_mode)
             return
 
     @property
     def target_temperature_step(self):
         """Return the supported step of target temperature."""
         return 1
+
+    @property
+    def unique_id(self):
+        """Return the unique id."""
+        return self._device.device_identifier
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""

@@ -9,15 +9,27 @@ import logging
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.binary_sensor import (PLATFORM_SCHEMA, BinarySensorEntity)
-from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_DEVICE_CLASS)
+from homeassistant.components.binary_sensor import (
+    PLATFORM_SCHEMA, 
+    BinarySensorEntity,
+)
+from homeassistant.const import (
+    CONF_NAME, 
+    CONF_DEVICES, 
+    CONF_ADDRESS, 
+    CONF_TYPE, 
+    CONF_DEVICE_CLASS, 
+    CONF_SCAN_INTERVAL,
+)
 from homeassistant.core import callback
 
+from datetime import timedelta
 from ..buspro import DATA_BUSPRO
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_CONF_DEVICE_CLASS = "None"
+DEFAULT_CONF_SCAN_INTERVAL = 0
 
 CONF_MOTION = 'motion'
 CONF_DRY_CONTACT_1 = 'dry_contact_1'
@@ -43,6 +55,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
                 vol.Required(CONF_NAME): cv.string,
                 vol.Required(CONF_TYPE): vol.In(SENSOR_TYPES),
                 vol.Optional(CONF_DEVICE_CLASS, default=DEFAULT_CONF_DEVICE_CLASS): cv.string,
+                vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_CONF_SCAN_INTERVAL): cv.string,
             })
         ])
 })
@@ -66,30 +79,38 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         channel_number = None
         switch_number = None
 
+        scan_interval = device_config[CONF_SCAN_INTERVAL]
+        interval = 0
+        if scan_interval is not None:
+            interval = int(scan_interval)
+            
+        if interval > 0:
+            SCAN_INTERVAL = timedelta(seconds=interval)
+            
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
 
         if sensor_type == CONF_UNIVERSAL_SWITCH:
             universal_switch_number = int(address2[2])
             _LOGGER.debug("Adding binary sensor '{}' with address {}, universal_switch_number {}, sensor type '{}' "
-                          "and device class '{}'".format(name, device_address, universal_switch_number, sensor_type,
-                                                         device_class))
+                            "and device class '{}'".format(name, device_address, universal_switch_number, sensor_type,
+                            device_class))
         elif sensor_type == CONF_SINGLE_CHANNEL:
             channel_number = int(address2[2])
             _LOGGER.debug("Adding binary sensor '{}' with address {}, channel_number {}, sensor type '{}' and "
-                          "device class '{}'".format(name, device_address, channel_number, sensor_type, device_class))
+                            "device class '{}'".format(name, device_address, channel_number, sensor_type, device_class))
         elif sensor_type == CONF_DRY_CONTACT:
             switch_number = int(address2[2])
             _LOGGER.debug("Adding binary sensor '{}' with address {}, switch_number '{}' and "
-                          "device class '{}'".format(name, device_address, switch_number, device_class))
+                            "device class '{}'".format(name, device_address, switch_number, device_class))
         else:
             _LOGGER.debug("Adding binary sensor '{}' with address {}, sensor type '{}' and device class '{}'".
-                          format(name, device_address, sensor_type, device_class))
+                            format(name, device_address, sensor_type, device_class))
 
         sensor = Sensor(hdl, device_address, universal_switch_number=universal_switch_number,
                         channel_number=channel_number, switch_number=switch_number, name=name)
 
-        devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class))
+        devices.append(BusproBinarySensor(hass, sensor, sensor_type, device_class, interval))
 
     async_add_entites(devices)
 
@@ -98,11 +119,16 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
 class BusproBinarySensor(BinarySensorEntity):
     """Representation of a Buspro switch."""
 
-    def __init__(self, hass, device, sensor_type, device_class):
+    def __init__(self, hass, device, sensor_type, device_class, scan_interval):
         self._hass = hass
         self._device = device
         self._device_class = device_class
         self._sensor_type = sensor_type
+        
+        self._should_poll = False
+        if scan_interval > 0:
+            self._should_poll = True
+
         self.async_register_callbacks()
 
     @callback
@@ -119,7 +145,11 @@ class BusproBinarySensor(BinarySensorEntity):
     @property
     def should_poll(self):
         """No polling needed within Buspro."""
-        return False
+        return self._should_poll
+
+    async def async_update(self):
+        if self._sensor_type == CONF_UNIVERSAL_SWITCH:
+            await self._device.read_sensor_status()
 
     @property
     def name(self):
@@ -135,6 +165,11 @@ class BusproBinarySensor(BinarySensorEntity):
     def device_class(self):
         """Return the class of this sensor."""
         return self._device_class
+
+    @property
+    def unique_id(self):
+        """Return the unique id."""
+        return self._device.device_identifier
 
     @property
     def is_on(self):

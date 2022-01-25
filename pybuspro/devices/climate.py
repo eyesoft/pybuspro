@@ -175,6 +175,10 @@ class Climate(Device):
         return self._away_temperature
 
     @property
+    def device_identifier(self):
+        return f"{self._device_address}"
+
+    @property
     def target_temperature(self):
         if self._mode == TemperatureMode.Normal.value:
             return self._normal_temperature

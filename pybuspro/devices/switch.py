@@ -53,6 +53,10 @@ class Switch(Device):
         else:
             return True
 
+    @property
+    def device_identifier(self):
+        return f"{self._device_address}-{self._channel}"
+
     async def _set(self, intensity, running_time_seconds):
         self._brightness = intensity
 

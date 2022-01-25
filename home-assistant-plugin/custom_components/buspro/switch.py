@@ -98,3 +98,8 @@ class BusproSwitch(SwitchEntity):
     async def async_turn_off(self, **kwargs):
         """Instruct the switch to turn off."""
         await self._device.set_off()
+
+    @property
+    def unique_id(self):
+        """Return the unique id."""
+        return self._device.device_identifier

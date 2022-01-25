@@ -19,7 +19,7 @@ class Sensor(Device):
         self._name = name
         self._device = device
         self._switch_number = switch_number
-
+        
         self._current_temperature = None
         self._brightness = None
         self._motion_sensor = None
@@ -209,6 +209,10 @@ class Sensor(Device):
             return True
         else:
             return False
+
+    @property
+    def device_identifier(self):
+        return f"{self._device_address}-{self._universal_switch_number}-{self._channel_number}-{self._switch_number}"
 
     def _call_read_current_status_of_sensor(self, run_from_init=False):
 
