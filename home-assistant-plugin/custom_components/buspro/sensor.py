@@ -11,8 +11,17 @@ from datetime import timedelta
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (CONF_NAME, CONF_DEVICES, CONF_ADDRESS, CONF_TYPE, CONF_UNIT_OF_MEASUREMENT,
-                                 ILLUMINANCE, TEMPERATURE, CONF_DEVICE_CLASS, CONF_SCAN_INTERVAL)
+from homeassistant.const import (
+    CONF_NAME, 
+    CONF_DEVICES, 
+    CONF_ADDRESS, 
+    CONF_TYPE, 
+    CONF_UNIT_OF_MEASUREMENT,
+    ILLUMINANCE, 
+    TEMPERATURE, 
+    CONF_DEVICE_CLASS, 
+    CONF_SCAN_INTERVAL,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.entity import Entity
 
@@ -24,6 +33,7 @@ DEFAULT_CONF_SCAN_INTERVAL = 0
 DEFAULT_CONF_OFFSET = 0
 CONF_DEVICE = "device"
 CONF_OFFSET = "offset"
+SCAN_INTERVAL = timedelta(minutes=2)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,9 +82,6 @@ async def async_setup_platform(hass, config, async_add_entites, discovery_info=N
         if scan_interval is not None:
             interval = int(scan_interval)
             
-        if interval > 0:
-            SCAN_INTERVAL = timedelta(seconds=interval)
-        
         address2 = address.split('.')
         device_address = (int(address2[0]), int(address2[1]))
 
