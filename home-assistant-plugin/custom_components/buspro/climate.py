@@ -119,7 +119,8 @@ class BusproClimate(ClimateEntity):
             """Call after device was updated."""
             self._target_temperature = device.target_temperature
             self._is_on = device.is_on
-            await self.async_update_ha_state()
+            if (self._hass is not None):
+                await self.async_update_ha_state()
 
         async def after_relay_sensor_update_callback(device):
             """Call after device was updated."""
