@@ -1,8 +1,6 @@
 import traceback
 from struct import *
 
-from crc16 import *
-
 from .enums import DeviceType
 from .generics import Generics
 from ..core.telegram import Telegram
@@ -127,7 +125,7 @@ class TelegramHelper:
         # crc_buf_length = length_of_data_package - 2
         # crc_buf = send_buf[-crc_buf_length:]
         # crc_buf_as_bytes = bytes(crc_buf)
-        # crc = crc16xmodem(crc_buf_as_bytes)
+        # crc = self._crc16(crc_buf_as_bytes)
         # hex_byte_array = pack(">H", crc)
         # send_buf.append(hex_byte_array[0])
         # send_buf.append(hex_byte_array[1])
@@ -138,22 +136,22 @@ class TelegramHelper:
 
         return send_buf
 
-    @staticmethod
-    def _calculate_crc(length_of_data_package, send_buf):
+    def _calculate_crc(self, length_of_data_package, send_buf):
         crc_buf_length = length_of_data_package - 2
         crc_buf = send_buf[-crc_buf_length:]
         crc_buf_as_bytes = bytes(crc_buf)
-        crc = crc16xmodem(crc_buf_as_bytes)
+        crc = self._crc16(crc_buf_as_bytes)
+
         return pack(">H", crc)
 
-    @staticmethod
-    def _calculate_crc_from_telegram(telegram):
+    def _calculate_crc_from_telegram(self, telegram):
         length_of_data_package = 11 + len(telegram.payload)
         crc_buf_length = length_of_data_package - 2
         send_buf = telegram.udp_data[:-2]
         crc_buf = send_buf[-crc_buf_length:]
         crc_buf_as_bytes = bytes(crc_buf)
-        crc = crc16xmodem(crc_buf_as_bytes)
+        crc = self._crc16(crc_buf_as_bytes)
+        
         return pack(">H", crc)
 
     def _check_crc(self, telegram):
@@ -162,3 +160,23 @@ class TelegramHelper:
         if calculated_crc == telegram.crc:
             return True
         return False
+
+    @staticmethod
+    def _crc16(data: bytes):
+        xor_in = 0x0000  # initial value
+        xor_out = 0x0000  # final XOR value
+        poly = 0x1021  # generator polinom (normal form)
+    
+        reg = xor_in
+        for octet in data:
+            # reflect in
+            for i in range(8):
+                topbit = reg & 0x8000
+                if octet & (0x80 >> i):
+                    topbit ^= 0x8000
+                reg <<= 1
+                if topbit:
+                    reg ^= poly
+            reg &= 0xFFFF
+            # reflect out
+        return reg ^ xor_out
