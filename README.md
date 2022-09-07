@@ -1,6 +1,8 @@
 pybuspro - A Buspro Library Written in Python
 ====================================================
 
+**This repository is archived. Transferred to https://github.com/eyesoft/home_assistant_buspro/.**
+
 Documentation
 -------------
 
